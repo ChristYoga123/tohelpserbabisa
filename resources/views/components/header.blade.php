@@ -11,7 +11,7 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link px-3 text-white" href="#">Beranda</a>
+                        <a class="nav-link px-3 text-white" href="{{ route('index') }}">Beranda</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link px-3 text-white" href="#about-us">Tentang</a>
