@@ -8,3 +8,6 @@ Route::get('/', function () {
 Route::get('/ojek', function () {
     return view('pages.transportasi.index');
 })->name('ojek');
+Route::get('/bersih-bersih', function () {
+    return view('pages.bersih.index');
+})->name('bersih');    
