@@ -138,6 +138,23 @@
         </div>
         <div class="service-block position-relative bg-secondary">
             <div class="jarallax service-bg"
+                style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(images/jasa-angkut.jpg); background-size: cover; background-repeat: no-repeat; background-position: center;">
+            </div>
+            <div class="container service-content position-absolute top-50 start-50 translate-middle">
+                <div class="row align-items-center">
+                    <div class="col-lg-9">
+                        <h3 class="display-6 fw-semibold text-white mb-4">Jasa Pindahan/Angkut Barang</h3>
+                        <p class="text-white">Layanan angkut barang kami membantu Anda memindahkan barang ke mana saja
+                            dengan cepat, aman, dan efisien.</p>
+                    </div>
+                    <div class="col-lg-3 text-lg-end">
+                        <a href="index.html" class="btn btn-outline-light service-btn">Pesan Sekarang</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="service-block position-relative bg-secondary">
+            <div class="jarallax service-bg"
                 style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(images/jasa-custom.jpg); background-size: cover; background-repeat: no-repeat; background-position: center;">
             </div>
             <div class="container service-content position-absolute top-50 start-50 translate-middle">
@@ -202,13 +219,13 @@
         <div class="container padding-small">
             <div class="row g-lg-5 align-items-center">
                 <!-- <div class="col-lg-6 mb-5 mb-lg-0">
-                                                                          <div class="border-dotted rounded-4 p-5">
-                                                                            <h2 class="display-4 fw-bold text-white">$30 Off</h2>
-                                                                            <p class="fs-3 fw-semibold text-white text-capitalize">if you Mention our Website</p>
-                                                                            <p class="text-white">RPurus pulvinar feugiat orci dictumst ellentesque ut sem partu rient. Purus pulvinar
-                                                                              feugiat orci dictumst ellentesque ut sem partu rien.</p>
-                                                                          </div>
-                                                                        </div> -->
+                                                                                          <div class="border-dotted rounded-4 p-5">
+                                                                                            <h2 class="display-4 fw-bold text-white">$30 Off</h2>
+                                                                                            <p class="fs-3 fw-semibold text-white text-capitalize">if you Mention our Website</p>
+                                                                                            <p class="text-white">RPurus pulvinar feugiat orci dictumst ellentesque ut sem partu rient. Purus pulvinar
+                                                                                              feugiat orci dictumst ellentesque ut sem partu rien.</p>
+                                                                                          </div>
+                                                                                        </div> -->
                 <div class="col-lg-6 mb-5 mb-lg-0">
                     <h6 class="text-white">Pesan Sekarang</h6>
                     <h2 class="display-4 fw-bold text-white">Pelayanan Terbaik dari Kami</h2>
