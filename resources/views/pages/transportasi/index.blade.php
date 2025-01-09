@@ -264,18 +264,21 @@
             // Create marker
             function createMarker(lat, lng, isAwal) {
                 const position = new google.maps.LatLng(lat, lng);
+                const svgMarker = "data:image/svg+xml," + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path fill="${isAwal ? '#00FF00' : '#FF0000'}" 
+                  d="M12 2a8 8 0 0 0-7.992 8A12.816 12.816 0 0 0 12 22a12.816 12.816 0 0 0 7.988-12A8 8 0 0 0 12 2zm0 11a3 3 0 1 1 3-3 3 3 0 0 1-3 3z"/>
+        </svg>
+    `);
 
                 const markerOptions = {
                     position: position,
                     map: map,
                     draggable: true,
                     icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        scale: 10,
-                        fillColor: isAwal ? '#00FF00' : '#FF0000',
-                        fillOpacity: 1,
-                        strokeColor: '#FFFFFF',
-                        strokeWeight: 2
+                        url: svgMarker,
+                        scaledSize: new google.maps.Size(40, 40),
+                        anchor: new google.maps.Point(20, 20)
                     }
                 };
 
