@@ -11,3 +11,6 @@ Route::get('/ojek', function () {
 Route::get('/bersih-bersih', function () {
     return view('pages.bersih.index');
 })->name('bersih');    
+Route::get('/pindahan', function () {
+    return view('pages.pindahan.index');
+})->name('pindahan');

@@ -10,6 +10,51 @@
             </div>
 
             <div class="row g-4">
+                <!-- Rumah Subsidi Package -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Rumah Subsidi</h5>
+                            <h2 class="card-text text-primary mb-3">Rp 170.000</h2>
+                            <p class="card-text mb-4">
+                                Include:<br>
+                                - 2 kamar tidur<br>
+                                - 1 kamar mandi kecil<br>
+                                - 1 dapur<br>
+                                - Ruang tamu<br>
+                                - Halaman depan
+                            </p>
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Rumah Subsidi"
+                                data-price="170.000">
+                                <i class="fab fa-whatsapp"></i> Pesan Sekarang
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rumah Komersil Package -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Rumah Komersil</h5>
+                            <h2 class="card-text text-primary mb-3">Rp 300.000</h2>
+                            <p class="card-text mb-4">
+                                Include:<br>
+                                - 3 kamar tidur<br>
+                                - 1 kamar mandi besar<br>
+                                - 1 dapur besar<br>
+                                - Ruang tengah<br>
+                                - Ruang keluarga<br>
+                                - Halaman depan
+                            </p>
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Rumah Komersil"
+                                data-price="300.000">
+                                <i class="fab fa-whatsapp"></i> Pesan Sekarang
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-md-4">
                     <div class="card h-100">
                         <div class="card-body">
@@ -101,7 +146,12 @@
                 const price = $(this).data('price');
 
                 const message =
-                    `Hello Minhelp, saya ingin meminta bantuan Cleaning Service dan saya sudah membaca Price List di Website\n\nJasa: ${service}\nHarga: Rp ${price}`;
+                    `Hello Minhelp, saya ingin meminta bantuan Cleaning Service dan saya sudah membaca Price List di Website\n\n` +
+                    `Harap Di Isi, Format Order Berikut\n` +
+                    `Jasa : ${service}\n` +
+                    `Harga : Rp ${price}\n` +
+                    `Tanggal Pengerjaan : \n` +
+                    `Alamat : `;
 
                 window.open(
                     `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
