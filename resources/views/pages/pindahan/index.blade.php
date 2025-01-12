@@ -11,24 +11,46 @@
 
             <div class="row justify-content-center g-4">
                 <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">Tossa</h5>
-                            {{-- <h2 class="card-text text-primary mb-4">Rp 4.000/m²</h2> --}}
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Tossa">
-                                <i class="fab fa-whatsapp"></i> Pesan Sekarang
+                    <div class="card h-100 shadow-sm hover-shadow transition">
+                        <div class="card-body p-4">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-truck-moving fa-3x text-success mb-3"></i>
+                                <h5 class="card-title fw-bold mb-0">Tossa</h5>
+                            </div>
+                            <div class="text-center mb-4">
+                                <h3 class="text-success mb-0">Start from 50rb</h3>
+                            </div>
+                            <div class="border-top border-bottom py-3 mb-4">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-users text-muted me-2"></i>
+                                    <p class="mb-0">Tambahan kuli: 30rb/orang</p>
+                                </div>
+                            </div>
+                            <a href="#" class="btn btn-success btn-lg w-100 order-btn" data-service="Tossa">
+                                <i class="fab fa-whatsapp me-2"></i> Pesan Sekarang
                             </a>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">Pickup</h5>
-                            {{-- <h2 class="card-text text-primary mb-4">Rp 5.000/m²</h2> --}}
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Pickup">
-                                <i class="fab fa-whatsapp"></i> Pesan Sekarang
+                    <div class="card h-100 shadow-sm hover-shadow transition">
+                        <div class="card-body p-4">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-truck fa-3x text-success mb-3"></i>
+                                <h5 class="card-title fw-bold mb-0">Pickup</h5>
+                            </div>
+                            <div class="text-center mb-4">
+                                <h3 class="text-success mb-0">Start from 100rb</h3>
+                            </div>
+                            <div class="border-top border-bottom py-3 mb-4">
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-users text-muted me-2"></i>
+                                    <p class="mb-0">Tambahan kuli: 30rb/orang</p>
+                                </div>
+                            </div>
+                            <a href="#" class="btn btn-success btn-lg w-100 order-btn" data-service="Pickup">
+                                <i class="fab fa-whatsapp me-2"></i> Pesan Sekarang
                             </a>
                         </div>
                     </div>
@@ -36,6 +58,21 @@
             </div>
         </div>
     </section>
+
+    <style>
+        .hover-shadow {
+            transition: all 0.3s ease;
+        }
+
+        .hover-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+        }
+
+        .transition {
+            transition: all 0.3s ease;
+        }
+    </style>
 @endsection
 
 @push('scripts')
@@ -58,6 +95,8 @@
                     `2. ......\n` +
                     `3. ......\n` +
                     `Jenis jasa : ${service}\n` +
+                    `Perlu kuli tambahan? (ya/tidak) : \n` +
+                    `Jika ya, berapa orang : \n` +
                     `Alamat tujuan / kirim : \n` +
                     `Tanggal/Waktu : \n` +
                     `No.hp / wa : \n` +
@@ -65,7 +104,8 @@
 
                 window.open(
                     `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
-                    '_blank');
+                    '_blank'
+                );
             });
         });
     </script>
