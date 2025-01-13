@@ -14,7 +14,7 @@
                     <div class="card h-100 shadow-sm hover-shadow transition">
                         <div class="card-body p-4">
                             <div class="text-center mb-4">
-                                <img src="{{ asset('images/tossa.png') }}" alt="" width="150px">
+                                <img src="{{ asset('images/tossa.png') }}" alt="" width="200px">
                                 <h5 class="card-title fw-bold mb-0">Tossa</h5>
                             </div>
                             <div class="text-center mb-4">
@@ -37,7 +37,7 @@
                     <div class="card h-100 shadow-sm hover-shadow transition">
                         <div class="card-body p-4">
                             <div class="text-center mb-4">
-                                <img src="{{ asset('images/pickup.png') }}" alt="" width="150px">
+                                <img src="{{ asset('images/pickup.png') }}" alt="" width="200px">
                                 <h5 class="card-title fw-bold mb-0">Pickup</h5>
                             </div>
                             <div class="text-center mb-4">
