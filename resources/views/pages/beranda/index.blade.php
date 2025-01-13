@@ -93,9 +93,6 @@
                         khusus yang tidak selalu bisa diatasi sendiri. Inilah mengapa <span
                             class="fw-semibold">ToHelpSerbaBisa</span> hadir – untuk mempermudah hidup Anda dengan
                         menyediakan berbagai layanan yang dapat disesuaikan dengan kebutuhan spesifik Anda.</p>
-                    <a href="index.html" class="btn btn-primary btn-slide hover-slide-right mt-4">
-                        <span>Detail</span>
-                    </a>
                 </div>
             </div>
         </div>
@@ -220,13 +217,13 @@
         <div class="container padding-small">
             <div class="row g-lg-5 align-items-center">
                 <!-- <div class="col-lg-6 mb-5 mb-lg-0">
-                                                                                                                  <div class="border-dotted rounded-4 p-5">
-                                                                                                                    <h2 class="display-4 fw-bold text-white">$30 Off</h2>
-                                                                                                                    <p class="fs-3 fw-semibold text-white text-capitalize">if you Mention our Website</p>
-                                                                                                                    <p class="text-white">RPurus pulvinar feugiat orci dictumst ellentesque ut sem partu rient. Purus pulvinar
-                                                                                                                      feugiat orci dictumst ellentesque ut sem partu rien.</p>
-                                                                                                                  </div>
-                                                                                                                </div> -->
+                                                                                                                      <div class="border-dotted rounded-4 p-5">
+                                                                                                                        <h2 class="display-4 fw-bold text-white">$30 Off</h2>
+                                                                                                                        <p class="fs-3 fw-semibold text-white text-capitalize">if you Mention our Website</p>
+                                                                                                                        <p class="text-white">RPurus pulvinar feugiat orci dictumst ellentesque ut sem partu rient. Purus pulvinar
+                                                                                                                          feugiat orci dictumst ellentesque ut sem partu rien.</p>
+                                                                                                                      </div>
+                                                                                                                    </div> -->
                 <div class="col-lg-6 mb-5 mb-lg-0">
                     <h6 class="text-white">Pesan Sekarang</h6>
                     <h2 class="display-4 fw-bold text-white">Pelayanan Terbaik dari Kami</h2>
