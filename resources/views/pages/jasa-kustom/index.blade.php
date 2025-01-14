@@ -4,8 +4,9 @@
     <section class="padding-small">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="display-4 fw-bold">Our Services</h2>
-                <p class="lead">Choose from our wide range of services designed to make your life easier</p>
+                <h2 class="display-4 fw-bold">Jasa Sesuai Permintaan</h2>
+                <p class="lead">Dari membantu belanja, mengurus keperluan administrasi, hingga
+                    tugas-tugas khusus lainnya, kami siap melayani Anda.</p>
             </div>
 
             <!-- Services Section -->
@@ -111,7 +112,7 @@ Bantuan Online
                                         </div>
                                         <a href="#" class="btn btn-success btn-lg w-100 order-btn"
                                             data-service="{{ $service['name'] }}">
-                                            <i class="fab fa-whatsapp me-2"></i> Contact Now
+                                            <i class="fab fa-whatsapp me-2"></i> Hubungi Kami
                                         </a>
                                     </div>
                                 </div>
