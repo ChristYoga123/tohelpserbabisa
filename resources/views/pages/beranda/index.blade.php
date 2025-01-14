@@ -4,29 +4,26 @@
         .star-rating {
             font-size: 24px;
             cursor: pointer;
+            direction: rtl;
+            /* Reverse the direction */
+            text-align: center;
         }
 
         .star-rating i {
             color: #ccc;
             transition: color 0.2s;
+            display: inline-block;
+            padding: 0 5px;
         }
 
-        .star-rating i.active {
-            color: #ffd700;
-        }
-
+        /* Change hover behavior to only affect previous stars */
         .star-rating i:hover,
         .star-rating i:hover~i {
             color: #ffd700;
         }
 
-        .star-rating {
-            text-align: center;
-        }
-
-        .star-rating i {
-            display: inline-block;
-            padding: 0 5px;
+        .star-rating i.active {
+            color: #ffd700;
         }
     </style>
 @endpush
@@ -78,8 +75,8 @@
                                 <svg class="play-icon text-primary my-3" width="80" height="80">
                                     <use xlink:href="#play-button"></use>
                                 </svg>
+                            </a>
                         </div>
-                        </a>
                     </div>
                 </div>
                 <div class="col-lg-7 mt-5">
@@ -216,14 +213,6 @@
             background-position: center;">
         <div class="container padding-small">
             <div class="row g-lg-5 align-items-center">
-                <!-- <div class="col-lg-6 mb-5 mb-lg-0">
-                                                                                                                      <div class="border-dotted rounded-4 p-5">
-                                                                                                                        <h2 class="display-4 fw-bold text-white">$30 Off</h2>
-                                                                                                                        <p class="fs-3 fw-semibold text-white text-capitalize">if you Mention our Website</p>
-                                                                                                                        <p class="text-white">RPurus pulvinar feugiat orci dictumst ellentesque ut sem partu rient. Purus pulvinar
-                                                                                                                          feugiat orci dictumst ellentesque ut sem partu rien.</p>
-                                                                                                                      </div>
-                                                                                                                    </div> -->
                 <div class="col-lg-6 mb-5 mb-lg-0">
                     <h6 class="text-white">Pesan Sekarang</h6>
                     <h2 class="display-4 fw-bold text-white">Pelayanan Terbaik dari Kami</h2>
@@ -233,7 +222,10 @@
                     <ul class="d-flex flex-wrap align-items-center list-unstyled m-0">
                         <li class="time text-white text-capitalize d-flex align-items-center me-4">
                             <div class="text-lg-end">
-                                <a href="index.html" class="btn btn-outline-light service-btn">Hubungi Kami</a>
+                                <a href="javascript:void(0)" onclick="sendWhatsAppMessage()"
+                                    class="btn btn-outline-light service-btn">
+                                    Hubungi Kami
+                                </a>
                             </div>
                         </li>
                     </ul>
@@ -263,11 +255,11 @@
                     <!-- Star Rating -->
                     <div class="star-rating">
                         <input type="hidden" name="rating" id="rating-value" required>
-                        <i class="fas fa-star" data-rating="1"></i>
-                        <i class="fas fa-star" data-rating="2"></i>
-                        <i class="fas fa-star" data-rating="3"></i>
-                        <i class="fas fa-star" data-rating="4"></i>
                         <i class="fas fa-star" data-rating="5"></i>
+                        <i class="fas fa-star" data-rating="4"></i>
+                        <i class="fas fa-star" data-rating="3"></i>
+                        <i class="fas fa-star" data-rating="2"></i>
+                        <i class="fas fa-star" data-rating="1"></i>
                     </div>
                 </div>
                 <div class="col-md-12 col-sm-12 mb-4">
@@ -296,7 +288,6 @@
         </div>
     </section>
 
-    <!-- Video Popup -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -320,14 +311,24 @@
         </div>
     </div>
 @endsection
+
 @push('scripts')
     <script>
-        // Config
+        // Fungsi untuk mengirim pesan WhatsApp
+        function sendWhatsAppMessage() {
+            const message = "Hii minhelp, saya membutuhkan bantuan To Help sekarang";
+            const phoneNumber = "6285695908981";
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Config untuk testimonial
         const config = {
             spreadsheetId: '{{ env('SPREADSHEET_ID') }}',
             scriptUrl: '{{ env('SPREADSHEET_SCRIPT_URL') }}'
         };
 
+        // Inisialisasi testimonial
         function initTestimonials() {
             const form = document.forms['tohelpserbabisa-testimonial-form'];
             const wrapper = document.getElementById('testimonial-wrapper');
@@ -335,6 +336,7 @@
             let swiper = null;
             let isLoading = false;
 
+            // Fungsi untuk memuat testimonial
             async function loadTestimonials() {
                 try {
                     const url = `https://docs.google.com/spreadsheets/d/${config.spreadsheetId}/export?format=csv`;
@@ -342,13 +344,6 @@
                     const data = await response.text();
 
                     if (!data || data.trim() === '') {
-                        testimonials = [];
-                        wrapper.innerHTML = '';
-                        return;
-                    }
-
-                    const rows = data.split('\n');
-                    if (rows.length <= 1) {
                         testimonials = [];
                         wrapper.innerHTML = '';
                         return;
@@ -363,11 +358,12 @@
                 }
             }
 
+            // Fungsi untuk parsing CSV
             function parseCSV(csv) {
                 return csv.split('\n')
                     .slice(1)
+                    .filter(line => line.trim())
                     .map(line => {
-                        if (!line.trim()) return null;
                         const [timestamp, name, review, rating] = line.split(',');
                         return {
                             timestamp,
@@ -376,9 +372,10 @@
                             rating: parseInt(rating) || 0
                         };
                     })
-                    .filter(row => row && row.name && row.review);
+                    .filter(row => row.name && row.review);
             }
 
+            // Fungsi untuk render testimonial
             function renderTestimonials() {
                 if (!testimonials.length) {
                     wrapper.innerHTML = '';
@@ -386,37 +383,40 @@
                 }
 
                 const html = testimonials.map(t => `
-                    <div class="swiper-slide">
-                        <div class="review-item">
-                        <div class="review">
-                            <blockquote class="mb-0">
+            <div class="swiper-slide">
+                <div class="review-item">
+                    <div class="review">
+                        <blockquote class="mb-0">
                             <p class="mb-0">"${t.review}"</p>
-                            </blockquote>
-                        </div>
-                        <div class="author-detail mt-4 d-flex align-items-center">
-                            <div class="author-text">
+                        </blockquote>
+                    </div>
+                    <div class="author-detail mt-4 d-flex align-items-center">
+                        <div class="author-text">
                             <h5 class="name mb-0">${t.name}</h5>
                             <div class="review-star d-flex mt-2">
                                 ${generateStars(t.rating)}
                             </div>
-                            </div>
-                        </div>
                         </div>
                     </div>
-                    `).join('');
+                </div>
+            </div>
+        `).join('');
 
                 wrapper.innerHTML = html;
                 initSwiper();
             }
 
+            // Fungsi untuk generate bintang rating
             function generateStars(rating) {
                 return Array(5).fill(0)
-                    .map((_, i) => `<svg class="star me-1 ${i < rating ? 'text-warning' : 'text-muted'}" width="16" height="16">
-        <use xlink:href="#star" />
-      </svg>`)
-                    .join('');
+                    .map((_, i) => `
+                <svg class="star me-1 ${i < rating ? 'text-warning' : 'text-muted'}" width="16" height="16">
+                    <use xlink:href="#star" />
+                </svg>
+            `).join('');
             }
 
+            // Inisialisasi Swiper
             function initSwiper() {
                 if (swiper) swiper.destroy();
                 if (!document.querySelector('.testimonial-swiper .swiper-slide')) return;
@@ -439,6 +439,7 @@
                 });
             }
 
+            // Handle submit form
             async function handleSubmit(e) {
                 e.preventDefault();
                 if (isLoading) return;
@@ -448,23 +449,12 @@
                 const review = formData.get('ulasan')?.trim();
                 const rating = document.getElementById('rating-value')?.value;
 
-                if (!name) {
-                    alert('Mohon masukkan nama Anda');
+                if (!name || !rating || !review) {
+                    alert('Mohon lengkapi semua field');
                     return;
                 }
 
-                if (!rating) {
-                    alert('Mohon berikan rating');
-                    return;
-                }
-
-                if (!review) {
-                    alert('Mohon berikan ulasan');
-                    return;
-                }
-
-                // Check for duplicates if testimonials are loaded
-                if (testimonials.length > 0 && testimonials.some(t => t.name.toLowerCase() === name.toLowerCase())) {
+                if (testimonials.some(t => t.name.toLowerCase() === name.toLowerCase())) {
                     alert('Anda sudah memberikan testimoni sebelumnya');
                     return;
                 }
@@ -482,19 +472,16 @@
                     });
 
                     if (response.ok) {
-                        const successAlert = document.getElementById('success-alert');
-                        successAlert.classList.add('show');
+                        document.getElementById('success-alert').classList.add('show');
                         form.reset();
-                        document.querySelectorAll('.star-rating i').forEach(star => star.classList.remove('active'));
-                        document.getElementById('rating-value').value = '';
+                        resetStarRating();
                         await loadTestimonials();
                     } else {
                         throw new Error('Gagal mengirim');
                     }
                 } catch (error) {
                     console.error('Submit error:', error);
-                    const errorAlert = document.getElementById('error-alert');
-                    errorAlert.classList.add('show');
+                    document.getElementById('error-alert').classList.add('show');
                 } finally {
                     isLoading = false;
                     submitBtn.disabled = false;
@@ -502,34 +489,94 @@
                 }
             }
 
-            const stars = document.querySelectorAll('.star-rating i');
-            const ratingInput = document.getElementById('rating-value');
+            // Reset star rating
+            function resetStarRating() {
+                const stars = document.querySelectorAll('.star-rating i');
+                stars.forEach(star => star.classList.remove('active'));
+                document.getElementById('rating-value').value = '';
+            }
 
-            stars.forEach(star => {
-                star.addEventListener('mouseover', () => {
-                    const rating = star.getAttribute('data-rating');
-                    stars.forEach(s => {
-                        s.classList.toggle('active', s.getAttribute('data-rating') <= rating);
+            // Inisialisasi star rating system
+            function initStarRating() {
+                const stars = document.querySelectorAll('.star-rating i');
+                const ratingInput = document.getElementById('rating-value');
+
+                stars.forEach(star => {
+                    // Handle mouseover event
+                    star.addEventListener('mouseover', function() {
+                        const rating = parseInt(this.getAttribute('data-rating'));
+                        stars.forEach(s => {
+                            const starRating = parseInt(s.getAttribute('data-rating'));
+                            if (starRating <= rating) {
+                                s.classList.add('active');
+                            } else {
+                                s.classList.remove('active');
+                            }
+                        });
+                    });
+
+                    // Handle mouseout event
+                    star.addEventListener('mouseout', function() {
+                        const currentRating = parseInt(ratingInput.value) || 0;
+                        stars.forEach(s => {
+                            const starRating = parseInt(s.getAttribute('data-rating'));
+                            if (starRating <= currentRating) {
+                                s.classList.add('active');
+                            } else {
+                                s.classList.remove('active');
+                            }
+                        });
+                    });
+
+                    // Handle click event
+                    star.addEventListener('click', function() {
+                        const rating = parseInt(this.getAttribute('data-rating'));
+                        ratingInput.value = rating;
+                        stars.forEach(s => {
+                            const starRating = parseInt(s.getAttribute('data-rating'));
+                            if (starRating <= rating) {
+                                s.classList.add('active');
+                            } else {
+                                s.classList.remove('active');
+                            }
+                        });
                     });
                 });
+            }
 
-                star.addEventListener('mouseout', () => {
-                    const rating = ratingInput.value;
-                    stars.forEach(s => {
-                        s.classList.toggle('active', rating && s.getAttribute('data-rating') <=
-                            rating);
-                    });
-                });
-
-                star.addEventListener('click', () => {
-                    ratingInput.value = star.getAttribute('data-rating');
-                });
-            });
-
+            // Add form submit event listener
             form.addEventListener('submit', handleSubmit);
+
+            // Initialize star rating
+            initStarRating();
+
+            // Load testimonials on page load
             loadTestimonials();
         }
 
+        // Initialize testimonials when DOM is loaded
         document.addEventListener('DOMContentLoaded', initTestimonials);
+
+        // Initialize Bootstrap components
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Initialize popovers
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            popoverTriggerList.map(function(popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
+
+            // Close alerts when close button is clicked
+            document.querySelectorAll('.alert .btn-close').forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.alert').classList.remove('show');
+                });
+            });
+        });
     </script>
 @endpush
