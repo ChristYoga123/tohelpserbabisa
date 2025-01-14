@@ -159,8 +159,7 @@
                             tugas-tugas khusus lainnya, kami siap melayani Anda.</p>
                     </div>
                     <div class="col-lg-3 text-lg-end">
-                        <a href="https://api.whatsapp.com/send?phone=6285695908981&text=Hii minhelp, saya membutuhkan bantuan To Help sekarang"
-                            class="btn btn-outline-light service-btn">Pesan Sekarang</a>
+                        <a href="{{ route('kustom') }}" class="btn btn-outline-light service-btn">Pesan Sekarang</a>
                     </div>
                 </div>
             </div>

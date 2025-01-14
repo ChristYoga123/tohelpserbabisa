@@ -14,3 +14,6 @@ Route::get('/bersih-bersih', function () {
 Route::get('/pindahan', function () {
     return view('pages.pindahan.index');
 })->name('pindahan');
+Route::get('/jasa-kustom', function () {
+    return view('pages.jasa-kustom.index');
+})->name('kustom');
