@@ -94,6 +94,7 @@ Bantuan Online
                         ['name' => 'Stalker', 'icon' => 'fas fa-binoculars'],
                         ['name' => 'Joki Game', 'icon' => 'fas fa-gamepad'],
                         ['name' => 'Buzzer', 'icon' => 'fas fa-bullhorn'],
+                        ['name' => 'Joki Tugas Apapun', 'icon' => 'fas fa-book'],
                     ],
                 ];
             @endphp
