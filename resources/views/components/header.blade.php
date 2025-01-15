@@ -14,13 +14,13 @@
                         <a class="nav-link px-3 text-white" href="{{ route('index') }}">Beranda</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-3 text-white" href="#about-us">Tentang</a>
+                        <a class="nav-link px-3 text-white" href="{{ route('index') }}#about-us">Tentang</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-3 text-white" href="#services">Pelayanan</a>
+                        <a class="nav-link px-3 text-white" href="{{ route('index') }}#services">Pelayanan</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link px-3 text-white" href="#cta">Kontak</a>
+                        <a class="nav-link px-3 text-white" href="{{ route('index') }}#cta">Kontak</a>
                     </li>
                 </ul>
             </div>
