@@ -1,5 +1,20 @@
 @extends('layouts.app')
+@push('styles')
+    <style>
+        .hero-image-container {
+            height: 680px;
+            /* Anda bisa menyesuaikan tinggi sesuai kebutuhan */
+            overflow: hidden;
+        }
 
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center bottom;
+        }
+    </style>
+@endpush
 @section('content')
     <section id="billboard">
         <div class="row align-items-center g-0 bg-secondary">
@@ -13,7 +28,9 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <img src="images/billboard.jpg" alt="img" class="img-fluid">
+                <div class="hero-image-container">
+                    <img src="{{ asset('images/hero-ojek.jpg') }}" alt="img" class="img-fluid hero-image">
+                </div>
             </div>
         </div>
     </section>
