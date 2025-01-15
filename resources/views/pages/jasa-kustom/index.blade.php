@@ -11,118 +11,84 @@
 
             <!-- Services Section -->
             @php
-                /*
-                Jastip 
-1. Jastip Makanan
-2. Jastim Minuman
-3. Jastip Barang
-
-Daily Activity
-1. Rawat Peliharaan
-2. Pasang Gas/Galon
-3. Jaga Anak
-
-Jasa Nemenin
-1. Teman Ngopi
-2. Teman Nonton
-3. Teman Curhat
-4. Teman Acara (Kondangan, Pesta, Wisuda, dll)
-
-Laundry
-1. Antar Cuci Sepeda
-2. Antar Cuci Mobil
-3. Antar Cuci Baju 
-
-All service
-1. Antar Service Sepeda
-2. Antar Service Mobil
-
-Travel
-1. Driver
-2. Rental Motor
-3. Rental Mobil
-
-Editing
-1. Edit Foto/Video
-2. Fotographer
-3. Videographer
-
-Bantuan Online
-1. SleepCall
-2. Stalker
-3. Joki Game
-4. Buzzer
-                */
                 $services = [
                     'Jastip' => [
-                        ['name' => 'Jastip Makanan', 'icon' => 'fas fa-utensils'],
-                        ['name' => 'Jastip Minuman', 'icon' => 'fas fa-coffee'],
-                        ['name' => 'Jastip Barang', 'icon' => 'fas fa-box'],
+                        'icon' => 'fas fa-shopping-bag',
+                        'items' => ['Jastip Makanan', 'Jastip Minuman', 'Jastip Barang'],
                     ],
                     'Daily Activity' => [
-                        ['name' => 'Rawat Peliharaan', 'icon' => 'fas fa-paw'],
-                        ['name' => 'Pasang Gas/Galon', 'icon' => 'fas fa-gas-pump'],
-                        ['name' => 'Jaga Anak', 'icon' => 'fas fa-baby'],
+                        'icon' => 'fas fa-tasks',
+                        'items' => ['Rawat Peliharaan', 'Pasang Gas/Galon', 'Jaga Anak'],
                     ],
                     'Jasa Nemenin' => [
-                        ['name' => 'Teman Ngopi', 'icon' => 'fas fa-coffee'],
-                        ['name' => 'Teman Nonton', 'icon' => 'fas fa-film'],
-                        ['name' => 'Teman Curhat', 'icon' => 'fas fa-comments'],
-                        ['name' => 'Teman Acara', 'icon' => 'fas fa-glass-cheers'],
+                        'icon' => 'fas fa-users',
+                        'items' => [
+                            'Teman Ngopi',
+                            'Teman Nonton',
+                            'Teman Curhat',
+                            'Teman Acara (Kondangan, Pesta, Wisuda, dll)',
+                            'Teman Wisata / Liburan',
+                            'Night Ride',
+                        ],
                     ],
                     'Laundry' => [
-                        ['name' => 'Antar Cuci Sepeda', 'icon' => 'fas fa-bicycle'],
-                        ['name' => 'Antar Cuci Mobil', 'icon' => 'fas fa-car'],
-                        ['name' => 'Antar Cuci Baju', 'icon' => 'fas fa-tshirt'],
+                        'icon' => 'fas fa-tshirt',
+                        'items' => ['Antar Cuci Sepeda', 'Antar Cuci Mobil', 'Antar Cuci Baju'],
                     ],
-                    'All service' => [
-                        ['name' => 'Antar Service Sepeda', 'icon' => 'fas fa-bicycle'],
-                        ['name' => 'Antar Service Mobil', 'icon' => 'fas fa-car'],
+                    'All Service' => [
+                        'icon' => 'fas fa-tools',
+                        'items' => ['Antar Service Sepeda', 'Antar Service Mobil'],
                     ],
                     'Travel' => [
-                        ['name' => 'Driver', 'icon' => 'fas fa-car'],
-                        ['name' => 'Rental Motor', 'icon' => 'fas fa-motorcycle'],
-                        ['name' => 'Rental Mobil', 'icon' => 'fas fa-car'],
+                        'icon' => 'fas fa-car',
+                        'items' => ['Driver', 'Rental Motor', 'Rental Mobil'],
                     ],
                     'Editing' => [
-                        ['name' => 'Edit Foto/Video', 'icon' => 'fas fa-camera'],
-                        ['name' => 'Fotographer', 'icon' => 'fas fa-camera'],
-                        ['name' => 'Videographer', 'icon' => 'fas fa-video'],
+                        'icon' => 'fas fa-camera',
+                        'items' => ['Edit Foto/Video', 'Fotographer', 'Videographer'],
                     ],
                     'Bantuan Online' => [
-                        ['name' => 'SleepCall', 'icon' => 'fas fa-bed'],
-                        ['name' => 'Stalker', 'icon' => 'fas fa-binoculars'],
-                        ['name' => 'Joki Game', 'icon' => 'fas fa-gamepad'],
-                        ['name' => 'Buzzer', 'icon' => 'fas fa-bullhorn'],
-                        ['name' => 'Joki Tugas Apapun', 'icon' => 'fas fa-book'],
+                        'icon' => 'fas fa-headset',
+                        'items' => ['SleepCall', 'Stalker', 'Joki Game', 'Buzzer'],
+                    ],
+                    'Joki Tugas' => [
+                        'icon' => 'fas fa-book',
+                        'items' => ['Skripsi', 'Makalah', 'Praktikum', 'Pekerjaan Rumah (PR)'],
                     ],
                 ];
             @endphp
 
-            @foreach ($services as $category => $items)
-                <div class="mb-5">
-                    <h3 class="text-center mb-4">{{ $category }}</h3>
-                    <div class="row justify-content-center g-4">
-                        @foreach ($items as $service)
-                            <div class="col-md-4">
-                                <div class="card h-100 shadow-sm hover-shadow transition">
-                                    <div class="card-body p-4">
-                                        <div class="text-center mb-4">
-                                            <i class="{{ $service['icon'] }} fa-3x mb-3 text-success"></i>
-                                            <h5 class="card-title fw-bold mb-0">{{ $service['name'] }}</h5>
-                                        </div>
-                                        <a href="#" class="btn btn-success btn-lg w-100 order-btn"
-                                            data-service="{{ $service['name'] }}">
-                                            <i class="fab fa-whatsapp me-2"></i> Hubungi Kami
-                                        </a>
+            <div class="container">
+                <div class="row g-4">
+                    @foreach ($services as $category => $service)
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100 hover-shadow">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <i class="{{ $service['icon'] }} fa-lg me-2 text-primary"></i>
+                                        <h4 class="card-title fw-bold mb-0">{{ $category }}</h4>
                                     </div>
+                                    <ul class="list-unstyled">
+                                        @foreach ($service['items'] as $item)
+                                            <li class="mb-2 d-flex align-items-center">
+                                                <i class="fas fa-circle text-primary me-2" style="font-size: 0.5rem;"></i>
+                                                <span>{{ $item }}</span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
+                        </div>
+                    @endforeach
                 </div>
-            @endforeach
-        </div>
+
+                <!-- WhatsApp Order Button -->
+                <div class="text-center mt-5">
+                    <button class="btn btn-success btn-lg order-btn">
+                        <i class="fab fa-whatsapp me-2"></i>Pesan Sekarang
+                    </button>
+                </div>
+            </div>
     </section>
 
     <style>
@@ -163,6 +129,26 @@ Bantuan Online
                     '_blank'
                 );
             });
+        });
+
+        document.querySelector('.order-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const message =
+                `Format Pemesanan\n` +
+                `Jenis pesanan : \n` +
+                `Alamat ambil / order : \n` +
+                `List order : \n` +
+                `1. ......\n` +
+                `2. ......\n` +
+                `3. ......\n` +
+                `Alamat tujuan / kirim : \n` +
+                `No.hp / wa : \n` +
+                `Atas nama : `;
+
+            window.open(
+                `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
+                '_blank'
+            );
         });
     </script>
 @endpush
