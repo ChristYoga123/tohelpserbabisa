@@ -277,7 +277,7 @@
     <section id="testimonial">
         <div class="container">
             <h6><span class="text-primary">|</span>Testimoni</h6>
-            <h3 class="display-6 fw-semibold mb-5">Kustomer kami</h3>
+            <h3 class="display-6 fw-semibold mb-5">Kata Mereka tentang kami</h3>
             <div class="swiper testimonial-swiper">
                 <div class="swiper-wrapper" id="testimonial-wrapper">
                     <!-- Testimonial items will be inserted here -->
