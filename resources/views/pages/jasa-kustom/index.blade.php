@@ -134,16 +134,8 @@
         document.querySelector('.order-btn').addEventListener('click', function(e) {
             e.preventDefault();
             const message =
-                `Format Pemesanan\n` +
-                `Jenis pesanan : \n` +
-                `Alamat ambil / order : \n` +
-                `List order : \n` +
-                `1. ......\n` +
-                `2. ......\n` +
-                `3. ......\n` +
-                `Alamat tujuan / kirim : \n` +
-                `No.hp / wa : \n` +
-                `Atas nama : `;
+                // Hii kak, saya ingin meminta bantuan To Help untuk (isi sesuai kebutuhan kalian)
+                `Hii kak, saya ingin meminta bantuan To Help untuk *(isi sesuai kebutuhan kalian)*`;
 
             window.open(
                 `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
