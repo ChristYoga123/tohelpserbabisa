@@ -69,14 +69,14 @@
                 <div class="col-lg-5">
                     <div class="imageblock position-relative">
                         <img class="img-fluid" src="{{ asset('images/about.jpg') }}" alt="img">
-                        <div class="video-player position-absolute top-50 start-50 translate-middle">
+                        {{-- <div class="video-player position-absolute top-50 start-50 translate-middle">
                             <a type="button" data-bs-toggle="modal" data-bs-target="#myModal"
                                 class="play-btn position-relative">
                                 <svg class="play-icon text-primary my-3" width="80" height="80">
                                     <use xlink:href="#play-button"></use>
                                 </svg>
                             </a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 <div class="col-lg-7 mt-5">
