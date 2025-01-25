@@ -372,12 +372,12 @@
                 getUserLocation();
             });
 
-            // Enhanced location validation function
+            // Fungsi validasi lokasi yang lebih ketat
             async function validateLocation(lat, lng) {
                 return new Promise((resolve) => {
                     const geocoder = new google.maps.Geocoder();
 
-                    // Strict validation checks
+                    // Validasi awal
                     if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
                         resolve(false);
                         return;
@@ -389,20 +389,23 @@
                             lng
                         }
                     }, (results, status) => {
-                        // Multiple validation criteria
+                        // Kriteria validasi yang lebih komprehensif
                         const isValidLocation =
                             status === google.maps.GeocoderStatus.OK &&
                             results &&
                             results.length > 0 &&
                             results[0].geometry &&
-                            results[0].geometry.location_type !== 'APPROXIMATE';
+                            results[0].geometry.location_type !== 'APPROXIMATE' &&
+                            results[0].formatted_address &&
+                            !results[0].formatted_address.toLowerCase().includes('undefined');
 
                         resolve(isValidLocation);
                     });
                 });
             }
 
-            async function validateAndUpdateLocation(lat, lng, inputId) {
+            // Fungsi untuk memvalidasi dan memperbarui lokasi
+            async function validateAndUpdateLocation(lat, lng, latInputId, lngInputId, addressInputId) {
                 // Validasi lokasi
                 const isValidLocation = await validateLocation(lat, lng);
 
@@ -411,8 +414,27 @@
                     return false;
                 }
 
-                // Update nilai input
-                $(`#${inputId}`).val(`${lat}, ${lng}`);
+                // Perbarui nilai input
+                $(`#${latInputId}`).val(lat);
+                $(`#${lngInputId}`).val(lng);
+
+                // Dapatkan alamat dari koordinat
+                const geocoder = new google.maps.Geocoder();
+                const latlng = {
+                    lat,
+                    lng
+                };
+                const {
+                    formatted_address
+                } = (await new Promise((resolve) => {
+                    geocoder.geocode({
+                        location: latlng
+                    }, (results, status) => {
+                        resolve(status === google.maps.GeocoderStatus.OK && results[0]);
+                    });
+                })) || {};
+                $(`#${addressInputId}`).val(formatted_address);
+
                 return true;
             }
 
@@ -426,19 +448,19 @@
                 const lng_akhir = parseFloat($('#lng_akhir').val());
                 const harga = $('#totalPrice').text();
 
-                // Validasi lokasi awal
+                // Validasi dan perbarui lokasi awal
                 const startValidationPassed = await validateAndUpdateLocation(lat_awal, lng_awal,
                     'lat_awal', 'lng_awal', 'lokasi_awal');
                 if (!startValidationPassed) return;
 
-                // Validasi lokasi tujuan
+                // Validasi dan perbarui lokasi tujuan
                 const endValidationPassed = await validateAndUpdateLocation(lat_akhir, lng_akhir,
                     'lat_akhir', 'lng_akhir', 'lokasi_akhir');
                 if (!endValidationPassed) return;
 
                 // Lanjutkan ke pemesanan WhatsApp
                 const message =
-                    `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${lokasi_awal}\nTitik Pengantaran : ${lokasi_akhir}\nHarga : ${harga}`;
+                    `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${harga}`;
                 window.open(
                     `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
                     '_blank'
