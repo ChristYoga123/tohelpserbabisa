@@ -433,14 +433,6 @@
                 // Trigger validation
                 validateAndOrder();
             });
-
-            // Add event listeners to reset validation when inputs change
-            $('#lokasi_awal, #lokasi_akhir').on('change input', function() {
-                $('#lat_awal').val('');
-                $('#lng_awal').val('');
-                $('#lat_akhir').val('');
-                $('#lng_akhir').val('');
-            });
             // Initialize the map
             initMap();
         });
