@@ -376,18 +376,56 @@
             $('#order').click(function() {
                 const lokasi_awal = $('#lokasi_awal').val();
                 const lokasi_akhir = $('#lokasi_akhir').val();
+                const lat_awal = $('#lat_awal').val();
+                const lng_awal = $('#lng_awal').val();
+                const lat_akhir = $('#lat_akhir').val();
+                const lng_akhir = $('#lng_akhir').val();
                 const harga = $('#totalPrice').text();
 
-                if (!lokasi_awal || !lokasi_akhir) {
-                    alert('Mohon isi lokasi penjemputan dan pengantaran terlebih dahulu');
-                    return;
+                // Function to validate location using Google Maps Geocoder
+                function validateLocation(lat, lng, address) {
+                    return new Promise((resolve, reject) => {
+                        const geocoder = new google.maps.Geocoder();
+                        const latlng = {
+                            lat: parseFloat(lat),
+                            lng: parseFloat(lng)
+                        };
+
+                        geocoder.geocode({
+                            location: latlng
+                        }, (results, status) => {
+                            if (status === "OK" && results[0]) {
+                                // Check if input address roughly matches geocoded address
+                                const geocodedAddress = results[0].formatted_address;
+                                const isValid = geocodedAddress.toLowerCase().includes(
+                                    address.toLowerCase());
+                                resolve(isValid);
+                            } else {
+                                resolve(false);
+                            }
+                        });
+                    });
                 }
 
-                const message =
-                    `Hii, saya baru saja memesan  To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${lokasi_awal}\nTitik Pengantaran : ${lokasi_akhir}\nHarga : ${harga}`;
-                window.open(
-                    `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
-                    '_blank');
+                // Async validation before WhatsApp order
+                async function validateAndOrder() {
+                    const startValid = await validateLocation(lat_awal, lng_awal, lokasi_awal);
+                    const endValid = await validateLocation(lat_akhir, lng_akhir, lokasi_akhir);
+
+                    if (!startValid || !endValid) {
+                        alert('Mohon pilih lokasi yang valid dari Google Maps. Gunakan autocomplete.');
+                        return;
+                    }
+
+                    const message =
+                        `Hii, saya baru saja memesan  To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${lokasi_awal}\nTitik Pengantaran : ${lokasi_akhir}\nHarga : ${harga}`;
+                    window.open(
+                        `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
+                        '_blank');
+                }
+
+                // Trigger validation
+                validateAndOrder();
             });
 
             // Initialize the map
