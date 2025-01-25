@@ -372,7 +372,38 @@
                 getUserLocation();
             });
 
-            $('#order').click(function() {
+            // Enhanced location validation function
+            async function validateLocation(lat, lng) {
+                return new Promise((resolve) => {
+                    const geocoder = new google.maps.Geocoder();
+
+                    // Strict validation checks
+                    if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
+                        resolve(false);
+                        return;
+                    }
+
+                    geocoder.geocode({
+                        location: {
+                            lat,
+                            lng
+                        }
+                    }, (results, status) => {
+                        // Multiple validation criteria
+                        const isValidLocation =
+                            status === google.maps.GeocoderStatus.OK &&
+                            results &&
+                            results.length > 0 &&
+                            results[0].geometry &&
+                            results[0].geometry.location_type !== 'APPROXIMATE';
+
+                        resolve(isValidLocation);
+                    });
+                });
+            }
+
+            // Modify order click handler
+            $('#order').click(async function() {
                 const lokasi_awal = $('#lokasi_awal').val().trim();
                 const lokasi_akhir = $('#lokasi_akhir').val().trim();
                 const lat_awal = parseFloat($('#lat_awal').val());
@@ -381,57 +412,53 @@
                 const lng_akhir = parseFloat($('#lng_akhir').val());
                 const harga = $('#totalPrice').text();
 
-                // Validate before geocoding
-                if (isNaN(lat_awal) || isNaN(lng_awal) || isNaN(lat_akhir) || isNaN(lng_akhir) ||
-                    !lokasi_awal || !lokasi_akhir) {
-                    alert('Mohon pilih lokasi dari daftar Google Maps menggunakan autocomplete');
+                // Comprehensive validation sequence
+                if (!lokasi_awal || !lokasi_akhir) {
+                    alert('Mohon lengkapi lokasi awal dan akhir');
                     return;
                 }
 
-                // Async validation before WhatsApp order
-                async function validateAndOrder() {
-                    const geocoder = new google.maps.Geocoder();
+                try {
+                    // Validate both start and end locations
+                    const [startValid, endValid] = await Promise.all([
+                        validateLocation(lat_awal, lng_awal),
+                        validateLocation(lat_akhir, lng_akhir)
+                    ]);
 
-                    // Validate starting location
-                    const startValidation = await new Promise((resolve) => {
-                        geocoder.geocode({
-                            location: {
-                                lat: lat_awal,
-                                lng: lng_awal
-                            }
-                        }, (results, status) => {
-                            resolve(status === google.maps.GeocoderStatus.OK);
-                        });
-                    });
-
-                    // Validate destination location
-                    const endValidation = await new Promise((resolve) => {
-                        geocoder.geocode({
-                            location: {
-                                lat: lat_akhir,
-                                lng: lng_akhir
-                            }
-                        }, (results, status) => {
-                            resolve(status === google.maps.GeocoderStatus.OK);
-                        });
-                    });
-
-                    // Check validation results
-                    if (!startValidation || !endValidation) {
-                        alert('Lokasi tidak valid. Pastikan menggunakan autocomplete Google Maps.');
+                    if (!startValid || !endValid) {
+                        alert(
+                        'Lokasi tidak valid. Pastikan menggunakan lokasi tepat dari Google Maps.');
                         return;
                     }
 
-                    // Validation passed, proceed with order
+                    // Additional runtime check to prevent post-validation manipulation
+                    const currentStartLat = parseFloat($('#lat_awal').val());
+                    const currentStartLng = parseFloat($('#lng_awal').val());
+                    const currentEndLat = parseFloat($('#lat_akhir').val());
+                    const currentEndLng = parseFloat($('#lng_akhir').val());
+
+                    if (
+                        currentStartLat !== lat_awal ||
+                        currentStartLng !== lng_awal ||
+                        currentEndLat !== lat_akhir ||
+                        currentEndLng !== lng_akhir
+                    ) {
+                        alert('Terdeteksi perubahan lokasi. Validasi ulang diperlukan.');
+                        return;
+                    }
+
+                    // Proceed with WhatsApp order if all checks pass
                     const message =
-                        `Hii, saya baru saja memesan  To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${lokasi_awal}\nTitik Pengantaran : ${lokasi_akhir}\nHarga : ${harga}`;
+                        `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${lokasi_awal}\nTitik Pengantaran : ${lokasi_akhir}\nHarga : ${harga}`;
                     window.open(
                         `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
-                        '_blank');
-                }
+                        '_blank'
+                    );
 
-                // Trigger validation
-                validateAndOrder();
+                } catch (error) {
+                    console.error('Validation error:', error);
+                    alert('Terjadi kesalahan dalam validasi lokasi. Silakan coba lagi.');
+                }
             });
             // Initialize the map
             initMap();
