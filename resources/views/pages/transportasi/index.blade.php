@@ -208,27 +208,47 @@
             // Setup autocomplete
             function setupAutocomplete(inputId, isAwal) {
                 const input = document.getElementById(inputId);
-                const autocomplete = new google.maps.places.Autocomplete(input);
+                const autocomplete = new google.maps.places.Autocomplete(input, {
+                    types: ['geocode', 'establishment'], // Restrict to valid map locations
+                    fields: ['geometry', 'name', 'formatted_address']
+                });
 
                 autocomplete.addListener('place_changed', function() {
                     const place = autocomplete.getPlace();
 
-                    if (place.geometry) {
-                        const lat = place.geometry.location.lat();
-                        const lng = place.geometry.location.lng();
-
-                        if (isAwal) {
-                            $('#lat_awal').val(lat);
-                            $('#lng_awal').val(lng);
-                        } else {
-                            $('#lat_akhir').val(lat);
-                            $('#lng_akhir').val(lng);
-                        }
-
-                        createMarker(lat, lng, isAwal);
-                        map.setCenter(place.geometry.location);
-                        calculateRoute();
+                    // Strict validation checks
+                    if (!place.geometry) {
+                        // Clear input if no valid place selected
+                        input.value = '';
+                        alert('Mohon pilih lokasi yang valid dari daftar Google Maps');
+                        return;
                     }
+
+                    // Additional validation to ensure it's a real, precise location
+                    if (!place.geometry.location ||
+                        !place.formatted_address ||
+                        place.formatted_address.toLowerCase().includes('undefined')) {
+                        input.value = '';
+                        alert(
+                            'Lokasi yang dipilih tidak valid. Silakan pilih lokasi spesifik dari daftar. Bisa digerakkan marker untuk menyesuaikan lokasi.'
+                        );
+                        return;
+                    }
+
+                    const lat = place.geometry.location.lat();
+                    const lng = place.geometry.location.lng();
+
+                    if (isAwal) {
+                        $('#lat_awal').val(lat);
+                        $('#lng_awal').val(lng);
+                    } else {
+                        $('#lat_akhir').val(lat);
+                        $('#lng_akhir').val(lng);
+                    }
+
+                    createMarker(lat, lng, isAwal);
+                    map.setCenter(place.geometry.location);
+                    calculateRoute();
                 });
             }
 
