@@ -372,7 +372,6 @@
                 getUserLocation();
             });
 
-            // Order button handler
             $('#order').click(function() {
                 const lokasi_awal = $('#lokasi_awal').val().trim();
                 const lokasi_akhir = $('#lokasi_akhir').val().trim();
@@ -383,7 +382,8 @@
                 const harga = $('#totalPrice').text();
 
                 // Validate before geocoding
-                if (isNaN(lat_awal) || isNaN(lng_awal) || isNaN(lat_akhir) || isNaN(lng_akhir)) {
+                if (isNaN(lat_awal) || isNaN(lng_awal) || isNaN(lat_akhir) || isNaN(lng_akhir) ||
+                    !lokasi_awal || !lokasi_akhir) {
                     alert('Mohon pilih lokasi dari daftar Google Maps menggunakan autocomplete');
                     return;
                 }
@@ -422,7 +422,7 @@
                         return;
                     }
 
-                    // Proceed with order if both locations are valid
+                    // Validation passed, proceed with order
                     const message =
                         `Hii, saya baru saja memesan  To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${lokasi_awal}\nTitik Pengantaran : ${lokasi_akhir}\nHarga : ${harga}`;
                     window.open(
@@ -432,6 +432,14 @@
 
                 // Trigger validation
                 validateAndOrder();
+            });
+
+            // Add event listeners to reset validation when inputs change
+            $('#lokasi_awal, #lokasi_akhir').on('change input', function() {
+                $('#lat_awal').val('');
+                $('#lng_awal').val('');
+                $('#lat_akhir').val('');
+                $('#lng_akhir').val('');
             });
             // Initialize the map
             initMap();
