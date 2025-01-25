@@ -402,7 +402,21 @@
                 });
             }
 
-            // Modify order click handler
+            async function validateAndUpdateLocation(lat, lng, inputId) {
+                // Validasi lokasi
+                const isValidLocation = await validateLocation(lat, lng);
+
+                if (!isValidLocation) {
+                    alert('Lokasi tidak valid. Pastikan menggunakan lokasi tepat dari Google Maps.');
+                    return false;
+                }
+
+                // Update nilai input
+                $(`#${inputId}`).val(`${lat}, ${lng}`);
+                return true;
+            }
+
+            // Modifikasi event click di tombol 'Pesan'
             $('#order').click(async function() {
                 const lokasi_awal = $('#lokasi_awal').val().trim();
                 const lokasi_akhir = $('#lokasi_akhir').val().trim();
@@ -412,54 +426,25 @@
                 const lng_akhir = parseFloat($('#lng_akhir').val());
                 const harga = $('#totalPrice').text();
 
-                // Comprehensive validation sequence
-                if (!lokasi_awal || !lokasi_akhir) {
-                    alert('Mohon lengkapi lokasi awal dan akhir');
-                    return;
-                }
+                // Validasi lokasi awal
+                const startValidationPassed = await validateAndUpdateLocation(lat_awal, lng_awal,
+                    'lat_awal', 'lng_awal', 'lokasi_awal');
+                if (!startValidationPassed) return;
 
-                try {
-                    // Validate both start and end locations
-                    const [startValid, endValid] = await Promise.all([
-                        validateLocation(lat_awal, lng_awal),
-                        validateLocation(lat_akhir, lng_akhir)
-                    ]);
+                // Validasi lokasi tujuan
+                const endValidationPassed = await validateAndUpdateLocation(lat_akhir, lng_akhir,
+                    'lat_akhir', 'lng_akhir', 'lokasi_akhir');
+                if (!endValidationPassed) return;
 
-                    if (!startValid || !endValid) {
-                        alert(
-                        'Lokasi tidak valid. Pastikan menggunakan lokasi tepat dari Google Maps.');
-                        return;
-                    }
-
-                    // Additional runtime check to prevent post-validation manipulation
-                    const currentStartLat = parseFloat($('#lat_awal').val());
-                    const currentStartLng = parseFloat($('#lng_awal').val());
-                    const currentEndLat = parseFloat($('#lat_akhir').val());
-                    const currentEndLng = parseFloat($('#lng_akhir').val());
-
-                    if (
-                        currentStartLat !== lat_awal ||
-                        currentStartLng !== lng_awal ||
-                        currentEndLat !== lat_akhir ||
-                        currentEndLng !== lng_akhir
-                    ) {
-                        alert('Terdeteksi perubahan lokasi. Validasi ulang diperlukan.');
-                        return;
-                    }
-
-                    // Proceed with WhatsApp order if all checks pass
-                    const message =
-                        `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${lokasi_awal}\nTitik Pengantaran : ${lokasi_akhir}\nHarga : ${harga}`;
-                    window.open(
-                        `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
-                        '_blank'
-                    );
-
-                } catch (error) {
-                    console.error('Validation error:', error);
-                    alert('Terjadi kesalahan dalam validasi lokasi. Silakan coba lagi.');
-                }
+                // Lanjutkan ke pemesanan WhatsApp
+                const message =
+                    `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${lokasi_awal}\nTitik Pengantaran : ${lokasi_akhir}\nHarga : ${harga}`;
+                window.open(
+                    `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
+                    '_blank'
+                );
             });
+
             // Initialize the map
             initMap();
         });
