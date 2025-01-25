@@ -374,91 +374,64 @@
 
             // Order button handler
             $('#order').click(function() {
-                const lokasi_awal = $('#lokasi_awal').val();
-                const lokasi_akhir = $('#lokasi_akhir').val();
+                const lokasi_awal = $('#lokasi_awal').val().trim();
+                const lokasi_akhir = $('#lokasi_akhir').val().trim();
                 const lat_awal = parseFloat($('#lat_awal').val());
                 const lng_awal = parseFloat($('#lng_awal').val());
                 const lat_akhir = parseFloat($('#lat_akhir').val());
                 const lng_akhir = parseFloat($('#lng_akhir').val());
                 const harga = $('#totalPrice').text();
 
-                // Validation flag to track any location changes
-                let validationPassed = true;
-
-                // Function to validate location using Google Maps Geocoder
-                function validateLocation(lat, lng, address) {
-                    return new Promise((resolve, reject) => {
-                        // Immediate fail for empty or NaN coordinates
-                        if (isNaN(lat) || isNaN(lng) || !address) {
-                            resolve(false);
-                            return;
-                        }
-
-                        const geocoder = new google.maps.Geocoder();
-                        const latlng = {
-                            lat: lat,
-                            lng: lng
-                        };
-
-                        geocoder.geocode({
-                            location: latlng
-                        }, (results, status) => {
-                            if (status === "OK" && results[0]) {
-                                const geocodedAddress = results[0].formatted_address
-                                    .toLowerCase();
-                                const inputAddress = address.toLowerCase();
-
-                                const words = inputAddress.split(/\s+/);
-                                const isValid = words.some(word =>
-                                    geocodedAddress.includes(word) && word.length > 2
-                                );
-
-                                resolve(isValid);
-                            } else {
-                                resolve(false);
-                            }
-                        });
-                    });
+                // Validate before geocoding
+                if (isNaN(lat_awal) || isNaN(lng_awal) || isNaN(lat_akhir) || isNaN(lng_akhir)) {
+                    alert('Mohon pilih lokasi dari daftar Google Maps menggunakan autocomplete');
+                    return;
                 }
 
                 // Async validation before WhatsApp order
                 async function validateAndOrder() {
-                    try {
-                        const startValid = await validateLocation(lat_awal, lng_awal, lokasi_awal);
-                        const endValid = await validateLocation(lat_akhir, lng_akhir, lokasi_akhir);
+                    const geocoder = new google.maps.Geocoder();
 
-                        // Track validation status
-                        if (!startValid || !endValid) {
-                            validationPassed = false;
-                            alert(
-                                'Mohon pilih lokasi yang valid dari Google Maps. Gunakan autocomplete.');
-                            return;
-                        }
+                    // Validate starting location
+                    const startValidation = await new Promise((resolve) => {
+                        geocoder.geocode({
+                            location: {
+                                lat: lat_awal,
+                                lng: lng_awal
+                            }
+                        }, (results, status) => {
+                            resolve(status === google.maps.GeocoderStatus.OK);
+                        });
+                    });
 
-                        // Proceed only if validation passed
-                        if (validationPassed) {
-                            const message =
-                                `Hii, saya baru saja memesan  To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${lokasi_awal}\nTitik Pengantaran : ${lokasi_akhir}\nHarga : ${harga}`;
-                            window.open(
-                                `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
-                                '_blank');
-                        }
-                    } catch (error) {
-                        console.error('Validation error:', error);
-                        alert('Terjadi kesalahan dalam validasi lokasi');
+                    // Validate destination location
+                    const endValidation = await new Promise((resolve) => {
+                        geocoder.geocode({
+                            location: {
+                                lat: lat_akhir,
+                                lng: lng_akhir
+                            }
+                        }, (results, status) => {
+                            resolve(status === google.maps.GeocoderStatus.OK);
+                        });
+                    });
+
+                    // Check validation results
+                    if (!startValidation || !endValidation) {
+                        alert('Lokasi tidak valid. Pastikan menggunakan autocomplete Google Maps.');
+                        return;
                     }
+
+                    // Proceed with order if both locations are valid
+                    const message =
+                        `Hii, saya baru saja memesan  To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${lokasi_awal}\nTitik Pengantaran : ${lokasi_akhir}\nHarga : ${harga}`;
+                    window.open(
+                        `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
+                        '_blank');
                 }
 
                 // Trigger validation
                 validateAndOrder();
-            });
-
-            // Add event listeners to reset validation when inputs change
-            $('#lokasi_awal, #lokasi_akhir').on('change input', function() {
-                $('#lat_awal').val('');
-                $('#lng_awal').val('');
-                $('#lat_akhir').val('');
-                $('#lng_akhir').val('');
             });
             // Initialize the map
             initMap();
