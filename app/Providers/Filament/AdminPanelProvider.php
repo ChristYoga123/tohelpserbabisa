@@ -17,6 +17,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use App\Filament\Admin\Resources\VoucherResource;
 use App\Filament\Admin\Resources\KaryawanResource;
+use App\Filament\Admin\Resources\TransaksiResource;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use FilipFonal\FilamentLogManager\FilamentLogManager;
 use GeoSot\FilamentEnvEditor\FilamentEnvEditorPlugin;
@@ -100,6 +101,7 @@ class AdminPanelProvider extends PanelProvider
                         ->items([
                             ...Dashboard::getNavigationItems(),
                             ...VoucherResource::getNavigationItems(),
+                            ...TransaksiResource::getNavigationItems(),
                             // ...PageResource::getNavigationItems(),
                             // ...CategoryResource::getNavigationItems(),
                             // ...HomePageSettings::getNavigationItems(),

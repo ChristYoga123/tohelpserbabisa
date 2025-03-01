@@ -31,6 +31,12 @@ class VoucherResource extends Resource
                         Forms\Components\TextInput::make('nama')
                             ->required()
                             ->maxLength(191),
+                        Forms\Components\TextInput::make('persentase')
+                            ->required()
+                            ->numeric()
+                            ->suffix('%')
+                            ->minValue(1)
+                            ->maxValue(100),
                         Forms\Components\DatePicker::make('tanggal_berakhir')
                             ->required(),
                     ])
@@ -43,6 +49,9 @@ class VoucherResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('nama')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('persentase')
+                    ->sortable()
+                    ->getStateUsing(fn(Voucher $voucher) => $voucher->persentase . '%'),
                 Tables\Columns\TextColumn::make('tanggal_berakhir')
                     ->date()
                     ->sortable(),

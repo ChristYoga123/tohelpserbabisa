@@ -71,4 +71,9 @@ class User extends Authenticatable implements HasAvatar, FilamentUser
 
         return false;
     }
+
+    public function tugas()
+    {
+        return $this->belongsToMany(Transaksi::class, 'karyawan_tugas', 'karyawan_id', 'transaksi_id')->withPivot('id');
+    }
 }
