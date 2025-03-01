@@ -12,4 +12,9 @@ class KaryawanTugas extends Model
     {
         return $this->belongsTo(User::class, 'karyawan_id');
     }
+
+    public function tugas()
+    {
+        return $this->belongsTo(Transaksi::class, 'tugas_id');
+    }
 }
