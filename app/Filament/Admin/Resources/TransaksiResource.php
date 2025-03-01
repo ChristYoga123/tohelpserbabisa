@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use Filament\Forms;
+use App\Models\User;
 use Filament\Tables;
 use Filament\Forms\Form;
 use App\Models\Transaksi;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\TransaksiResource\Pages;
 use App\Filament\Admin\Resources\TransaksiResource\RelationManagers;
+use Filament\Notifications\Notification;
 
 class TransaksiResource extends Resource
 {
@@ -78,6 +80,19 @@ class TransaksiResource extends Resource
                         'belum' => 'warning',
                         'proses' => 'info',
                         'selesai' => 'success',
+                    })
+                    ->getStateUsing(function(Transaksi $transaksi) {
+                        if ($transaksi->tugas->isEmpty()) {
+                            return 'Belum Selesai';
+                        }
+
+                        if($transaksi->karyawanTugas->every(fn($q) => $q->is_selesai)) {
+                            $transaksi->update(['status_tugas' => 'selesai']);
+                            return 'Selesai';
+                        }
+                
+                        return 'Belum Selesai';
+
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -92,11 +107,49 @@ class TransaksiResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('beriTugas')
+                    ->label('Beri Tugas')
+                    ->icon('heroicon-o-briefcase')
+                    ->form([
+                        Forms\Components\Select::make('karyawan')
+                            ->label('Karyawan Yang Sedang Tidak Memiliki Tugas')
+                            ->multiple()
+                            ->searchable()
+                            ->preload()
+                            ->options(User::query()
+                            ->whereHas('roles', fn($q) => $q->where('name', 'karyawan'))
+                            ->where(function($query) {
+                                $query->whereDoesntHave('karyawanTugas') // karyawan yang belum punya tugas
+                                      ->orWhereDoesntHave('karyawanTugas', function($q) {
+                                          $q->where('is_selesai', false); // karyawan yang tidak memiliki tugas yang belum selesai
+                                      });
+                            })
+                            ->pluck('name', 'id'))
+                            ->required()
+                    ])
+                    ->action(function(Transaksi $transaksi, array $data)
+                    {
+                        $transaksi->tugas()->attach($data['karyawan']);
+
+                        Notification::make()
+                            ->title('Sukses')
+                            ->body('Karyawan telah ditugaskan')
+                            ->success()
+                            ->send();
+                    })
+                    ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() != 0),
+                Tables\Actions\Action::make('lihatTugas')
+                    ->label('Lihat Tugas')
+                    ->color('info')
+                    ->icon('heroicon-o-briefcase')
+                    ->url(fn(Transaksi $transaksi) => Pages\TugasPage::getUrl(['record' => $transaksi]))
+                    ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() == 0),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
@@ -106,6 +159,7 @@ class TransaksiResource extends Resource
     {
         return [
             'index' => Pages\ManageTransaksis::route('/'),
+            'tugas' => Pages\TugasPage::route('/{record}/tugas'),
         ];
     }
 }

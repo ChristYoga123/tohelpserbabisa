@@ -10,11 +10,16 @@ class Transaksi extends Model
 
     public function tugas()
     {
-        return $this->belongsToMany(User::class, 'karyawan_tugas', 'transaksi_id', 'karyawan_id')->withPivot('id');
+        return $this->belongsToMany(User::class, 'karyawan_tugas', 'tugas_id', 'karyawan_id')->withPivot('id');
     }
 
     public function voucher()
     {
         return $this->belongsTo(Voucher::class);
+    }
+
+    public function karyawanTugas()
+    {
+        return $this->hasMany(KaryawanTugas::class, 'tugas_id');
     }
 }

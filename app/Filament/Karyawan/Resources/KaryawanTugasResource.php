@@ -59,9 +59,11 @@ class KaryawanTugasResource extends Resource
                 Tables\Columns\TextColumn::make('tugas.jenis')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_selesai')
+                Tables\Columns\TextColumn::make('is_selesai')
                     ->label('Status Tugas')
-                    ->boolean(),
+                    ->badge()
+                    ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->is_selesai ? 'Selesei' : 'Belum')
+                    ->color(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->is_selesai ? 'success' : 'danger'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -77,6 +79,7 @@ class KaryawanTugasResource extends Resource
             ->actions([
                 Tables\Actions\Action::make('tugasSelesai')
                     ->label('Selesai')
+                    ->color('success')
                     ->icon('heroicon-o-check-circle')
                     ->requiresConfirmation()
                     ->action(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->update(['is_selesai' => true]))

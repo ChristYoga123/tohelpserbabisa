@@ -26,7 +26,8 @@
                                     <p class="mb-0">Tambahan kuli: 30rb/orang</p>
                                 </div>
                             </div>
-                            <a href="#" class="btn btn-success btn-lg w-100 order-btn" data-service="Tossa">
+                            <a href="#" class="btn btn-success btn-lg w-100 order-btn" data-service="Tossa"
+                                data-price="50000">
                                 <i class="fab fa-whatsapp me-2"></i> Pesan Sekarang
                             </a>
                         </div>
@@ -49,7 +50,8 @@
                                     <p class="mb-0">Tambahan kuli: 30rb/orang</p>
                                 </div>
                             </div>
-                            <a href="#" class="btn btn-success btn-lg w-100 order-btn" data-service="Pickup">
+                            <a href="#" class="btn btn-success btn-lg w-100 order-btn" data-service="Pickup"
+                                data-price="100000">
                                 <i class="fab fa-whatsapp me-2"></i> Pesan Sekarang
                             </a>
                         </div>
@@ -80,32 +82,102 @@
         $(document).ready(function() {
             $('.order-btn').click(function(e) {
                 e.preventDefault();
-                const service = $(this).data('service');
+                let service = $(this).data('service');
+                let price = $(this).data('price');
 
-                const message =
-                    `Format Pemesanan\n` +
-                    `Jenis pesanan : Pindahan/Angkut Barang\n` +
-                    `Alamat ambil / order : \n` +
-                    `List barang berat : \n` +
-                    `1. ......\n` +
-                    `2. ......\n` +
-                    `3. ......\n` +
-                    `List barang ringan :\n` +
-                    `1. ......\n` +
-                    `2. ......\n` +
-                    `3. ......\n` +
-                    `Jenis jasa : ${service}\n` +
-                    `Perlu kuli tambahan? (ya/tidak) : \n` +
-                    `Jika ya, berapa orang : \n` +
-                    `Alamat tujuan / kirim : \n` +
-                    `Tanggal/Waktu : \n` +
-                    `No.hp / wa : \n` +
-                    `Atas nama : `;
+                Swal.fire({
+                    title: "Apakah anda yakin?",
+                    text: "Apakah anda yakin ingin memesan jasa ini?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Ya, pesan!",
+                    cancelButtonText: "Batal",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `{{ route('pindahan.pesan') }}`,
+                            method: 'POST',
+                            data: {
+                                // csrf
+                                _token: '{{ csrf_token() }}',
+                                jasa: service,
+                                total_harga: price,
+                                alamat: result.value
+                            },
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire({
+                                        title: 'Berhasil',
+                                        text: 'Pesanan berhasil dibuat, Anda akan diarahkan ke WhatsApp Admin',
+                                        icon: 'success'
+                                    }).then(() => {
+                                        const message =
+                                            `Format Pemesanan\n` +
+                                            `Jenis pesanan : Pindahan/Angkut Barang\n` +
+                                            `Alamat ambil / order : \n` +
+                                            `List barang berat : \n` +
+                                            `1. ......\n` +
+                                            `2. ......\n` +
+                                            `3. ......\n` +
+                                            `List barang ringan :\n` +
+                                            `1. ......\n` +
+                                            `2. ......\n` +
+                                            `3. ......\n` +
+                                            `Jenis jasa : ${service}\n` +
+                                            `Perlu kuli tambahan? (ya/tidak) : \n` +
+                                            `Jika ya, berapa orang : \n` +
+                                            `Alamat tujuan / kirim : \n` +
+                                            `Tanggal/Waktu : \n` +
+                                            `No.hp / wa : \n` +
+                                            `Atas nama : `;
 
-                window.open(
-                    `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
-                    '_blank'
-                );
+                                        window.open(
+                                            `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
+                                            '_blank'
+                                        );
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Gagal',
+                                        text: 'Pesanan gagal dibuat, silahkan coba lagi',
+                                        icon: 'error'
+                                    });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    title: 'Gagal',
+                                    text: 'Pesanan gagal dibuat, silahkan coba lagi',
+                                    icon: 'error'
+                                });
+                            }
+                        });
+                    }
+                });
+                // const message =
+                //     `Format Pemesanan\n` +
+                //     `Jenis pesanan : Pindahan/Angkut Barang\n` +
+                //     `Alamat ambil / order : \n` +
+                //     `List barang berat : \n` +
+                //     `1. ......\n` +
+                //     `2. ......\n` +
+                //     `3. ......\n` +
+                //     `List barang ringan :\n` +
+                //     `1. ......\n` +
+                //     `2. ......\n` +
+                //     `3. ......\n` +
+                //     `Jenis jasa : ${service}\n` +
+                //     `Perlu kuli tambahan? (ya/tidak) : \n` +
+                //     `Jika ya, berapa orang : \n` +
+                //     `Alamat tujuan / kirim : \n` +
+                //     `Tanggal/Waktu : \n` +
+                //     `No.hp / wa : \n` +
+                //     `Atas nama : `;
+
+                // window.open(
+                //     `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
+                //     '_blank'
+                // );
             });
         });
     </script>

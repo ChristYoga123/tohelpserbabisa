@@ -163,7 +163,7 @@
                                 // csrf
                                 _token: '{{ csrf_token() }}',
                                 jasa: service,
-                                price: parseInt(price.replace(/\D/g, '')),
+                                total_harga: parseInt(price.replace(/\D/g, '')),
                                 alamat: result.value
                             },
                             success: function(response) {
@@ -192,6 +192,13 @@
                                         icon: 'error'
                                     });
                                 }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    title: 'Gagal',
+                                    text: 'Pesanan gagal dibuat, silahkan coba lagi',
+                                    icon: 'error'
+                                });
                             }
                         });
                     }

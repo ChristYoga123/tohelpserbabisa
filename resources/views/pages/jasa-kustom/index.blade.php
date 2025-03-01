@@ -114,33 +114,75 @@
                 e.preventDefault();
                 const service = $(this).data('service');
 
-                const message =
-                    `Format Pemesanan\n` +
-                    `Jenis layanan: ${service}\n` +
-                    `Nama: \n` +
-                    `No. HP/WA: \n` +
-                    `Alamat: \n` +
-                    `Tanggal/Waktu: \n` +
-                    `Detail pesanan: \n` +
-                    `Catatan tambahan: `;
+                Swal.fire({
+                    title: "Apakah anda yakin?",
+                    text: "Apakah anda yakin ingin memesan jasa ini?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Ya, pesan!",
+                    cancelButtonText: "Batal",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `{{ route('kustom.pesan') }}`,
+                            method: 'POST',
+                            data: {
+                                // csrf
+                                _token: '{{ csrf_token() }}',
+                                // jasa: service,
+                                // total_harga: price,
+                                // alamat: result.value
+                            },
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire({
+                                        title: 'Berhasil',
+                                        text: 'Pesanan berhasil dibuat, Anda akan diarahkan ke WhatsApp Admin',
+                                        icon: 'success'
+                                    }).then(() => {
+                                        const message =
+                                            // Hii kak, saya ingin meminta bantuan To Help untuk (isi sesuai kebutuhan kalian)
+                                            `Hii kak, saya ingin meminta bantuan To Help untuk *(isi sesuai kebutuhan kalian)*`;
 
-                window.open(
-                    `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
-                    '_blank'
-                );
+                                        window.open(
+                                            `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
+                                            '_blank'
+                                        );
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Gagal',
+                                        text: 'Pesanan gagal dibuat, silahkan coba lagi',
+                                        icon: 'error'
+                                    });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    title: 'Gagal',
+                                    text: 'Pesanan gagal dibuat, silahkan coba lagi',
+                                    icon: 'error'
+                                });
+                            }
+                        });
+                    }
+                });
+
+                // const message =
+                //     `Format Pemesanan\n` +
+                //     `Jenis layanan: ${service}\n` +
+                //     `Nama: \n` +
+                //     `No. HP/WA: \n` +
+                //     `Alamat: \n` +
+                //     `Tanggal/Waktu: \n` +
+                //     `Detail pesanan: \n` +
+                //     `Catatan tambahan: `;
+
+                // window.open(
+                //     `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
+                //     '_blank'
+                // );
             });
-        });
-
-        document.querySelector('.order-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            const message =
-                // Hii kak, saya ingin meminta bantuan To Help untuk (isi sesuai kebutuhan kalian)
-                `Hii kak, saya ingin meminta bantuan To Help untuk *(isi sesuai kebutuhan kalian)*`;
-
-            window.open(
-                `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
-                '_blank'
-            );
         });
     </script>
 @endpush

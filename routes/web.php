@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\BersihController;
+use App\Http\Controllers\JasaCustomController;
+use App\Http\Controllers\PindahanController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -13,9 +15,8 @@ Route::get('/ojek', function () {
 Route::get('/bersih-bersih', [BersihController::class, 'index'])->name('bersih');    
 Route::post('/bersih-bersih/pesan', [BersihController::class, 'pesan'])->name('bersih.pesan');    
 
-Route::get('/pindahan', function () {
-    return view('pages.pindahan.index');
-})->name('pindahan');
-Route::get('/jasa-kustom', function () {
-    return view('pages.jasa-kustom.index');
-})->name('kustom');
+Route::get('/pindahan', [PindahanController::class, 'index'])->name('pindahan');
+Route::post('/pindahan/pesan', [PindahanController::class, 'pesan'])->name('pindahan.pesan');
+
+Route::get('/jasa-kustom', [JasaCustomController::class, 'index'])->name('kustom');
+Route::post('/jasa-kustom/pesan', [JasaCustomController::class, 'pesan'])->name('kustom.pesan');

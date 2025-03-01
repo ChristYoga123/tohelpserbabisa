@@ -50,14 +50,15 @@ class TugasPage extends Page implements HasTable
         return $table
             ->query(KaryawanTugas::with('karyawan')->where('tugas_id', $this->transaksi->id))
             ->columns([
-                TextColumn::make('karyawan.nama')
+                TextColumn::make('karyawan.name')
                     ->label('Nama Karyawan'),
                 TextColumn::make('is_selesai')
                     ->label('Status')
-                    ->format(function ($value) {
-                        return $value ? 'Selesai' : 'Belum Selesai';
+                    ->getStateUsing(function (KaryawanTugas $karyawanTugas) {
+                        return $karyawanTugas->is_selesai ? 'Selesai' : 'Belum Selesai';
                     })
-                    ->color(fn ($value) => $value ? 'success' : 'warning'),
+                    ->badge()
+                    ->color(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->is_selesai ? 'success' : 'warning'),
             ])
             ->filters([
                 //
