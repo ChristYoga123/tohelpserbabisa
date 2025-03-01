@@ -33,6 +33,7 @@
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     @stack('styles')
 
 </head>
@@ -53,6 +54,8 @@
     <script type="text/javascript" src="{{ asset('js/script.js') }}"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ asset('toastr/build/toastr.css') }}">
+    <script src="{{ asset('toastr/build/toastr.min.js') }}"></script>
     <script src="{{ asset('sweetalert2/dist/sweetalert2.all.min.js') }}"></script>
     @stack('scripts')
 

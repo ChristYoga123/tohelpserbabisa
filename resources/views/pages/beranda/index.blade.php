@@ -253,15 +253,6 @@
     <section id="quote" class="padding-small">
         <div class="container text-center">
             <h3 class="display-6 fw-semibold">Testimonimu Adalah Semangat Kami</h3>
-            <!-- Add alert containers -->
-            <div class="alert alert-success alert-dismissible fade" id="success-alert" role="alert">
-                Terima kasih! Testimonial Anda telah berhasil dikirim.
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            <div class="alert alert-danger alert-dismissible fade" id="error-alert" role="alert">
-                Maaf, terjadi kesalahan. Silakan coba lagi.
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
             <form name="tohelpserbabisa-testimonial-form">
                 <div class="col-lg-12 col-md-12 col-sm-12 mb-4">
                     <input type="text" name="nama" placeholder="Nama*"
@@ -283,7 +274,8 @@
                         placeholder="Ulasan*" required></textarea>
                 </div>
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary btn-slide hover-slide-right mt-4" id="submit-btn">
+                    <button onclick="submitTestimoni()" class="btn btn-primary btn-slide hover-slide-right mt-4"
+                        id="submit-btn">
                         <span id="button-text">Kirim</span>
                     </button>
                 </div>
@@ -298,6 +290,29 @@
             <div class="swiper testimonial-swiper">
                 <div class="swiper-wrapper" id="testimonial-wrapper">
                     <!-- Testimonial items will be inserted here -->
+                    @foreach ($testimonis as $testimoni)
+                        <div class="swiper-slide">
+                            <div class="review-item">
+                                <div class="review">
+                                    <blockquote class="mb-0">
+                                        <p class="mb-0" style="white-space: pre-wrap;">{{ $testimoni->komentar }}</p>
+                                    </blockquote>
+                                </div>
+                                <div class="author-detail mt-4 d-flex align-items-center">
+                                    <div class="author-text">
+                                        <h5 class="name mb-0">{{ $testimoni->nama }}</h5>
+                                        <div class="review-star d-flex mt-2">
+                                            @for ($i = 0; $i < $testimoni->rating; $i++)
+                                                <svg class="star me-1 text-warning" width="16" height="16">
+                                                    <use xlink:href="#star" />
+                                                </svg>
+                                            @endfor
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
                 <div class="swiper-pagination position-relative pt-5"></div>
             </div>
@@ -338,257 +353,50 @@
             window.open(whatsappUrl, '_blank');
         }
 
-        // Config untuk testimonial
-        const config = {
-            spreadsheetId: '{{ env('SPREADSHEET_ID') }}',
-            scriptUrl: '{{ env('SPREADSHEET_SCRIPT_URL') }}'
-        };
-
-        // Inisialisasi testimonial
-        function initTestimonials() {
+        function submitTestimoni() {
             const form = document.forms['tohelpserbabisa-testimonial-form'];
-            const wrapper = document.getElementById('testimonial-wrapper');
-            let testimonials = [];
-            let swiper = null;
-            let isLoading = false;
+            const nama = form['nama'].value;
+            const rating = form['rating'].value;
+            const ulasan = form['ulasan'].value;
 
-            // Fungsi untuk memuat testimonial
-            async function loadTestimonials() {
-                try {
-                    const url = `https://docs.google.com/spreadsheets/d/${config.spreadsheetId}/export?format=csv`;
-                    const response = await fetch(url);
-                    const text = await response.text();
-
-                    if (!text || text.trim() === '') {
-                        testimonials = [];
-                        wrapper.innerHTML = '';
-                        return;
-                    }
-
-                    // Parse CSV with proper handling of special characters and quotes
-                    testimonials = parseCSVSafely(text);
-                    renderTestimonials();
-                } catch (error) {
-                    console.error('Load error:', error);
-                    testimonials = [];
-                    wrapper.innerHTML = `<p class="text-danger">Error loading testimonials</p>`;
-                }
+            if (!nama || !rating || !ulasan) {
+                alert('Silakan lengkapi data terlebih dahulu');
+                return;
             }
 
-            // Enhanced CSV parsing function with better handling of special characters
-            function parseCSVSafely(csv) {
-                const lines = csv.split('\n');
-                const headers = lines[0].split(',');
+            const submitBtn = document.getElementById('submit-btn');
+            const buttonText = document.getElementById('button-text');
+            submitBtn.disabled = true;
+            buttonText.innerText = 'Mengirim...';
 
-                return lines.slice(1)
-                    .filter(line => line.trim())
-                    .map(line => {
-                        // Handle quoted fields properly
-                        const values = line.match(/(?:^|,)("(?:[^"]*(?:""[^"]*)*)"|[^,]*)/g)
-                            .map(value => {
-                                // Remove leading comma if present
-                                value = value.startsWith(',') ? value.slice(1) : value;
-                                // Remove surrounding quotes and unescape double quotes
-                                if (value.startsWith('"') && value.endsWith('"')) {
-                                    value = value.slice(1, -1).replace(/""/g, '"');
-                                }
-                                return value.trim();
-                            });
-
-                        return {
-                            timestamp: values[0] || '',
-                            name: values[1] || '',
-                            review: values[2] || '',
-                            rating: parseInt(values[3]) || 0
-                        };
-                    })
-                    .filter(row => row.name && row.review);
-            }
-
-            // Fungsi untuk render testimonial
-            function renderTestimonials() {
-                if (!testimonials.length) {
-                    wrapper.innerHTML = '';
-                    return;
-                }
-
-                const html = testimonials.map(t => `
-            <div class="swiper-slide">
-                <div class="review-item">
-                    <div class="review">
-                        <blockquote class="mb-0">
-                            <p class="mb-0" style="white-space: pre-wrap;">"${escapeHtml(t.review)}"</p>
-                        </blockquote>
-                    </div>
-                    <div class="author-detail mt-4 d-flex align-items-center">
-                        <div class="author-text">
-                            <h5 class="name mb-0">${escapeHtml(t.name)}</h5>
-                            <div class="review-star d-flex mt-2">
-                                ${generateStars(Math.min(Math.max(parseInt(t.rating) || 0, 0), 5))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-
-                wrapper.innerHTML = html;
-                initSwiper();
-            }
-
-            // Escape HTML to prevent XSS
-            function escapeHtml(unsafe) {
-                return unsafe
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            }
-
-            // Fungsi untuk generate bintang rating dengan validasi
-            function generateStars(rating) {
-                rating = Math.min(Math.max(parseInt(rating) || 0, 0), 5);
-                return Array(5).fill(0)
-                    .map((_, i) => `
-                <svg class="star me-1 ${i < rating ? 'text-warning' : 'text-muted'}" width="16" height="16">
-                    <use xlink:href="#star" />
-                </svg>
-            `).join('');
-            }
-
-            // Handle submit form dengan sanitasi input
-            async function handleSubmit(e) {
-                e.preventDefault();
-                if (isLoading) return;
-
-                const formData = new FormData(form);
-                const name = formData.get('nama')?.trim();
-                const review = formData.get('ulasan')?.trim();
-                const rating = parseInt(document.getElementById('rating-value')?.value) || 0;
-
-                if (!name || !rating || !review) {
-                    alert('Mohon lengkapi semua field');
-                    return;
-                }
-
-                if (rating < 1 || rating > 5) {
-                    alert('Rating harus antara 1-5');
-                    return;
-                }
-
-                isLoading = true;
-                const submitBtn = document.getElementById('submit-btn');
-                const buttonText = document.getElementById('button-text');
-                submitBtn.disabled = true;
-                buttonText.textContent = 'Mengirim...';
-
-                try {
-                    // Create a new FormData with sanitized values
-                    const sanitizedFormData = new FormData();
-                    sanitizedFormData.append('nama', name);
-                    sanitizedFormData.append('ulasan', review);
-                    sanitizedFormData.append('rating', rating.toString());
-
-                    const response = await fetch(config.scriptUrl, {
-                        method: 'POST',
-                        body: sanitizedFormData
-                    });
-
-                    if (response.ok) {
-                        document.getElementById('success-alert').classList.add('show');
+            $.ajax({
+                url: '{{ route('testimoni') }}',
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    nama: nama,
+                    rating: rating,
+                    komentar: ulasan
+                },
+                success: function(response) {
+                    console.log(response);
+                    if (response.status === 'success') {
+                        toastr.success('Testimonial Anda telah berhasil dikirim');
                         form.reset();
-                        resetStarRating();
-                        await loadTestimonials();
+                        window.location.reload();
                     } else {
-                        throw new Error('Gagal mengirim');
+                        toastr.error('Maaf, terjadi kesalahan. Silakan coba lagi.');
                     }
-                } catch (error) {
-                    console.error('Submit error:', error);
-                    document.getElementById('error-alert').classList.add('show');
-                } finally {
-                    isLoading = false;
+                },
+                error: function(error) {
+                    console.error(error);
+                    toastr.error(error.responseJSON.message || 'Maaf, terjadi kesalahan. Silakan coba lagi.');
+                },
+                complete: function() {
                     submitBtn.disabled = false;
-                    buttonText.textContent = 'Kirim';
+                    buttonText.innerText = 'Kirim';
                 }
-            }
-
-            // Inisialisasi Swiper dengan handling dinamis
-            function initSwiper() {
-                if (swiper) swiper.destroy();
-                if (!document.querySelector('.testimonial-swiper .swiper-slide')) return;
-
-                swiper = new Swiper('.testimonial-swiper', {
-                    slidesPerView: 1,
-                    spaceBetween: 30,
-                    pagination: {
-                        el: '.swiper-pagination',
-                        clickable: true
-                    },
-                    breakpoints: {
-                        768: {
-                            slidesPerView: 2
-                        },
-                        1024: {
-                            slidesPerView: 3
-                        }
-                    },
-                    autoHeight: true // Enable dynamic height
-                });
-            }
-
-            // Reset star rating
-            function resetStarRating() {
-                const stars = document.querySelectorAll('.star-rating i');
-                stars.forEach(star => star.classList.remove('active'));
-                document.getElementById('rating-value').value = '';
-            }
-
-            // Initialize star rating system
-            function initStarRating() {
-                const stars = document.querySelectorAll('.star-rating i');
-                const ratingInput = document.getElementById('rating-value');
-
-                stars.forEach(star => {
-                    star.addEventListener('mouseover', function() {
-                        const rating = parseInt(this.getAttribute('data-rating'));
-                        updateStarsDisplay(rating);
-                    });
-
-                    star.addEventListener('mouseout', function() {
-                        const currentRating = parseInt(ratingInput.value) || 0;
-                        updateStarsDisplay(currentRating);
-                    });
-
-                    star.addEventListener('click', function() {
-                        const rating = parseInt(this.getAttribute('data-rating'));
-                        ratingInput.value = rating;
-                        updateStarsDisplay(rating);
-                    });
-                });
-            }
-
-            // Helper function to update stars display
-            function updateStarsDisplay(rating) {
-                const stars = document.querySelectorAll('.star-rating i');
-                stars.forEach(s => {
-                    const starRating = parseInt(s.getAttribute('data-rating'));
-                    if (starRating <= rating) {
-                        s.classList.add('active');
-                    } else {
-                        s.classList.remove('active');
-                    }
-                });
-            }
-
-            // Add form submit event listener
-            form.addEventListener('submit', handleSubmit);
-
-            // Initialize star rating
-            initStarRating();
-
-            // Load testimonials on page load
-            loadTestimonials();
+            });
         }
 
         // Inisialisasi video player
@@ -607,8 +415,57 @@
 
         // Initialize all components when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
+            // Get all star elements
+            const stars = document.querySelectorAll('.star-rating .fas.fa-star');
+            const ratingInput = document.getElementById('rating-value');
+
+            // Initialize stars with gray color
+            stars.forEach(star => {
+                star.style.color = '#ccc'; // Default gray color
+
+                // Add click event listener to each star
+                star.addEventListener('click', function() {
+                    const rating = this.getAttribute('data-rating');
+                    setRating(rating);
+                });
+
+                // Add hover effects
+                star.addEventListener('mouseover', function() {
+                    const rating = this.getAttribute('data-rating');
+                    highlightStars(rating);
+                });
+            });
+
+            // Add mouseleave event to the star container to reset to selected rating
+            document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+                const currentRating = ratingInput.value || 0;
+                highlightStars(currentRating);
+            });
+
+            // Function to set the rating
+            function setRating(rating) {
+                // Set the hidden input value
+                ratingInput.value = rating;
+
+                // Highlight the stars permanently
+                highlightStars(rating);
+            }
+
+            // Function to highlight stars
+            function highlightStars(rating) {
+                stars.forEach(star => {
+                    const starRating = parseInt(star.getAttribute('data-rating'));
+
+                    // If this star's rating is less than or equal to the selected rating, color it yellow
+                    if (starRating <= rating) {
+                        star.style.color = '#ffc107'; // Bootstrap yellow/warning color
+                    } else {
+                        star.style.color = '#ccc'; // Gray color for unselected stars
+                    }
+                });
+            }
             // Initialize testimonials
-            initTestimonials();
+            // initTestimonials();
 
             // Initialize video player
             initVideoPlayer();
