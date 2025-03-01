@@ -62,7 +62,7 @@ class TransaksiResource extends Resource
                 Tables\Columns\TextColumn::make('order_id')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('voucher.nama')
-                    ->numeric()
+                    ->getStateUsing(fn(Transaksi $transaksi) => $transaksi->voucher->nama ?? 'Tidak Ada Voucher')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('jenis'),
                 Tables\Columns\TextColumn::make('total_harga')
@@ -150,7 +150,7 @@ class TransaksiResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     
-                    Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

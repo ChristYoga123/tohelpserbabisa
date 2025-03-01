@@ -115,6 +115,23 @@
         </div>
         <div class="service-block position-relative bg-secondary">
             <div class="jarallax service-bg"
+                style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(images/ojek.png); background-size: cover; background-repeat: no-repeat; background-position: center; ">
+            </div>
+            <div class="container service-content position-absolute top-50 start-50 translate-middle">
+                <div class="row align-items-center">
+                    <div class="col-lg-9">
+                        <h3 class="display-6 fw-semibold text-white mb-4">Transportasi (Mobil)</h3>
+                        <p class="text-white">Layanan mobil kami siap mengantar Anda ke mana saja dengan cepat dan aman.
+                        </p>
+                    </div>
+                    <div class="col-lg-3 text-lg-end">
+                        <a href="{{ route('taxi') }}" class="btn btn-outline-light service-btn">Pesan Sekarang</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="service-block position-relative bg-secondary">
+            <div class="jarallax service-bg"
                 style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(images/bersih-rumah.png); background-size: cover; background-repeat: no-repeat; background-position: center;">
             </div>
             <div class="container service-content position-absolute top-50 start-50 translate-middle">
