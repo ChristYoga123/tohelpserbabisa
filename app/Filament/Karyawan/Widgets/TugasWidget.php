@@ -1,60 +1,19 @@
 <?php
 
-namespace App\Filament\Karyawan\Resources;
+namespace App\Filament\Karyawan\Widgets;
 
-use App\Filament\Karyawan\Resources\KaryawanTugasResource\Pages;
-use App\Filament\Karyawan\Resources\KaryawanTugasResource\RelationManagers;
 use App\Models\KaryawanTugas;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Widgets\TableWidget as BaseWidget;
 
-class KaryawanTugasResource extends Resource
+class TugasWidget extends BaseWidget
 {
-    protected static ?string $model = KaryawanTugas::class;
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Tugas Karyawan';
-
-    public static function canCreate(): bool
-    {
-        return false;
-    }
-
-    public static function canDelete(Model $model): bool
-    {
-        return false;
-    }
-
-    public static function canEdit(Model $model): bool
-    {
-        return false;
-    }
-
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('tugas_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('karyawan_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\Toggle::make('is_selesai')
-                    ->required(),
-            ]);
-    }
-
-    public static function table(Table $table): Table
+    protected int | string | array $columnSpan = 'full';
+    public function table(Table $table): Table
     {
         return $table
-            ->query(KaryawanTugas::query()->with('karyawan')->whereKaryawanId(auth()->user()->id))
+            ->query(KaryawanTugas::query()->with('karyawan')->whereKaryawanId(auth()->user()->id)->orderBy('created_at', 'desc')->limit(5))
             ->columns([
                 Tables\Columns\TextColumn::make('tugas.jenis')
                     ->numeric()
@@ -90,12 +49,5 @@ class KaryawanTugasResource extends Resource
                     // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ManageKaryawanTugas::route('/'),
-        ];
     }
 }

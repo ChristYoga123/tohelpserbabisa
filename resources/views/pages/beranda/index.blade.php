@@ -274,8 +274,8 @@
                         placeholder="Ulasan*" required></textarea>
                 </div>
                 <div class="col-12">
-                    <button onclick="submitTestimoni()" class="btn btn-primary btn-slide hover-slide-right mt-4"
-                        id="submit-btn">
+                    <button type="button" onclick="submitTestimoni()"
+                        class="btn btn-primary btn-slide hover-slide-right mt-4" id="submit-btn">
                         <span id="button-text">Kirim</span>
                     </button>
                 </div>
