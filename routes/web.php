@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BersihController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -8,9 +9,10 @@ Route::get('/', function () {
 Route::get('/ojek', function () {
     return view('pages.transportasi.index');
 })->name('ojek');
-Route::get('/bersih-bersih', function () {
-    return view('pages.bersih.index');
-})->name('bersih');    
+
+Route::get('/bersih-bersih', [BersihController::class, 'index'])->name('bersih');    
+Route::post('/bersih-bersih/pesan', [BersihController::class, 'pesan'])->name('bersih.pesan');    
+
 Route::get('/pindahan', function () {
     return view('pages.pindahan.index');
 })->name('pindahan');

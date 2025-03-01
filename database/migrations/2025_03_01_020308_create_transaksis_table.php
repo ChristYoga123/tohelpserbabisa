@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('order_id')->unique();
             $table->foreignId('voucher_id')->nullable()->constrained();
             $table->enum('jenis', ['ojek', 'taxi', 'bersih-rumah', 'angkutan', 'custom']);
+            $table->string('jasa');
             $table->unsignedBigInteger('total_harga')->nullable();
             $table->enum('status_tugas', ['belum', 'proses', 'selesai'])->default('belum');
             $table->timestamps();

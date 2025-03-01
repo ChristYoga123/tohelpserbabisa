@@ -142,20 +142,86 @@
         $(document).ready(function() {
             $('.order-btn').click(function(e) {
                 e.preventDefault();
+
                 const service = $(this).data('service');
                 const price = $(this).data('price');
+                // console.log(parseInt(price.replace(/\D/g, '')));
 
-                const message =
-                    `Hello Minhelp, saya ingin meminta bantuan Cleaning Service dan saya sudah membaca Price List di Website\n\n` +
-                    `Harap Di Isi, Format Order Berikut\n` +
-                    `Jasa : ${service}\n` +
-                    `Harga : Rp ${price}\n` +
-                    `Tanggal Pengerjaan : \n` +
-                    `Alamat : `;
+                Swal.fire({
+                    title: "Apakah anda yakin?",
+                    text: "Apakah anda yakin ingin memesan jasa ini?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Ya, pesan!",
+                    cancelButtonText: "Batal",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `{{ route('bersih.pesan') }}`,
+                            method: 'POST',
+                            data: {
+                                // csrf
+                                _token: '{{ csrf_token() }}',
+                                jasa: service,
+                                price: parseInt(price.replace(/\D/g, '')),
+                                alamat: result.value
+                            },
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    Swal.fire({
+                                        title: 'Berhasil',
+                                        text: 'Pesanan berhasil dibuat, Anda akan diarahkan ke WhatsApp Admin',
+                                        icon: 'success'
+                                    }).then(() => {
+                                        const message =
+                                            `Hello Minhelp, saya ingin meminta bantuan Cleaning Service dan saya sudah membaca Price List di Website\n\n` +
+                                            `Harap Di Isi, Format Order Berikut\n` +
+                                            `Jasa : ${service}\n` +
+                                            `Harga : Rp ${price}\n` +
+                                            `Tanggal Pengerjaan : \n` +
+                                            `Alamat : `;
 
-                window.open(
-                    `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
-                    '_blank');
+                                        window.open(
+                                            `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
+                                            '_blank');
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Gagal',
+                                        text: 'Pesanan gagal dibuat, silahkan coba lagi',
+                                        icon: 'error'
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // $.ajax({
+                //     url: `{{ route('bersih.pesan') }}`,
+                //     method: 'POST',
+                //     data: {
+                //         // csrf
+                //         _token: '{{ csrf_token() }}',
+                //         jasa: service,
+                //         price: parseInt(price.replace(/\D/g, ''))
+                //     },
+                //     success: function(response) {
+                //         if (response.status)
+                //     }
+                // })
+
+                // const message =
+                //     `Hello Minhelp, saya ingin meminta bantuan Cleaning Service dan saya sudah membaca Price List di Website\n\n` +
+                //     `Harap Di Isi, Format Order Berikut\n` +
+                //     `Jasa : ${service}\n` +
+                //     `Harga : Rp ${price}\n` +
+                //     `Tanggal Pengerjaan : \n` +
+                //     `Alamat : `;
+
+                // window.open(
+                //     `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
+                //     '_blank');
             });
         });
     </script>

@@ -53,13 +53,8 @@
     <script type="text/javascript" src="{{ asset('js/script.js') }}"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="{{ asset('sweetalert2/dist/sweetalert2.all.min.js') }}"></script>
     @stack('scripts')
-    <script>
-        $(document).ready(function() {
-            let year = new Date().getFullYear();
-            document.getElementById('year').innerHTML = year;
-        });
-    </script>
 
 </body>
 
