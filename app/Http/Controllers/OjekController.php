@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Transaksi;
+use App\Models\Voucher;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,13 +26,14 @@ class OjekController extends Controller
             Transaksi::create([
                 'order_id' => 'OJK-' . Str::random(8),
                 'jenis' => 'ojek',
+                'voucher_id' => Voucher::whereNama($request->voucher)->first()->id ?? null,
                 'total_harga' => $request->total_harga,
             ]);
 
             DB::commit();
             return response()->json([
                 'status' => 'success',
-                'message' => 'Berhasil memesan jasa bersih-bersih'
+                'message' => 'Berhasil memesan jasa ojek'
             ]);
         }catch(Exception $e)
         {
@@ -39,7 +41,7 @@ class OjekController extends Controller
             DB::rollBack();
             return response()->json([
                 'status' => 'error',
-                'message' => 'Terjadi kesalahan saat memesan jasa bersih-bersih'
+                'message' => 'Terjadi kesalahan saat memesan jasa ojek'
             ], 500);
         }
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Exception;
 use App\Models\Transaksi;
+use App\Models\Voucher;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,7 @@ class MobilController extends Controller
             Transaksi::create([
                 'order_id' => 'TX-' . Str::random(8),
                 'jenis' => 'taxi',
+                'voucher_id' => Voucher::whereNama($request->voucher)->first()->id ?? null,
                 'total_harga' => $request->total_harga,
             ]);
 

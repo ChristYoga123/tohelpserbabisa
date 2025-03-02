@@ -45,7 +45,7 @@
         <div class="row align-items-center g-0 bg-secondary">
             <div class="col-lg-6">
                 <div class="m-4 p-4 m-lg-5 p-lg-5">
-                    <h6 class="text-white"><span class="text-primary">Transportasi</span>(Ngojek)</h6>
+                    <h6 class="text-white"><span class="text-primary">Transportasi</span>(Mobil)</h6>
                     <h2 class="display-4 fw-bold text-white my-4">Perjalanan Nyaman, Harga Bersahabat</h2>
                     <a href="#quote" class="btn btn-light btn-bg btn-slide hover-slide-right mt-4">
                         <span>Silahkan Pesan</span>
@@ -121,8 +121,11 @@
             // Constants
             const BASECAMP_LAT = -8.171121371857444;
             const BASECAMP_LNG = 113.7233082269837;
-            const FLAT_FEE = 1000; // New flat fee
-            const PER_KM_RATE = 2000;
+
+            // New pricing model
+            const RATE_PER_KM = 2000; // 2rb/km for motorcycle
+            const MINIMUM_ORDER_PRICE = 7000; // Minimum order price is 7rb
+
             // Declare voucherDiscount at the script level so it's accessible in multiple functions
             let voucherDiscount = 0;
             let appliedVoucherCode = '';
@@ -293,10 +296,18 @@
                 return R * c;
             }
 
-            // Calculate total price with the new pricing model
+            // Calculate total price with the new flat rate pricing model
             function calculatePrice(routeDistance) {
-                // Simple calculation: flat fee + per km rate
-                return FLAT_FEE + (routeDistance * PER_KM_RATE);
+                // Ceiling the distance to get proper calculation
+                const roundedDistance = Math.ceil(routeDistance);
+
+                // Calculate base price (distance × rate per km)
+                let calculatedPrice = roundedDistance * RATE_PER_KM;
+
+                // Apply minimum order price if the calculated price is lower
+                let totalPrice = Math.max(calculatedPrice, MINIMUM_ORDER_PRICE);
+
+                return totalPrice;
             }
 
             // Get address from coordinates using Google Geocoder
@@ -375,8 +386,21 @@
                         const routeDistance = (route.legs[0].distance.value / 1000).toFixed(2);
                         const duration = Math.round(route.legs[0].duration.value / 60);
 
-                        // Calculate total price with new model
-                        let totalPrice = Math.ceil(calculatePrice(parseFloat(routeDistance)) / 100) * 100;
+                        // Get rounded distance for display
+                        const roundedDistance = Math.ceil(parseFloat(routeDistance));
+
+                        // Calculate price using new flat rate pricing
+                        let calculatedPrice = roundedDistance * RATE_PER_KM;
+                        let totalPrice = Math.max(calculatedPrice, MINIMUM_ORDER_PRICE);
+                        let priceInfo = '';
+
+                        // Create appropriate price explanation based on whether minimum price is applied
+                        if (calculatedPrice < MINIMUM_ORDER_PRICE) {
+                            priceInfo = `Tarif: Rp${MINIMUM_ORDER_PRICE.toLocaleString()} (Tarif minimum)`;
+                        } else {
+                            priceInfo =
+                                `Tarif: Rp${totalPrice.toLocaleString()} (${roundedDistance} km × Rp${RATE_PER_KM.toLocaleString()}/km)`;
+                        }
 
                         // Apply voucher discount if available
                         let discountAmount = 0;
@@ -391,11 +415,11 @@
 
                         // Update route info display with pricing and discount
                         $('#routeInfo').html(
-                            `Jarak: <span id="distance">${routeDistance}</span> km<br>
-                Estimasi waktu: <span id="duration">${duration}</span> menit<br>
-                Harga: Rp${FLAT_FEE.toLocaleString()} (tarif dasar) + Rp${(routeDistance * PER_KM_RATE).toLocaleString()} (${routeDistance} km × Rp${PER_KM_RATE.toLocaleString()})
-                ${discountInfo}<br>
-                Harga Total: Rp<span id="totalPrice">${totalPrice.toLocaleString()}</span>`
+                            `Jarak: <span id="distance">${routeDistance}</span> km (dibulatkan menjadi ${roundedDistance} km)<br>
+                            Estimasi waktu: <span id="duration">${duration}</span> menit<br>
+                            ${priceInfo}
+                            ${discountInfo}<br>
+                            Harga Total: Rp<span id="totalPrice">${totalPrice.toLocaleString()}</span>`
                         ).show();
                     }
                 });
@@ -559,6 +583,7 @@
                                 // csrf
                                 _token: '{{ csrf_token() }}',
                                 total_harga: parseInt(price.replace(/\D/g, '')),
+                                voucher: appliedVoucherCode,
                             },
                             success: function(response) {
                                 if (response.status === 'success') {
@@ -568,7 +593,7 @@
                                         icon: 'success'
                                     }).then(() => {
                                         const message =
-                                            `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${$('#totalPrice').text()}`;
+                                            `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Mobil\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${$('#totalPrice').text()}`;
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
                                             '_blank'
@@ -592,14 +617,6 @@
                         });
                     }
                 });
-
-                // Create WhatsApp message and open link
-                // const message =
-                //     `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${$('#totalPrice').text()}`;
-                // window.open(
-                //     `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
-                //     '_blank'
-                // );
             });
 
             $('#reset-voucher').click(function() {

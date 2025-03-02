@@ -45,7 +45,7 @@
         <div class="row align-items-center g-0 bg-secondary">
             <div class="col-lg-6">
                 <div class="m-4 p-4 m-lg-5 p-lg-5">
-                    <h6 class="text-white"><span class="text-primary">Transportasi</span>(Ngojek)</h6>
+                    <h6 class="text-white"><span class="text-primary">Transportasi</span>(Mobil)</h6>
                     <h2 class="display-4 fw-bold text-white my-4">Perjalanan Nyaman, Harga Bersahabat</h2>
                     <a href="#quote" class="btn btn-light btn-bg btn-slide hover-slide-right mt-4">
                         <span>Silahkan Pesan</span>
@@ -121,8 +121,15 @@
             // Constants
             const BASECAMP_LAT = -8.171121371857444;
             const BASECAMP_LNG = 113.7233082269837;
-            const FLAT_FEE = 1000; // New flat fee
-            const PER_KM_RATE = 2000;
+            const BASE_FEE = 2000; // Base fee for car
+
+            // Tiered pricing for cars
+            const TIER_1_MAX = 3; // 1-3 km
+            const TIER_1_RATE = 6000; // 6rb/km
+            const TIER_2_MAX = 10; // 4-10 km
+            const TIER_2_RATE = 5000; // 5rb/km
+            const TIER_3_RATE = 4000; // > 10 km rate (4rb/km)
+
             // Declare voucherDiscount at the script level so it's accessible in multiple functions
             let voucherDiscount = 0;
             let appliedVoucherCode = '';
@@ -293,10 +300,25 @@
                 return R * c;
             }
 
-            // Calculate total price with the new pricing model
+            // Calculate total price with the new tiered pricing model for cars
             function calculatePrice(routeDistance) {
-                // Simple calculation: flat fee + per km rate
-                return FLAT_FEE + (routeDistance * PER_KM_RATE);
+                // Ceiling the distance to get proper tier calculation
+                const roundedDistance = Math.ceil(routeDistance);
+                let totalPrice = BASE_FEE; // Start with base fee
+
+                // Apply tiered pricing
+                if (roundedDistance <= TIER_1_MAX) {
+                    // Tier 1: 1-3 km at 6000/km
+                    totalPrice += roundedDistance * TIER_1_RATE;
+                } else if (roundedDistance <= TIER_2_MAX) {
+                    // Tier 2: 4-10 km at 5000/km
+                    totalPrice += roundedDistance * TIER_2_RATE;
+                } else {
+                    // Tier 3: >10 km at 4000/km
+                    totalPrice += roundedDistance * TIER_3_RATE;
+                }
+
+                return totalPrice;
             }
 
             // Get address from coordinates using Google Geocoder
@@ -375,8 +397,21 @@
                         const routeDistance = (route.legs[0].distance.value / 1000).toFixed(2);
                         const duration = Math.round(route.legs[0].duration.value / 60);
 
-                        // Calculate total price with new model
-                        let totalPrice = Math.ceil(calculatePrice(parseFloat(routeDistance)) / 100) * 100;
+                        // Get rounded distance for display
+                        const roundedDistance = Math.ceil(parseFloat(routeDistance));
+
+                        // Calculate price using tiered pricing
+                        let totalPrice = calculatePrice(parseFloat(routeDistance));
+
+                        // Determine which rate is applied based on distance
+                        let appliedRate;
+                        if (roundedDistance <= TIER_1_MAX) {
+                            appliedRate = TIER_1_RATE;
+                        } else if (roundedDistance <= TIER_2_MAX) {
+                            appliedRate = TIER_2_RATE;
+                        } else {
+                            appliedRate = TIER_3_RATE;
+                        }
 
                         // Apply voucher discount if available
                         let discountAmount = 0;
@@ -391,11 +426,12 @@
 
                         // Update route info display with pricing and discount
                         $('#routeInfo').html(
-                            `Jarak: <span id="distance">${routeDistance}</span> km<br>
-                Estimasi waktu: <span id="duration">${duration}</span> menit<br>
-                Harga: Rp${FLAT_FEE.toLocaleString()} (tarif dasar) + Rp${(routeDistance * PER_KM_RATE).toLocaleString()} (${routeDistance} km × Rp${PER_KM_RATE.toLocaleString()})
-                ${discountInfo}<br>
-                Harga Total: Rp<span id="totalPrice">${totalPrice.toLocaleString()}</span>`
+                            `Jarak: <span id="distance">${roundedDistance}</span> km<br>
+                            Estimasi waktu: <span id="duration">${duration}</span> menit<br>
+                            Tarif dasar: Rp${BASE_FEE.toLocaleString()}<br>
+                            Tarif jarak: Rp${(roundedDistance * appliedRate).toLocaleString()} (${roundedDistance} km × Rp${appliedRate.toLocaleString()}/km)
+                            ${discountInfo}<br>
+                            Harga Total: Rp<span id="totalPrice">${totalPrice.toLocaleString()}</span>`
                         ).show();
                     }
                 });
@@ -553,12 +589,13 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: `{{ route('ojek.pesan') }}`,
+                            url: `{{ route('taxi.pesan') }}`,
                             method: 'POST',
                             data: {
                                 // csrf
                                 _token: '{{ csrf_token() }}',
                                 total_harga: parseInt(price.replace(/\D/g, '')),
+                                voucher: appliedVoucherCode,
                             },
                             success: function(response) {
                                 if (response.status === 'success') {
@@ -568,7 +605,7 @@
                                         icon: 'success'
                                     }).then(() => {
                                         const message =
-                                            `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${$('#totalPrice').text()}`;
+                                            `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Mobil\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${$('#totalPrice').text()}`;
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
                                             '_blank'
@@ -592,14 +629,6 @@
                         });
                     }
                 });
-
-                // Create WhatsApp message and open link
-                // const message =
-                //     `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${$('#totalPrice').text()}`;
-                // window.open(
-                //     `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
-                //     '_blank'
-                // );
             });
 
             $('#reset-voucher').click(function() {
