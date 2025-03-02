@@ -86,10 +86,24 @@
                     <input type="hidden" id="lng_akhir" name="lng_akhir">
                 </div>
             </form>
-
-            <div class="mt-5 d-flex flex-column">
-                <strong>Biaya: Rp<span id="harga-dasar">2000</span>,00/km</strong>
-                <strong>Tarif Dasar: Rp1000,00</strong>
+            <!-- Voucher Section -->
+            <div class="mt-4 mb-3">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-md-10">
+                        <div class="input-group">
+                            <input type="text" id="kode-voucher" class="form-control ps-3 py-2 rounded-0"
+                                placeholder="Masukkan kode voucher" aria-label="Kode voucher">
+                            <button class="btn btn-primary" type="button" id="apply-voucher">
+                                <i class="fas fa-tag"></i> Apply Voucher
+                            </button>
+                            <button class="btn btn-outline-secondary" type="button" id="reset-voucher"
+                                style="display: none;">
+                                <i class="fas fa-times"></i> Reset
+                            </button>
+                        </div>
+                        <div id="voucher-info" class="mt-2 text-start" style="display: none;"></div>
+                    </div>
+                </div>
             </div>
 
             <a id="order" class="btn btn-success mt-3">
@@ -109,6 +123,115 @@
             const BASECAMP_LNG = 113.7233082269837;
             const FLAT_FEE = 1000; // New flat fee
             const PER_KM_RATE = 2000;
+            // Declare voucherDiscount at the script level so it's accessible in multiple functions
+            let voucherDiscount = 0;
+            let appliedVoucherCode = '';
+
+            // Function to apply voucher
+            function applyVoucher() {
+                const voucherCode = $('#kode-voucher').val().trim();
+
+                if (!voucherCode) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Silahkan masukkan kode voucher',
+                        icon: 'error'
+                    });
+                    return;
+                }
+
+                // Check if same voucher is being applied again
+                if (voucherCode === appliedVoucherCode) {
+                    Swal.fire({
+                        title: 'Info',
+                        text: 'Voucher ini sudah diaplikasikan',
+                        icon: 'info'
+                    });
+                    return;
+                }
+
+                // Show loading indicator
+                Swal.fire({
+                    title: 'Memproses',
+                    text: 'Memeriksa kode voucher...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Send AJAX request to validate voucher
+                $.ajax({
+                    url: '{{ route('voucher.check') }}',
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        code: voucherCode
+                    },
+                    success: function(response) {
+                        Swal.close();
+
+                        if (response.status === 'success') {
+                            $('#reset-voucher').show();
+                            $('input#kode-voucher').prop('readonly', true);
+                            // Save the applied voucher and discount percentage
+                            voucherDiscount = response.data.persentase;
+                            appliedVoucherCode = voucherCode;
+
+                            // Display voucher info
+                            $('#voucher-info').html(
+                                `<div class="alert alert-success">
+                        <strong>Voucher berhasil diaplikasikan!</strong><br>
+                        Diskon ${voucherDiscount}% dari ${response.data.nama}
+                    </div>`
+                            ).show();
+
+                            // Recalculate price with the discount
+                            calculateRoute();
+
+                            Swal.fire({
+                                title: 'Berhasil',
+                                text: `Voucher "${response.data.nama}" berhasil diaplikasikan! Diskon ${voucherDiscount}%`,
+                                icon: 'success'
+                            });
+                        } else {
+                            $('#voucher-info').html(
+                                `<div class="alert alert-danger">
+                        <strong>Voucher tidak valid!</strong><br>
+                        ${response.message}
+                    </div>`
+                            ).show();
+
+                            Swal.fire({
+                                title: 'Gagal',
+                                text: response.message || 'Voucher tidak valid',
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.close();
+
+                        let errorMessage = 'Terjadi kesalahan saat memeriksa voucher';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+
+                        $('#voucher-info').html(
+                            `<div class="alert alert-danger">
+                    <strong>Error!</strong><br>
+                    ${errorMessage}
+                </div>`
+                        ).show();
+
+                        Swal.fire({
+                            title: 'Error',
+                            text: errorMessage,
+                            icon: 'error'
+                        });
+                    }
+                });
+            }
 
             // Map variables
             let map;
@@ -232,7 +355,6 @@
                 });
             }
 
-            // Calculate and display route between markers
             function calculateRoute() {
                 if (!markerAwal || !markerAkhir) return;
 
@@ -254,18 +376,51 @@
                         const duration = Math.round(route.legs[0].duration.value / 60);
 
                         // Calculate total price with new model
-                        const totalPrice = Math.ceil(calculatePrice(parseFloat(routeDistance)) / 100) * 100;
+                        let totalPrice = Math.ceil(calculatePrice(parseFloat(routeDistance)) / 100) * 100;
 
-                        // Update route info display with simplified pricing
+                        // Apply voucher discount if available
+                        let discountAmount = 0;
+                        let discountInfo = '';
+
+                        if (voucherDiscount > 0) {
+                            discountAmount = Math.round(totalPrice * (voucherDiscount / 100));
+                            totalPrice -= discountAmount;
+                            discountInfo =
+                                `<br>Diskon Voucher (${voucherDiscount}%): -Rp${discountAmount.toLocaleString()}`;
+                        }
+
+                        // Update route info display with pricing and discount
                         $('#routeInfo').html(
                             `Jarak: <span id="distance">${routeDistance}</span> km<br>
-                    Estimasi waktu: <span id="duration">${duration}</span> menit<br>
-                    Harga: Rp${FLAT_FEE.toLocaleString()} (tarif dasar) + Rp${(routeDistance * PER_KM_RATE).toLocaleString()} (${routeDistance} km × Rp${PER_KM_RATE.toLocaleString()})<br>
-                    Harga Total: Rp<span id="totalPrice">${totalPrice.toLocaleString()}</span>`
+                Estimasi waktu: <span id="duration">${duration}</span> menit<br>
+                Harga: Rp${FLAT_FEE.toLocaleString()} (tarif dasar) + Rp${(routeDistance * PER_KM_RATE).toLocaleString()} (${routeDistance} km × Rp${PER_KM_RATE.toLocaleString()})
+                ${discountInfo}<br>
+                Harga Total: Rp<span id="totalPrice">${totalPrice.toLocaleString()}</span>`
                         ).show();
                     }
                 });
             }
+
+            // Add voucher reset functionality
+            function resetVoucher() {
+                voucherDiscount = 0;
+                appliedVoucherCode = '';
+                $('input#kode-voucher').prop('readonly', false);
+                $('#kode-voucher').val('');
+                $('#voucher-info').hide();
+                calculateRoute();
+            }
+
+            // Add button event listeners
+            $('#apply-voucher').click(applyVoucher);
+
+            // Allow enter key to submit voucher
+            $('#kode-voucher').keypress(function(e) {
+                if (e.which === 13) {
+                    applyVoucher();
+                    e.preventDefault();
+                }
+            });
 
             // Create marker on the map
             function createMarker(lat, lng, isAwal) {
@@ -445,6 +600,11 @@
                 //     `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
                 //     '_blank'
                 // );
+            });
+
+            $('#reset-voucher').click(function() {
+                resetVoucher();
+                $(this).hide();
             });
         });
     </script>

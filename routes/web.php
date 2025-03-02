@@ -5,6 +5,7 @@ use App\Http\Controllers\JasaCustomController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\OjekController;
 use App\Http\Controllers\PindahanController;
+use App\Http\Controllers\VoucherController;
 use App\Models\Testimoni;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,9 @@ Route::get('/', function () {
         'testimonis' => Testimoni::latest()->get()
     ]);
 })->name('index');
+
+Route::post('/voucher/check', [VoucherController::class, 'check'])->name('voucher.check');
+
 Route::post('/testimoni', function (Request $request) {
     $request->validate([
         'nama' => 'required|unique:testimonis,nama',
