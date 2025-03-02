@@ -106,11 +106,17 @@ class KaryawanResource extends Resource
                             'name' => $data['name'],
                             'email' => $data['email'],
                             'password' => isset($data['password']) ? Hash::make($data['password']) : $user->password,
-                            'custom_fields' => [
-                                'tanggal_lahir' => $data['tanggal_lahir'],
-                            ],
                             'avatar_url' => $data['avatar_url'],
                         ]);
+
+                        if(isset($data['tanggal_lahir']))
+                        {
+                            $user->update([
+                                'custom_fields' => [
+                                    'tanggal_lahir' => $data['tanggal_lahir'],
+                                ],
+                            ]);
+                        }
     
                         DB::commit();
 
