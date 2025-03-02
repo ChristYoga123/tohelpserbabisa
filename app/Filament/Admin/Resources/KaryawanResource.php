@@ -59,7 +59,6 @@ class KaryawanResource extends Resource
                             ->locale('id'),
                         FileUpload::make('avatar_url')
                             ->label('Foto')
-                            ->image()
                             ->maxFiles(1),
                     ]),
             ]);
