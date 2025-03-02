@@ -55,7 +55,7 @@ class KaryawanResource extends Resource
                             ->required(fn (string $operation): bool => $operation === 'create'),
                         DatePicker::make('tanggal_lahir')
                             ->label('Tanggal Lahir')
-                            ->required()
+                            ->required(fn(string $operation): bool => $operation === 'create')
                             ->locale('id'),
                         FileUpload::make('avatar_url')
                             ->label('Foto')
