@@ -2,11 +2,14 @@
 
 namespace App\Filament\Admin\Resources\KaryawanResource\Pages;
 
-use App\Filament\Admin\Resources\KaryawanResource;
+use Exception;
 use App\Models\User;
 use Filament\Actions;
-use Filament\Resources\Pages\ManageRecords;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Support\Htmlable;
+use Filament\Resources\Pages\ManageRecords;
+use App\Filament\Admin\Resources\KaryawanResource;
+use Filament\Notifications\Notification;
 
 class ManageKaryawans extends ManageRecords
 {
@@ -18,13 +21,34 @@ class ManageKaryawans extends ManageRecords
             Actions\CreateAction::make()
                 ->using(function(array $data)
                 {
-                    $karyawan = User::create([
-                        'name' => $data['name'],
-                        'email' => $data['email'],
-                        'password' => bcrypt($data['password']),
-                    ]);
+                    DB::beginTransaction();
+                    try
+                    {
+                        $karyawan = User::create([
+                            'name' => $data['name'],
+                            'email' => $data['email'],
+                            'password' => bcrypt($data['password']),
+                        ]);
+    
+                        $karyawan->assignRole('karyawan');
 
-                    $karyawan->assignRole('karyawan');
+                        DB::commit();
+
+                        Notification::make()
+                            ->title('Sukses!')
+                            ->body('Tambah karyawan berhasil!')
+                            ->success()
+                            ->send();
+                    } catch(Exception $e)
+                    {
+                        DB::rollBack();
+
+                        Notification::make()
+                            ->title('Gagal!')
+                            ->body('Tambah karyawan gagal!')
+                            ->error()
+                            ->send();
+                    }
                 }),
         ];
     }
