@@ -28,6 +28,10 @@ class ManageKaryawans extends ManageRecords
                             'name' => $data['name'],
                             'email' => $data['email'],
                             'password' => bcrypt($data['password']),
+                            'custom_fields' => [
+                                'tanggal_lahir' => $data['tanggal_lahir'],
+                            ],
+                            'avatar_url' => $data['avatar_url'],
                         ]);
     
                         $karyawan->assignRole('karyawan');

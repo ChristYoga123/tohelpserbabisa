@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Exception;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
@@ -9,13 +10,20 @@ use App\Models\Karyawan;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\DB;
+use Filament\Forms\Components\Grid;
 use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\KaryawanResource\Pages;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use App\Filament\Admin\Resources\KaryawanResource\RelationManagers;
-use Filament\Forms\Components\Grid;
 
 class KaryawanResource extends Resource
 {
@@ -44,7 +52,15 @@ class KaryawanResource extends Resource
                             ->password()
                             ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                             ->dehydrated(fn ($state) => filled($state))
-                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->required(fn (string $operation): bool => $operation === 'create'),
+                        DatePicker::make('tanggal_lahir')
+                            ->label('Tanggal Lahir')
+                            ->required()
+                            ->locale('id'),
+                        FileUpload::make('avatar_url')
+                            ->label('Foto')
+                            ->image()
+                            ->maxFiles(1),
                     ]),
             ]);
     }
@@ -52,7 +68,7 @@ class KaryawanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(User::query()->whereHas('roles', fn (Builder $query) => $query->where('name', 'karyawan')))
+            ->query(User::query()->with('media')->whereHas('roles', fn (Builder $query) => $query->where('name', 'karyawan')))
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Karyawan')
@@ -62,12 +78,59 @@ class KaryawanResource extends Resource
                     ->label('Email')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('tanggal_lahir')
+                    ->label('Tanggal Lahir')
+                    ->searchable()
+                    ->sortable()
+                    ->getStateUsing(function (User $user)
+                    {
+                        // ambil usia dari tanggal lahir
+                        $tanggal_lahir = $user?->custom_fields['tanggal_lahir'] ?? null;
+                        $usia = date_diff(date_create($tanggal_lahir), date_create('now'))->y;
+                        return $usia . ' tahun';
+                    }),
+                ImageColumn::make('avatar_url')
+                    ->label('Foto'),
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->using(function(User $user, array $data)
+                {
+                    // dd($data);
+                    DB::beginTransaction();
+                    try
+                    {
+                        $user->update([
+                            'name' => $data['name'],
+                            'email' => $data['email'],
+                            'password' => isset($data['password']) ? Hash::make($data['password']) : $user->password,
+                            'custom_fields' => [
+                                'tanggal_lahir' => $data['tanggal_lahir'],
+                            ],
+                            'avatar_url' => $data['avatar_url'],
+                        ]);
+    
+                        DB::commit();
+
+                        Notification::make()
+                            ->title('Sukses!')
+                            ->body('Edit karyawan berhasil!')
+                            ->success()
+                            ->send();
+                    } catch(Exception $e)
+                    {
+                        DB::rollBack();
+
+                        Notification::make()
+                            ->title('Gagal!')
+                            ->body('Edit karyawan gagal!' . $e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
+                }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
