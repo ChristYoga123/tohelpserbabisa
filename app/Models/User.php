@@ -62,20 +62,6 @@ class User extends Authenticatable implements HasAvatar, FilamentUser, HasMedia
         ];
     }
 
-    public function canAccessPanel(Panel $panel): bool
-    {
-        if($panel->getId() === 'admin')
-        {
-            return $this->hasRole('super_admin');
-        }
-        else if($panel->getId() === 'karyawan')
-        {
-            return $this->hasRole('karyawan');
-        }
-
-        return false;
-    }
-
     public function tugas()
     {
         return $this->belongsToMany(Transaksi::class, 'karyawan_tugas', 'karyawan_id', 'tugas_id')->withPivot('id');
@@ -84,5 +70,19 @@ class User extends Authenticatable implements HasAvatar, FilamentUser, HasMedia
     public function karyawanTugas()
     {
         return $this->hasMany(KaryawanTugas::class, 'karyawan_id');
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if($panel->getId() == 'admin')
+        {
+            return $this->hasRole('super_admin');
+        }
+        if($panel->getId() == 'karyawan')
+        {
+            return $this->hasRole('karyawan');
+        }
+
+        return false;
     }
 }

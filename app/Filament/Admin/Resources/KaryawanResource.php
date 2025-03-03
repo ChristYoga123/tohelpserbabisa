@@ -67,7 +67,7 @@ class KaryawanResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(User::query()->with('media')->whereHas('roles', fn (Builder $query) => $query->where('name', 'karyawan')))
+            ->query(User::query()->with('media')->whereNot('name', 'Admin')->whereHas('roles', fn (Builder $query) => $query->where('name', 'karyawan')))
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Karyawan')
@@ -96,6 +96,31 @@ class KaryawanResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
+                ->form([
+                    Grid::make()
+                    ->columns(1)
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Nama Karyawan')
+                            ->required()
+                            ->unique(ignoreRecord: true),
+                        TextInput::make('email')
+                            ->label('Email')
+                            ->required()
+                            ->email()
+                            ->unique(ignoreRecord: true),
+                        TextInput::make('password')
+                            ->password(),
+                        DatePicker::make('tanggal_lahir')
+                            ->label('Tanggal Lahir')
+                            ->required(fn(string $operation): bool => $operation === 'create')
+                            ->locale('id')
+                            ->formatStateUsing(fn(User $user) => $user?->custom_fields['tanggal_lahir'] ?? null),
+                        FileUpload::make('avatar_url')
+                            ->label('Foto')
+                            ->maxFiles(1),
+                    ]),
+                ])
                 ->using(function(User $user, array $data)
                 {
                     // dd($data);
@@ -105,9 +130,15 @@ class KaryawanResource extends Resource
                         $user->update([
                             'name' => $data['name'],
                             'email' => $data['email'],
-                            'password' => isset($data['password']) ? Hash::make($data['password']) : $user->password,
                             'avatar_url' => $data['avatar_url'],
                         ]);
+
+                        if(isset($data['password']))
+                        {
+                            $user->update([
+                                'password' => Hash::make($data['password']),
+                            ]);
+                        }
 
                         if(isset($data['tanggal_lahir']))
                         {
@@ -117,6 +148,8 @@ class KaryawanResource extends Resource
                                 ],
                             ]);
                         }
+
+                        $user->syncRoles(['karyawan']);
     
                         DB::commit();
 
