@@ -76,6 +76,10 @@ class TransaksiWidget extends BaseWidget
                     ->button()
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
+                    ->requiresConfirmation()
+                    ->modalHeading('Selesaikan Tugas')
+                    ->modalDescription('Apakah anda yakin ingin menyelesaikan tugas ini?')
+                    ->modalSubmitActionLabel('Ya, Selesaikan')
                     ->action(function(Transaksi $transaksi)
                     {
                         $transaksi->karyawanTugas->each(fn($q) => $q->update(['is_selesai' => true]));
