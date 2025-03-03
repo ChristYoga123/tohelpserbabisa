@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use App\Models\Transaksi;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Select;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\TransaksiResource\Pages;
 use CodeWithDennis\SimpleMap\Components\Tables\SimpleMap;
+use App\Filament\Admin\Resources\TransaksiResource\Pages\TugasPage;
 use App\Filament\Admin\Resources\TransaksiResource\RelationManagers;
 
 class TransaksiResource extends Resource
@@ -110,24 +112,35 @@ class TransaksiResource extends Resource
             ])
             ->actions([
                 // Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('selesaiTugas')
+                    ->label('Selesai')
+                    ->button()
+                    ->color('success')
+                    ->icon('heroicon-o-check-circle')
+                    ->action(function(Transaksi $transaksi)
+                    {
+                        $transaksi->karyawanTugas->each(fn($q) => $q->update(['is_selesai' => true]));
+
+                        $transaksi->update(['status_tugas' => 'selesai']);
+
+                        Notification::make()
+                            ->title('Sukses')
+                            ->body('Tugas telah selesai')
+                            ->success()
+                            ->send();
+                    })
+                    ->hidden(fn(Transaksi $transaksi) => $transaksi->status_tugas === 'selesai' || $transaksi->tugas->isEmpty()),
                 Tables\Actions\Action::make('beriTugas')
                     ->label('Beri Tugas')
+                    ->button()
                     ->icon('heroicon-o-briefcase')
                     ->form([
-                        Forms\Components\Select::make('karyawan')
+                        Select::make('karyawan')
                             ->label('Karyawan Yang Sedang Tidak Memiliki Tugas')
                             ->multiple()
                             ->searchable()
                             ->preload()
-                            ->options(User::query()
-                            ->whereHas('roles', fn($q) => $q->where('name', 'karyawan'))
-                            ->where(function($query) {
-                                $query->whereDoesntHave('karyawanTugas') // karyawan yang belum punya tugas
-                                      ->orWhereDoesntHave('karyawanTugas', function($q) {
-                                          $q->where('is_selesai', false); // karyawan yang tidak memiliki tugas yang belum selesai
-                                      });
-                            })
-                            ->pluck('name', 'id'))
+                            ->options(User::query()->whereHas('roles', fn($q) => $q->where('name', 'karyawan'))->pluck('name', 'id'))
                             ->required()
                     ])
                     ->action(function(Transaksi $transaksi, array $data)
@@ -158,11 +171,13 @@ class TransaksiResource extends Resource
                     ->visible(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput && $karyawanTugas->titik_tujuan),
                 Tables\Actions\Action::make('lihatTugas')
                     ->label('Lihat Tugas')
-                    ->color('info')
+                    ->button()
+                    ->color('warning')
                     ->icon('heroicon-o-briefcase')
-                    ->url(fn(Transaksi $transaksi) => Pages\TugasPage::getUrl(['record' => $transaksi]))
+                    ->url(fn(Transaksi $transaksi) => TugasPage::getUrl(['record' => $transaksi]))
                     ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() == 0),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->button(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
