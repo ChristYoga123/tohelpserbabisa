@@ -2,12 +2,13 @@
 
 namespace App\Filament\Karyawan\Widgets;
 
+use Filament\Tables;
+use Filament\Tables\Table;
 use App\Models\KaryawanTugas;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Tables;
-use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use CodeWithDennis\SimpleMap\Components\Tables\SimpleMap;
 
 class TugasWidget extends BaseWidget
 {
@@ -26,6 +27,14 @@ class TugasWidget extends BaseWidget
                     ->badge()
                     ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->is_selesai ? 'Selesai' : 'Belum')
                     ->color(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->is_selesai ? 'success' : 'warning'),
+                // SimpleMap::make('showMap')
+                //     ->directions()
+                //     ->origin(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_jemput)
+                //     ->destination(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_tujuan)
+                //     ->driving()
+                //     ->imperial()
+                //     ->satellite()
+                //     ->language('id'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -50,6 +59,21 @@ class TugasWidget extends BaseWidget
                     ->modalSubmitActionLabel('Ya, Selesaikan')
                     ->action(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->update(['is_selesai' => true]))
                     ->visible(fn (KaryawanTugas $karyawanTugas) => !$karyawanTugas->is_selesai),
+                SimpleMap::make('showMap')
+                    ->button()
+                    ->icon('heroicon-o-map')
+                    ->label('Lihat Peta')
+                    ->color('info')
+                    ->viewing()
+                    ->directions()
+                    ->origin(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_jemput)
+                    ->destination(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_tujuan)
+                    // ->walking()
+                    // ->satellite()
+                    ->zoom(13)
+                    ->language('id')
+                    ->region('id')
+                    ->visible(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_jemput && $karyawanTugas->tugas->titik_tujuan),
                 Tables\Actions\Action::make('lihatTugas')
                     ->button()
                     ->label('Lihat Tugas')
@@ -64,7 +88,8 @@ class TugasWidget extends BaseWidget
                                     ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_jemput ?? '-'),
                                 TextEntry::make('titik_tujuan')
                                     ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_tujuan ?? '-'),
-                                    ])
+                                ]),
+                                
                         ])
                     ->modalSubmitAction(false),
             ])

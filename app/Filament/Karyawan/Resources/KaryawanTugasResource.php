@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use CodeWithDennis\SimpleMap\Components\Tables\SimpleMap;
 use App\Filament\Karyawan\Resources\KaryawanTugasResource\Pages;
 use App\Filament\Karyawan\Resources\KaryawanTugasResource\RelationManagers;
 
@@ -56,7 +57,7 @@ class KaryawanTugasResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(KaryawanTugas::query()->with('karyawan')->whereKaryawanId(auth()->user()->id)->latest())
+            ->query(KaryawanTugas::query()->with(['karyawan', 'tugas'])->whereKaryawanId(auth()->user()->id)->latest())
             ->columns([
                 Tables\Columns\TextColumn::make('tugas.order_id')
                     ->label('Order ID'),
@@ -91,6 +92,21 @@ class KaryawanTugasResource extends Resource
                     ->modalSubmitActionLabel('Ya, Selesaikan')
                     ->action(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->update(['is_selesai' => true]))
                     ->visible(fn (KaryawanTugas $karyawanTugas) => !$karyawanTugas->is_selesai),
+                SimpleMap::make('showMap')
+                    ->button()
+                    ->icon('heroicon-o-map')
+                    ->label('Lihat Peta')
+                    ->color('info')
+                    ->viewing()
+                    ->directions()
+                    ->origin(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_jemput)
+                    ->destination(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_tujuan)
+                    // ->walking()
+                    // ->satellite()
+                    ->zoom(13)
+                    ->language('id')
+                    ->region('id')
+                    ->visible(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_jemput && $karyawanTugas->tugas->titik_tujuan),
                 Tables\Actions\Action::make('lihatTugas')
                     ->button()
                     ->label('Lihat Tugas')
