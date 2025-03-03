@@ -11,11 +11,12 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\TransaksiResource\Pages;
+use CodeWithDennis\SimpleMap\Components\Tables\SimpleMap;
 use App\Filament\Admin\Resources\TransaksiResource\RelationManagers;
-use Filament\Notifications\Notification;
 
 class TransaksiResource extends Resource
 {
@@ -58,6 +59,7 @@ class TransaksiResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(Transaksi::query()->with('voucher')->orderBy('created_at', 'desc'))
             ->columns([
                 Tables\Columns\TextColumn::make('order_id')
                     ->searchable(),
@@ -139,6 +141,21 @@ class TransaksiResource extends Resource
                             ->send();
                     })
                     ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() != 0),
+                SimpleMap::make('showMap')
+                    ->button()
+                    ->icon('heroicon-o-map')
+                    ->label('Lihat Peta')
+                    ->color('info')
+                    ->viewing()
+                    ->directions()
+                    ->origin(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput)
+                    ->destination(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_tujuan)
+                    // ->walking()
+                    // ->satellite()
+                    ->zoom(13)
+                    ->language('id')
+                    ->region('id')
+                    ->visible(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput && $karyawanTugas->titik_tujuan),
                 Tables\Actions\Action::make('lihatTugas')
                     ->label('Lihat Tugas')
                     ->color('info')

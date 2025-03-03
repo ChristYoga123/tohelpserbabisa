@@ -10,6 +10,7 @@ use Filament\Forms\Components\Select;
 use Filament\Support\Enums\FontWeight;
 use Filament\Notifications\Notification;
 use Filament\Widgets\TableWidget as BaseWidget;
+use CodeWithDennis\SimpleMap\Components\Tables\SimpleMap;
 use App\Filament\Admin\Resources\TransaksiResource\Pages\TugasPage;
 
 class TransaksiWidget extends BaseWidget
@@ -101,6 +102,21 @@ class TransaksiWidget extends BaseWidget
                             ->send();
                     })
                     ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() != 0),
+                SimpleMap::make('showMap')
+                    ->button()
+                    ->icon('heroicon-o-map')
+                    ->label('Lihat Peta')
+                    ->color('info')
+                    ->viewing()
+                    ->directions()
+                    ->origin(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput)
+                    ->destination(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_tujuan)
+                    // ->walking()
+                    // ->satellite()
+                    ->zoom(13)
+                    ->language('id')
+                    ->region('id')
+                    ->visible(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput && $karyawanTugas->titik_tujuan),
                 Tables\Actions\Action::make('lihatTugas')
                     ->label('Lihat Tugas')
                     ->color('info')
