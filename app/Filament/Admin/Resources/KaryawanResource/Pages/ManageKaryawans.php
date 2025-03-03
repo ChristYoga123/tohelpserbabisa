@@ -27,7 +27,7 @@ class ManageKaryawans extends ManageRecords
                         $karyawan = User::create([
                             'name' => $data['name'],
                             'email' => $data['email'],
-                            'password' => bcrypt($data['password']),
+                            'password' => $data['password'],
                             'custom_fields' => [
                                 'tanggal_lahir' => $data['tanggal_lahir'],
                             ],
