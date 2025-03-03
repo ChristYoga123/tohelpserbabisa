@@ -2,17 +2,19 @@
 
 namespace App\Filament\Karyawan\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use App\Models\KaryawanTugas;
+use Filament\Resources\Resource;
+use Filament\Infolists\Components\Grid;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Karyawan\Resources\KaryawanTugasResource\Pages;
 use App\Filament\Karyawan\Resources\KaryawanTugasResource\RelationManagers;
-use App\Models\KaryawanTugas;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class KaryawanTugasResource extends Resource
 {
@@ -54,16 +56,17 @@ class KaryawanTugasResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->query(KaryawanTugas::query()->with('karyawan')->whereKaryawanId(auth()->user()->id))
+            ->query(KaryawanTugas::query()->with('karyawan')->whereKaryawanId(auth()->user()->id)->latest())
             ->columns([
+                Tables\Columns\TextColumn::make('tugas.order_id')
+                    ->label('Order ID'),
                 Tables\Columns\TextColumn::make('tugas.jenis')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Jenis Tugas'),
                 Tables\Columns\TextColumn::make('is_selesai')
                     ->label('Status Tugas')
                     ->badge()
-                    ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->is_selesai ? 'Selesei' : 'Belum')
-                    ->color(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->is_selesai ? 'success' : 'danger'),
+                    ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->is_selesai ? 'Selesai' : 'Belum')
+                    ->color(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->is_selesai ? 'success' : 'warning'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -79,11 +82,32 @@ class KaryawanTugasResource extends Resource
             ->actions([
                 Tables\Actions\Action::make('tugasSelesai')
                     ->label('Selesai')
+                    ->button()
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
                     ->requiresConfirmation()
+                    ->modalHeading('Selesaikan Tugas')
+                    ->modalDescription('Apakah anda yakin ingin menyelesaikan tugas ini?')
+                    ->modalSubmitActionLabel('Ya, Selesaikan')
                     ->action(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->update(['is_selesai' => true]))
                     ->visible(fn (KaryawanTugas $karyawanTugas) => !$karyawanTugas->is_selesai),
+                Tables\Actions\Action::make('lihatTugas')
+                    ->button()
+                    ->label('Lihat Tugas')
+                    ->icon('heroicon-o-eye')
+                    ->infolist([
+                        Grid::make()
+                            ->columns(1)
+                            ->schema([
+                                TextEntry::make('jarak')
+                                    ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->jarak . ' KM' ?? '-'),
+                                TextEntry::make('titik_jemput')
+                                    ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_jemput ?? '-'),
+                                TextEntry::make('titik_tujuan')
+                                    ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_tujuan ?? '-'),
+                                    ])
+                        ])
+                    ->modalSubmitAction(false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

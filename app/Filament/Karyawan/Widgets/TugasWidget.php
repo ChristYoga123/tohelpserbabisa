@@ -3,6 +3,8 @@
 namespace App\Filament\Karyawan\Widgets;
 
 use App\Models\KaryawanTugas;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -13,16 +15,17 @@ class TugasWidget extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->query(KaryawanTugas::query()->with('karyawan')->whereKaryawanId(auth()->user()->id)->orderBy('created_at', 'desc')->limit(5))
+            ->query(KaryawanTugas::query()->with(['karyawan', 'tugas'])->whereKaryawanId(auth()->user()->id)->whereIsSelesai(false)->latest()->limit(5))
             ->columns([
+                Tables\Columns\TextColumn::make('tugas.order_id')
+                    ->label('Order ID'),
                 Tables\Columns\TextColumn::make('tugas.jenis')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Jenis Tugas'),
                 Tables\Columns\TextColumn::make('is_selesai')
                     ->label('Status Tugas')
                     ->badge()
-                    ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->is_selesai ? 'Selesei' : 'Belum')
-                    ->color(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->is_selesai ? 'success' : 'danger'),
+                    ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->is_selesai ? 'Selesai' : 'Belum')
+                    ->color(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->is_selesai ? 'success' : 'warning'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -38,11 +41,32 @@ class TugasWidget extends BaseWidget
             ->actions([
                 Tables\Actions\Action::make('tugasSelesai')
                     ->label('Selesai')
+                    ->button()
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
                     ->requiresConfirmation()
+                    ->modalHeading('Selesaikan Tugas')
+                    ->modalDescription('Apakah anda yakin ingin menyelesaikan tugas ini?')
+                    ->modalSubmitActionLabel('Ya, Selesaikan')
                     ->action(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->update(['is_selesai' => true]))
                     ->visible(fn (KaryawanTugas $karyawanTugas) => !$karyawanTugas->is_selesai),
+                Tables\Actions\Action::make('lihatTugas')
+                    ->button()
+                    ->label('Lihat Tugas')
+                    ->icon('heroicon-o-eye')
+                    ->infolist([
+                        Grid::make()
+                            ->columns(1)
+                            ->schema([
+                                TextEntry::make('jarak')
+                                    ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->jarak . ' KM' ?? '-'),
+                                TextEntry::make('titik_jemput')
+                                    ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_jemput ?? '-'),
+                                TextEntry::make('titik_tujuan')
+                                    ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->titik_tujuan ?? '-'),
+                                    ])
+                        ])
+                    ->modalSubmitAction(false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

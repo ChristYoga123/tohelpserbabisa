@@ -584,6 +584,9 @@
                                 _token: '{{ csrf_token() }}',
                                 total_harga: parseInt(price.replace(/\D/g, '')),
                                 voucher: appliedVoucherCode,
+                                jarak: parseFloat($('#distance').text()),
+                                titik_jemput: $('#lokasi_awal').val(),
+                                titik_tujuan: $('#lokasi_akhir').val(),
                             },
                             success: function(response) {
                                 if (response.status === 'success') {
