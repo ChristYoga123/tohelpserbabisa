@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Karyawan\Resources\KaryawanTugasResource;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -10,6 +9,7 @@ use Filament\PanelProvider;
 use Filament\Pages\Dashboard;
 use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Navigation\NavigationGroup;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Navigation\NavigationBuilder;
@@ -19,6 +19,7 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
+use App\Filament\Karyawan\Resources\KaryawanTugasResource;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -92,6 +93,10 @@ class KaryawanPanelProvider extends PanelProvider
                         ]),
 
                 ]);
-            });
+            })
+            ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
+                fn() => view('filament.karyawan.components.change-admin-panel')
+            );
     }
 }

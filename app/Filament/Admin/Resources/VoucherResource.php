@@ -30,6 +30,7 @@ class VoucherResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('nama')
                             ->required()
+                            ->label('Kode Voucher')
                             ->maxLength(191),
                         Forms\Components\TextInput::make('persentase')
                             ->required()
@@ -48,7 +49,8 @@ class VoucherResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Kode Voucher'),
                 Tables\Columns\TextColumn::make('persentase')
                     ->sortable()
                     ->getStateUsing(fn(Voucher $voucher) => $voucher->persentase . '%'),
