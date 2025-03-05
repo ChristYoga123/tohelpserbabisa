@@ -191,84 +191,129 @@
                     tugas-tugas khusus lainnya, kami siap melayani Anda.</p>
             </div>
 
-            <!-- Services Section -->
             @php
                 $services = [
                     'Jastip' => [
                         'icon' => 'fas fa-shopping-bag',
+                        'color' => '#007bff', // Custom blue
                         'items' => ['Jastip Makanan', 'Jastip Minuman', 'Jastip Barang'],
                     ],
                     'Daily Activity' => [
                         'icon' => 'fas fa-tasks',
+                        'color' => '#17a2b8', // Custom teal
                         'items' => ['Rawat Peliharaan', 'Pasang Gas/Galon', 'Jaga Anak'],
                     ],
                     'Jasa Nemenin' => [
                         'icon' => 'fas fa-users',
+                        'color' => '#ffc107', // Custom amber
                         'items' => [
                             'Teman Ngopi',
                             'Teman Nonton',
                             'Teman Curhat',
                             'Teman Acara (Kondangan, Pesta, Wisuda, dll)',
                             'Teman Wisata / Liburan',
-                            'Night Ride',
+                            'Night Ride',
                         ],
                     ],
                     'Laundry' => [
                         'icon' => 'fas fa-tshirt',
+                        'color' => '#6c757d', // Custom gray
                         'items' => ['Antar Cuci Sepeda', 'Antar Cuci Mobil', 'Antar Cuci Baju'],
                     ],
                     'All Service' => [
                         'icon' => 'fas fa-tools',
+                        'color' => '#343a40', // Custom dark
                         'items' => ['Antar Service Sepeda', 'Antar Service Mobil'],
                     ],
                     'Travel' => [
                         'icon' => 'fas fa-car',
+                        'color' => '#28a745', // Custom green
                         'items' => ['Driver', 'Rental Motor', 'Rental Mobil'],
                     ],
                     'Editing' => [
                         'icon' => 'fas fa-camera',
+                        'color' => '#dc3545', // Custom red
                         'items' => ['Edit Foto/Video', 'Fotographer', 'Videographer'],
                     ],
                     'Bantuan Online' => [
                         'icon' => 'fas fa-headset',
+                        'color' => '#28a745', // Custom green
                         'items' => ['SleepCall', 'Stalker', 'Joki Game', 'Buzzer'],
                     ],
                     'Joki Tugas' => [
                         'icon' => 'fas fa-book',
+                        'color' => '#343a40', // Custom dark
                         'items' => ['Skripsi', 'Makalah', 'Praktikum', 'Pekerjaan Rumah (PR)'],
                     ],
                 ];
             @endphp
 
-            <div class="container">
-                <div class="row g-4">
+            <style>
+                .card-custom {
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;
+                    border-radius: 15px;
+                    overflow: hidden;
+                }
+
+                .card-custom:hover {
+                    transform: translateY(-10px);
+                    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+                }
+
+                .card-header-icon {
+                    background-size: cover;
+                    background-position: center;
+                    height: 60px;
+                    width: 60px;
+                    border-radius: 15px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-right: 15px;
+                }
+
+                .card-footer-btn {
+                    transition: all 0.3s ease;
+                }
+
+                .card-footer-btn:hover {
+                    transform: scale(1.05);
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                }
+            </style>
+
+            <div class="container py-4">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                     @foreach ($services as $category => $service)
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card h-100 hover-shadow">
+                        <div class="col">
+                            <div class="card card-custom h-100 border-0 shadow-sm">
                                 <div class="card-body">
                                     <div class="d-flex align-items-center mb-3">
-                                        <i class="{{ $service['icon'] }} fa-lg me-2 text-primary"></i>
+                                        <div class="card-header-icon"
+                                            style="background-color: {{ $service['color'] }}; color: white;">
+                                            <i class="{{ $service['icon'] }} fa-2x"></i>
+                                        </div>
                                         <h4 class="card-title fw-bold mb-0">{{ $category }}</h4>
                                     </div>
                                     <ul class="list-unstyled">
                                         @foreach ($service['items'] as $item)
                                             <li class="mb-2 d-flex align-items-center">
-                                                <i class="fas fa-circle text-primary me-2" style="font-size: 0.5rem;"></i>
-                                                <span>{{ $item }}</span>
+                                                <i class="fas fa-circle me-2"
+                                                    style="color: {{ $service['color'] }}; font-size: 0.5rem;"></i>
+                                                <span class="text-muted">{{ $item }}</span>
                                             </li>
                                         @endforeach
                                     </ul>
                                 </div>
+                                <div class="card-footer bg-transparent border-0 p-3">
+                                    <button type="button" class="btn btn-success btn-lg w-100 card-footer-btn order-btn"
+                                        data-jasa="{{ $category }}">
+                                        <i class="fab fa-whatsapp me-2"></i>Pesan Sekarang
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     @endforeach
-                </div>
-
-                <!-- WhatsApp Order Button -->
-                <div class="text-center mt-5">
-                    <button class="btn btn-success btn-lg order-btn">
-                        <i class="fab fa-whatsapp me-2"></i>Pesan Sekarang
-                    </button>
                 </div>
             </div>
     </section>
@@ -614,6 +659,7 @@
                         data: {
                             // csrf
                             _token: '{{ csrf_token() }}',
+                            jasa: $(this).data('jasa'),
                             // jasa: service,
                             // total_harga: price,
                             // alamat: result.value

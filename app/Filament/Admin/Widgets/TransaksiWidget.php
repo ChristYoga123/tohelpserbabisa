@@ -28,6 +28,8 @@ class TransaksiWidget extends BaseWidget
                     ->getStateUsing(fn(Transaksi $transaksi) => $transaksi->voucher->nama ?? 'Tidak Ada Voucher')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('jenis'),
+                Tables\Columns\TextColumn::make('jasa')
+                    ->getStateUsing(fn(Transaksi $transaksi) => $transaksi->jasa ?? '-'),
                 Tables\Columns\TextColumn::make('total_harga')
                     ->weight(FontWeight::Bold)
                     ->numeric()

@@ -22,6 +22,8 @@ class TugasWidget extends BaseWidget
                     ->label('Order ID'),
                 Tables\Columns\TextColumn::make('tugas.jenis')
                     ->label('Jenis Tugas'),
+                Tables\Columns\TextColumn::make('tugas.jasa')
+                    ->getStateUsing(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->tugas->jasa ?? '-'),
                 Tables\Columns\TextColumn::make('is_selesai')
                     ->label('Status Tugas')
                     ->badge()

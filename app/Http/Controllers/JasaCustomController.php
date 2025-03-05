@@ -25,6 +25,7 @@ class JasaCustomController extends Controller
             Transaksi::create([
                 'order_id' => 'CST-' . Str::random(8),
                 'jenis' => 'custom',
+                'jasa' => $request->jasa,
             ]);
 
             DB::commit();
