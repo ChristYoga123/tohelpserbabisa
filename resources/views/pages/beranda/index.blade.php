@@ -94,7 +94,7 @@
             </div>
         </div>
     </section>
-
+    {{-- 
     <section id="services" class="">
         <div class="service-block position-relative bg-secondary">
             <div class="jarallax service-bg"
@@ -181,31 +181,58 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
 
-    <section class="padding-small">
+    <section>
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="display-4 fw-bold">Jasa Sesuai Permintaan</h2>
-                <p class="lead">Dari membantu belanja, mengurus keperluan administrasi, hingga
-                    tugas-tugas khusus lainnya, kami siap melayani Anda.</p>
+                <h2 class="display-4 fw-bold">Kami Siap Membantu</h2>
+                <p class="lead">Apapun permasalahan Anda? Serahkan pada kami untuk solusi yang praktis dan terpercaya!</p>
             </div>
 
             @php
                 $services = [
+                    'Ojek' => [
+                        'icon' => 'fas fa-motorcycle',
+                        'color' => '#FF5733', // Bright Red-Orange
+                        'items' => ['Ojek Motor'],
+                        'isAnchor' => true,
+                        'route' => route('ojek'),
+                    ],
+                    'Mobil' => [
+                        'icon' => 'fas fa-taxi',
+                        'color' => '#2E86C1', // Deep Blue
+                        'items' => ['Ojek Mobil'],
+                        'isAnchor' => true,
+                        'route' => route('taxi'),
+                    ],
+                    'Angkut Barang' => [
+                        'icon' => 'fas fa-truck',
+                        'color' => '#F4D03F', // Golden Yellow
+                        'items' => ['Tossa', 'Pick Up'],
+                        'isAnchor' => true,
+                        'route' => route('pindahan'),
+                    ],
+                    'Bersih Rumah' => [
+                        'icon' => 'fas fa-broom',
+                        'color' => '#16A085', // Teal Green
+                        'items' => ['Rumah Subsidi', 'Rumah Komersil', 'Ruang Tamu', 'Dan Lain-Lain'],
+                        'isAnchor' => true,
+                        'route' => route('bersih'),
+                    ],
                     'Jastip' => [
                         'icon' => 'fas fa-shopping-bag',
-                        'color' => '#007bff', // Custom blue
+                        'color' => '#E74C3C', // Bold Red
                         'items' => ['Jastip Makanan', 'Jastip Minuman', 'Jastip Barang'],
                     ],
                     'Daily Activity' => [
                         'icon' => 'fas fa-tasks',
-                        'color' => '#17a2b8', // Custom teal
+                        'color' => '#9B59B6', // Purple
                         'items' => ['Rawat Peliharaan', 'Pasang Gas/Galon', 'Jaga Anak'],
                     ],
                     'Jasa Nemenin' => [
                         'icon' => 'fas fa-users',
-                        'color' => '#ffc107', // Custom amber
+                        'color' => '#F39C12', // Orange
                         'items' => [
                             'Teman Ngopi',
                             'Teman Nonton',
@@ -217,36 +244,37 @@
                     ],
                     'Laundry' => [
                         'icon' => 'fas fa-tshirt',
-                        'color' => '#6c757d', // Custom gray
+                        'color' => '#3498DB', // Light Blue
                         'items' => ['Antar Cuci Sepeda', 'Antar Cuci Mobil', 'Antar Cuci Baju'],
                     ],
                     'All Service' => [
                         'icon' => 'fas fa-tools',
-                        'color' => '#343a40', // Custom dark
+                        'color' => '#34495E', // Dark Slate
                         'items' => ['Antar Service Sepeda', 'Antar Service Mobil'],
                     ],
                     'Travel' => [
                         'icon' => 'fas fa-car',
-                        'color' => '#28a745', // Custom green
+                        'color' => '#1ABC9C', // Soft Cyan
                         'items' => ['Driver', 'Rental Motor', 'Rental Mobil'],
                     ],
                     'Editing' => [
                         'icon' => 'fas fa-camera',
-                        'color' => '#dc3545', // Custom red
+                        'color' => '#E84393', // Pink
                         'items' => ['Edit Foto/Video', 'Fotographer', 'Videographer'],
                     ],
                     'Bantuan Online' => [
                         'icon' => 'fas fa-headset',
-                        'color' => '#28a745', // Custom green
+                        'color' => '#27AE60', // Green
                         'items' => ['SleepCall', 'Stalker', 'Joki Game', 'Buzzer'],
                     ],
                     'Joki Tugas' => [
                         'icon' => 'fas fa-book',
-                        'color' => '#343a40', // Custom dark
+                        'color' => '#8E44AD', // Dark Purple
                         'items' => ['Skripsi', 'Makalah', 'Praktikum', 'Pekerjaan Rumah (PR)'],
                     ],
                 ];
             @endphp
+
 
             <style>
                 .card-custom {
@@ -306,10 +334,19 @@
                                     </ul>
                                 </div>
                                 <div class="card-footer bg-transparent border-0 p-3">
-                                    <button type="button" class="btn btn-success btn-lg w-100 card-footer-btn order-btn"
-                                        data-jasa="{{ $category }}">
-                                        <i class="fab fa-whatsapp me-2"></i>Pesan Sekarang
-                                    </button>
+                                    @if (isset($service['isAnchor']))
+                                        <a href="{{ $service['route'] }}"
+                                            class="btn btn-success btn-lg w-100 card-footer-btn"
+                                            data-jasa="{{ $category }}">
+                                            <i class="fab fa-whatsapp me-2"></i>Pesan Sekarang
+                                        </a>
+                                    @else
+                                        <button type="button"
+                                            class="btn btn-success btn-lg w-100 card-footer-btn order-btn"
+                                            data-jasa="{{ $category }}">
+                                            <i class="fab fa-whatsapp me-2"></i>Pesan Sekarang
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -333,7 +370,7 @@
         }
     </style>
 
-    <section id="features">
+    <section id="features" class="padding-small">
         <div class="container">
             <div class="row">
                 <div class="text-center col-lg-3 col-md-6 mb-4 mb-lg-0">
