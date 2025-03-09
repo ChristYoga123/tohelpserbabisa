@@ -183,8 +183,8 @@
         </div>
     </section> --}}
 
-    <section>
-        <div class="container" id="services">
+    <section id="services">
+        <div class="container">
             <div class="text-center mb-5">
                 <h2 class="display-4 fw-bold">Kami Siap Membantu</h2>
                 <p class="lead">Apapun permasalahan Anda? Serahkan pada kami untuk solusi yang praktis dan terpercaya!</p>
@@ -266,6 +266,8 @@
                         'icon' => 'fas fa-headset',
                         'color' => '#27AE60', // Green
                         'items' => ['SleepCall', 'Stalker', 'Joki Game', 'Buzzer'],
+                        'isAnchor' => true,
+                        'route' => route('bersih'),
                     ],
                     'Joki Tugas' => [
                         'icon' => 'fas fa-book',
