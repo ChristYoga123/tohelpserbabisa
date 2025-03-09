@@ -267,7 +267,7 @@
                         'color' => '#27AE60', // Green
                         'items' => ['SleepCall', 'Stalker', 'Joki Game', 'Buzzer'],
                         'isAnchor' => true,
-                        'route' => route('bersih'),
+                        'route' => route('bantuan'),
                     ],
                     'Joki Tugas' => [
                         'icon' => 'fas fa-book',
