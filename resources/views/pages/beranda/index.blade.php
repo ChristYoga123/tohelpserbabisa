@@ -184,7 +184,7 @@
     </section> --}}
 
     <section>
-        <div class="container">
+        <div class="container" id="services">
             <div class="text-center mb-5">
                 <h2 class="display-4 fw-bold">Kami Siap Membantu</h2>
                 <p class="lead">Apapun permasalahan Anda? Serahkan pada kami untuk solusi yang praktis dan terpercaya!</p>
@@ -338,7 +338,7 @@
                                         <a href="{{ $service['route'] }}"
                                             class="btn btn-success btn-lg w-100 card-footer-btn"
                                             data-jasa="{{ $category }}">
-                                            <i class="fab fa-whatsapp me-2"></i>Pesan Sekarang
+                                            Selengkapnya
                                         </a>
                                     @else
                                         <button type="button"
