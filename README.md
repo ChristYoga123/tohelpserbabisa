@@ -88,5 +88,3 @@ You can access the `role-management` using RoleSeeder.php
 ### 6. Enjoy Your Develop Process
 
 ### NB: You can check the details of your dependencies using composer.json
-
-<!-- test -->
