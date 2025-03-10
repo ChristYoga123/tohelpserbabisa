@@ -45,7 +45,7 @@
         <div class="row align-items-center g-0 bg-secondary">
             <div class="col-lg-6">
                 <div class="m-4 p-4 m-lg-5 p-lg-5">
-                    <h6 class="text-white"><span class="text-primary">Transportasi</span>(Mobil)</h6>
+                    <h6 class="text-white"><span class="text-primary">Transportasi</span>(Ojek)</h6>
                     <h2 class="display-4 fw-bold text-white my-4">Perjalanan Nyaman, Harga Bersahabat</h2>
                     <a href="#quote" class="btn btn-light btn-bg btn-slide hover-slide-right mt-4">
                         <span>Silahkan Pesan</span>
@@ -596,7 +596,7 @@
                                         icon: 'success'
                                     }).then(() => {
                                         const message =
-                                            `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Mobil\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${$('#totalPrice').text()}`;
+                                            `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${$('#totalPrice').text()}`;
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
                                             '_blank'
