@@ -183,7 +183,7 @@
         </div>
     </section> --}}
 
-    <section>
+    <section id="services">
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="display-4 fw-bold">Kami Siap Membantu</h2>
@@ -266,6 +266,8 @@
                         'icon' => 'fas fa-headset',
                         'color' => '#27AE60', // Green
                         'items' => ['SleepCall', 'Stalker', 'Joki Game', 'Buzzer'],
+                        'isAnchor' => true,
+                        'route' => route('bantuan'),
                     ],
                     'Joki Tugas' => [
                         'icon' => 'fas fa-book',
@@ -338,7 +340,7 @@
                                         <a href="{{ $service['route'] }}"
                                             class="btn btn-success btn-lg w-100 card-footer-btn"
                                             data-jasa="{{ $category }}">
-                                            <i class="fab fa-whatsapp me-2"></i>Pesan Sekarang
+                                            Selengkapnya
                                         </a>
                                     @else
                                         <button type="button"

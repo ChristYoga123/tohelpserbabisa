@@ -2,9 +2,9 @@
 
 Personal Laravel Starter Kit, integrated with:
 
-1. FilamentPHP, 
-2. FilamentPHP EditProfile, 
-3. FilamentPHP EditEnv, 
+1. FilamentPHP,
+2. FilamentPHP EditProfile,
+3. FilamentPHP EditEnv,
 4. FilamentPHP LogManager
 5. FilamentPHP SpatieMediaLibrary
 6. Spatie Laravel-Permission
@@ -65,14 +65,13 @@ Insert your initial user
 
 Filament Shield v1.5 or above
 
-``` 
+```
 php artisan shield:setup --fresh
 
 php artisan shield:generate --all
 
-php artisan shield:super-admin 
+php artisan shield:super-admin
 ```
-
 
 Filament Shield v1.4
 
