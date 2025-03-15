@@ -224,6 +224,8 @@
                         'icon' => 'fas fa-shopping-bag',
                         'color' => '#E74C3C', // Bold Red
                         'items' => ['Jastip Makanan', 'Jastip Minuman', 'Jastip Barang'],
+                        'isAnchor' => true,
+                        'route' => route('jastip'),
                     ],
                     'Daily Activity' => [
                         'icon' => 'fas fa-tasks',
