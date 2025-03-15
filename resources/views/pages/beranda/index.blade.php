@@ -230,7 +230,9 @@
                     'Daily Activity' => [
                         'icon' => 'fas fa-tasks',
                         'color' => '#9B59B6', // Purple
-                        'items' => ['Rawat Peliharaan', 'Pasang Gas/Galon', 'Jaga Anak'],
+                        'items' => ['Rawat Peliharaan', 'Pasang Gas/Galon', 'Jaga Anak', 'Dorong Motor', 'Ban Bocor'],
+                        'isAnchor' => true,
+                        'route' => route('daily'),
                     ],
                     'Jasa Nemenin' => [
                         'icon' => 'fas fa-users',

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BantuanController;
 use App\Http\Controllers\BersihController;
+use App\Http\Controllers\DailyActivityController;
 use App\Http\Controllers\JasaCustomController;
 use App\Http\Controllers\JastipController;
 use App\Http\Controllers\MobilController;
@@ -74,6 +75,9 @@ Route::post('/bantuan-online/pesan', [BantuanController::class, 'pesan'])->name(
 
 Route::get('/jastip', [JastipController::class, 'index'])->name('jastip');
 Route::post('/jastip/pesan', [JastipController::class, 'pesan'])->name('jastip.pesan');
+
+Route::get('/daily', [DailyActivityController::class, 'index'])->name('daily');
+Route::post('/daily/pesan', [DailyActivityController::class, 'pesan'])->name('daily.pesan');
 
 Route::get('/jasa-kustom', [JasaCustomController::class, 'index'])->name('kustom');
 Route::post('/jasa-kustom/pesan', [JasaCustomController::class, 'pesan'])->name('kustom.pesan');
