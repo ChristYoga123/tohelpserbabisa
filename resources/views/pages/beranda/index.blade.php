@@ -213,10 +213,10 @@
                         'isAnchor' => true,
                         'route' => route('pindahan'),
                     ],
-                    'Bersih Rumah' => [
+                    'Bersih Bersih' => [
                         'icon' => 'fas fa-broom',
                         'color' => '#16A085', // Teal Green
-                        'items' => ['Rumah Subsidi', 'Rumah Komersil', 'Ruang Tamu', 'Dan Lain-Lain'],
+                        'items' => ['Rumah Subsidi', 'Rumah Komersil', 'Ruang Tamu', 'Tandon', 'Dan Lain-Lain'],
                         'isAnchor' => true,
                         'route' => route('bersih'),
                     ],

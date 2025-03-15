@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\OrderHelper;
 use Exception;
 use App\Models\Transaksi;
 use Illuminate\Support\Str;
@@ -20,22 +21,26 @@ class BersihController extends Controller
     {
         DB::beginTransaction();
 
-        try
-        {
-            Transaksi::create([
-                'order_id' => 'B-' . Str::random(8),
+        try {
+            $data = [
+                'order_id' => OrderHelper::generateOrderId('B-'),
                 'jenis' => 'bersih-rumah',
                 'jasa' => $request->jasa,
-                'total_harga' => $request->total_harga,
-            ]);
+            ];
+
+            if ($request->has('total_harga')) {
+                $data['total_harga'] = $request->total_harga;
+            }
+
+            Transaksi::create($data);
 
             DB::commit();
             return response()->json([
                 'status' => 'success',
-                'message' => 'Berhasil memesan jasa bersih-bersih'
+                'message' => 'Berhasil memesan jasa bersih-bersih',
+                'order_id' => $data['order_id']
             ]);
-        }catch(Exception $e)
-        {
+        } catch (Exception $e) {
             Log::error($e->getMessage());
             DB::rollBack();
             return response()->json([
