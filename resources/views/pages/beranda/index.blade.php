@@ -264,6 +264,8 @@
                         'icon' => 'fas fa-car',
                         'color' => '#1ABC9C', // Soft Cyan
                         'items' => ['Driver', 'Rental Motor', 'Rental Mobil'],
+                        'isAnchor' => true,
+                        'route' => route('travel'),
                     ],
                     'Editing' => [
                         'icon' => 'fas fa-camera',
