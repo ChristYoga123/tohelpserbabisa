@@ -23,7 +23,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $enumJenis = ['ojek', 'taxi', 'bersih-rumah', 'angkutan', 'custom', 'bantuan-online'];
+        $enumJenis = ['ojek', 'taxi', 'bersih-rumah', 'angkutan', 'custom', 'bantuan-online', 'jastip'];
 
         Schema::table('transaksis', function (Blueprint $table) use ($enumJenis) {
             $table->enum('jenis', $enumJenis)->change();
