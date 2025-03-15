@@ -271,6 +271,8 @@
                         'icon' => 'fas fa-camera',
                         'color' => '#E84393', // Pink
                         'items' => ['Edit Foto/Video', 'Fotographer', 'Videographer'],
+                        'isAnchor' => true,
+                        'route' => route('editing'),
                     ],
                     'Bantuan Online' => [
                         'icon' => 'fas fa-headset',

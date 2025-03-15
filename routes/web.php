@@ -3,6 +3,7 @@
 use App\Http\Controllers\BantuanController;
 use App\Http\Controllers\BersihController;
 use App\Http\Controllers\DailyActivityController;
+use App\Http\Controllers\EditingController;
 use App\Http\Controllers\JasaCustomController;
 use App\Http\Controllers\JasaNemeninController;
 use App\Http\Controllers\JastipController;
@@ -90,6 +91,9 @@ Route::post('/service/pesan', [ServiceController::class, 'pesan'])->name('servic
 
 Route::get('/travel', [TravelController::class, 'index'])->name('travel');
 Route::post('/travel/pesan', [TravelController::class, 'pesan'])->name('travel.pesan');
+
+Route::get('/editing', [EditingController::class, 'index'])->name('editing');
+Route::post('/editing/pesan', [EditingController::class, 'pesan'])->name('editing.pesan');
 
 Route::get('/jasa-kustom', [JasaCustomController::class, 'index'])->name('kustom');
 Route::post('/jasa-kustom/pesan', [JasaCustomController::class, 'pesan'])->name('kustom.pesan');
