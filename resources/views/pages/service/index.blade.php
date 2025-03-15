@@ -5,8 +5,8 @@
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="display-4 fw-bold">Jasa Service</h2>
-                <p class="lead">Layanan menemani aktivitas Anda seperti ngopi, nonton, atau kegiatan lainnya dengan tarif
-                    terjangkau dan nyaman.</p>
+                <p class="lead">Layanan perbaikan dan pemeliharaan untuk berbagai kebutuhan Anda dengan tarif terjangkau
+                    dan nyaman.</p>
             </div>
 
             <div class="row g-4">
