@@ -191,7 +191,6 @@
                             method: 'POST',
                             data: data,
                             success: function(response) {
-                                console.log(response);
                                 if (response.status === 'success') {
                                     Swal.fire({
                                         title: 'Berhasil',
