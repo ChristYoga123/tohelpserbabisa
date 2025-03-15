@@ -3,6 +3,7 @@
 use App\Http\Controllers\BantuanController;
 use App\Http\Controllers\BersihController;
 use App\Http\Controllers\JasaCustomController;
+use App\Http\Controllers\JastipController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\OjekController;
 use App\Http\Controllers\PindahanController;
@@ -70,6 +71,9 @@ Route::post('/pindahan/pesan', [PindahanController::class, 'pesan'])->name('pind
 
 Route::get('/bantuan-online', [BantuanController::class, 'index'])->name('bantuan');
 Route::post('/bantuan-online/pesan', [BantuanController::class, 'pesan'])->name('bantuan.pesan');
+
+Route::get('/jastip', [JastipController::class, 'index'])->name('jastip');
+Route::post('/jastip/pesan', [JastipController::class, 'pesan'])->name('jastip.pesan');
 
 Route::get('/jasa-kustom', [JasaCustomController::class, 'index'])->name('kustom');
 Route::post('/jasa-kustom/pesan', [JasaCustomController::class, 'pesan'])->name('kustom.pesan');
