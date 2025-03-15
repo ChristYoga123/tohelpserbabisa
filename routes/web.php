@@ -9,6 +9,7 @@ use App\Http\Controllers\JastipController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\OjekController;
 use App\Http\Controllers\PindahanController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\VoucherController;
 use App\Models\Testimoni;
 use Illuminate\Http\Request;
@@ -82,6 +83,9 @@ Route::post('/daily/pesan', [DailyActivityController::class, 'pesan'])->name('da
 
 Route::get('/jasa-nemenin', [JasaNemeninController::class, 'index'])->name('nemenin');
 Route::post('/jasa-nemenin/pesan', [JasaNemeninController::class, 'pesan'])->name('nemenin.pesan');
+
+Route::get('/service', [ServiceController::class, 'index'])->name('service');
+Route::post('/service/pesan', [ServiceController::class, 'pesan'])->name('service.pesan');
 
 Route::get('/jasa-kustom', [JasaCustomController::class, 'index'])->name('kustom');
 Route::post('/jasa-kustom/pesan', [JasaCustomController::class, 'pesan'])->name('kustom.pesan');

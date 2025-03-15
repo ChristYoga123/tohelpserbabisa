@@ -256,7 +256,9 @@
                     'All Service' => [
                         'icon' => 'fas fa-tools',
                         'color' => '#34495E', // Dark Slate
-                        'items' => ['Antar Service Sepeda', 'Antar Service Mobil'],
+                        'items' => ['Antar Service Sepeda', 'Antar Service Mobil', 'Antar Service Elektronik'],
+                        'isAnchor' => true,
+                        'route' => route('service'),
                     ],
                     'Travel' => [
                         'icon' => 'fas fa-car',
