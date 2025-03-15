@@ -103,6 +103,7 @@
                                         const message =
                                             `Hii kak, saya ingin meminta bantuan To Help\n\n` +
                                             `Harap Di Isi, Format Order Berikut\n` +
+                                            `Order ID : ${response.order_id}\n` +
                                             `Jenis Jasa : Bantuan online\n` +
                                             `Tipe Jasa : ${service}\n` +
                                             `Waktu : \n` +

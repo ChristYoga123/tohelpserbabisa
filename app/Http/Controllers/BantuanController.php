@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\OrderHelper;
 use Exception;
 use App\Models\Transaksi;
 use Illuminate\Support\Str;
@@ -21,8 +22,9 @@ class BantuanController extends Controller
         DB::beginTransaction();
 
         try {
+            $order_id = OrderHelper::generateOrderId('BAO-');
             Transaksi::create([
-                'order_id' => 'BAO-' . Str::random(8),
+                'order_id' => $order_id,
                 'jenis' => 'bantuan-online',
                 'jasa' => $request->jasa,
             ]);
@@ -30,7 +32,8 @@ class BantuanController extends Controller
             DB::commit();
             return response()->json([
                 'status' => 'success',
-                'message' => 'Berhasil memesan jasa Bantuan Online'
+                'message' => 'Berhasil memesan jasa Bantuan Online',
+                'order_id' => $order_id
             ]);
         } catch (Exception $e) {
             Log::error($e->getMessage());
