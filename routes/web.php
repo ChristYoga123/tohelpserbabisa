@@ -4,6 +4,7 @@ use App\Http\Controllers\BantuanController;
 use App\Http\Controllers\BersihController;
 use App\Http\Controllers\DailyActivityController;
 use App\Http\Controllers\JasaCustomController;
+use App\Http\Controllers\JasaNemeninController;
 use App\Http\Controllers\JastipController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\OjekController;
@@ -78,6 +79,9 @@ Route::post('/jastip/pesan', [JastipController::class, 'pesan'])->name('jastip.p
 
 Route::get('/daily', [DailyActivityController::class, 'index'])->name('daily');
 Route::post('/daily/pesan', [DailyActivityController::class, 'pesan'])->name('daily.pesan');
+
+Route::get('/jasa-nemenin', [JasaNemeninController::class, 'index'])->name('nemenin');
+Route::post('/jasa-nemenin/pesan', [JasaNemeninController::class, 'pesan'])->name('nemenin.pesan');
 
 Route::get('/jasa-kustom', [JasaCustomController::class, 'index'])->name('kustom');
 Route::post('/jasa-kustom/pesan', [JasaCustomController::class, 'pesan'])->name('kustom.pesan');

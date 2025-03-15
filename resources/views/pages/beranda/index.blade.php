@@ -245,6 +245,8 @@
                             'Teman Wisata / Liburan',
                             'Night Ride',
                         ],
+                        'isAnchor' => true,
+                        'route' => route('nemenin'),
                     ],
                     'Laundry' => [
                         'icon' => 'fas fa-tshirt',
