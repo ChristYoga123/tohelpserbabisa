@@ -5,8 +5,8 @@
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="display-4 fw-bold">Jasa Titip</h2>
-                <p class="lead">Layanan pembersihan profesional untuk memastikan lingkungan Anda tetap bersih dan
-                    nyaman.</p>
+                <p class="lead">Layanan jasa titip untuk makanan, minuman, atau barang dengan harga terjangkau dan
+                    pelayanan cepat.</p>
             </div>
 
             <div class="row g-4">
@@ -17,7 +17,7 @@
                             <h2 class="card-text text-primary mb-3">Start from Rp 9.000*</h2>
                             <p class="card-text mb-4">
                                 Ketentuan:<br>
-                                - Start from 9rb (Jarak tempuh 3.5km)<br>
+                                - Start from 9k (Jarak tempuh 3.5km)<br>
                                 - Rincian biaya transport 2k/km + 2k/outlet<br>
                                 - Bisa Jastip disemua outlet (kecuali alkohol / sejenisnya)<br>
                                 - Antri pemesanan 5k/30 menit, 15k/jam (Jika ada)<br>
