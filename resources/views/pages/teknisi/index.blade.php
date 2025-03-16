@@ -5,7 +5,7 @@
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="display-4 fw-bold">Teknisi</h2>
-                <p class="lead">Pilih paket jasa teknisi yang sesuai dengan kebutuhan Anda untuk memastikan perangkat Anda
+                <p class="lead">Layanan jasa teknisi yang sesuai dengan kebutuhan Anda untuk memastikan perangkat Anda
                     berfungsi dengan baik.</p>
             </div>
 
