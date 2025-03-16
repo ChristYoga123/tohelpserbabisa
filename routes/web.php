@@ -7,6 +7,7 @@ use App\Http\Controllers\EditingController;
 use App\Http\Controllers\JasaCustomController;
 use App\Http\Controllers\JasaNemeninController;
 use App\Http\Controllers\JastipController;
+use App\Http\Controllers\JokiTugasController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\OjekController;
 use App\Http\Controllers\PindahanController;
@@ -94,6 +95,9 @@ Route::post('/travel/pesan', [TravelController::class, 'pesan'])->name('travel.p
 
 Route::get('/editing', [EditingController::class, 'index'])->name('editing');
 Route::post('/editing/pesan', [EditingController::class, 'pesan'])->name('editing.pesan');
+
+Route::get('/joki-tugas', [JokiTugasController::class, 'index'])->name('joki-tugas');
+Route::post('/joki-tugas/pesan', [JokiTugasController::class, 'pesan'])->name('joki-tugas.pesan');
 
 Route::get('/jasa-kustom', [JasaCustomController::class, 'index'])->name('kustom');
 Route::post('/jasa-kustom/pesan', [JasaCustomController::class, 'pesan'])->name('kustom.pesan');

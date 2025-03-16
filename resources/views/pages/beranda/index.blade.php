@@ -285,6 +285,8 @@
                         'icon' => 'fas fa-book',
                         'color' => '#8E44AD', // Dark Purple
                         'items' => ['Skripsi', 'Makalah', 'Praktikum', 'Pekerjaan Rumah (PR)'],
+                        'isAnchor' => true,
+                        'route' => route('joki-tugas'),
                     ],
                 ];
             @endphp
