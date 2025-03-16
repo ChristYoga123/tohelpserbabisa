@@ -12,6 +12,8 @@ use App\Http\Controllers\MobilController;
 use App\Http\Controllers\OjekController;
 use App\Http\Controllers\PindahanController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\SpaController;
+use App\Http\Controllers\TeknisiController;
 use App\Http\Controllers\TravelController;
 use App\Http\Controllers\VoucherController;
 use App\Models\Testimoni;
@@ -98,6 +100,12 @@ Route::post('/editing/pesan', [EditingController::class, 'pesan'])->name('editin
 
 Route::get('/joki-tugas', [JokiTugasController::class, 'index'])->name('joki-tugas');
 Route::post('/joki-tugas/pesan', [JokiTugasController::class, 'pesan'])->name('joki-tugas.pesan');
+
+Route::get('/teknisi', [TeknisiController::class, 'index'])->name('teknisi');
+Route::post('/teknisi/pesan', [TeknisiController::class, 'pesan'])->name('teknisi.pesan');
+
+Route::get('/spa', [SpaController::class, 'index'])->name('spa');
+Route::post('/spa/pesan', [SpaController::class, 'pesan'])->name('spa.pesan');
 
 Route::get('/jasa-kustom', [JasaCustomController::class, 'index'])->name('kustom');
 Route::post('/jasa-kustom/pesan', [JasaCustomController::class, 'pesan'])->name('kustom.pesan');
