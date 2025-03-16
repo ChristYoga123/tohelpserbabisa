@@ -292,15 +292,15 @@
                         'icon' => 'fas fa-wrench',
                         'color' => '#F1C40F', // Yellow
                         'items' => ['Teknisi Bangunan', 'Teknisi Listrik', 'Teknisi Air'],
-                        // 'isAnchor' => true,
-                        // 'route' => route('teknisi'),
+                        'isAnchor' => true,
+                        'route' => route('teknisi'),
                     ],
                     'SPA' => [
                         'icon' => 'fas fa-spa',
                         'color' => '#3498DB', // Light Blue
                         'items' => ['Massage', 'Scrub', 'Refleksi', 'Dan Lain-Lain'],
-                        // 'isAnchor' => true,
-                        // 'route' => route('spa'),
+                        'isAnchor' => true,
+                        'route' => route('spa'),
                     ],
                     'Jasa IT' => [
                         'icon' => 'fas fa-laptop',
@@ -369,7 +369,7 @@
                                     </ul>
                                 </div>
                                 <div class="card-footer bg-transparent border-0 p-3">
-                                    @if (isset($service['isAnchor']))
+                                    @if (isset($service['isAnchor']) && $service['isAnchor'] === true)
                                         <a href="{{ $service['route'] }}"
                                             class="btn btn-success btn-lg w-100 card-footer-btn"
                                             data-jasa="{{ $category }}">
