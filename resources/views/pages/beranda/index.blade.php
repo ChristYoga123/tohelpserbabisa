@@ -288,6 +288,20 @@
                         'isAnchor' => true,
                         'route' => route('joki-tugas'),
                     ],
+                    'Teknisi' => [
+                        'icon' => 'fas fa-wrench',
+                        'color' => '#F1C40F', // Yellow
+                        'items' => ['Teknisi Bangunan', 'Teknisi Listrik', 'Teknisi Air'],
+                        // 'isAnchor' => true,
+                        // 'route' => route('teknisi'),
+                    ],
+                    'SPA' => [
+                        'icon' => 'fas fa-spa',
+                        'color' => '#3498DB', // Light Blue
+                        'items' => ['Massage', 'Scrub', 'Refleksi', 'Dan Lain-Lain'],
+                        // 'isAnchor' => true,
+                        // 'route' => route('spa'),
+                    ],
                 ];
             @endphp
 
