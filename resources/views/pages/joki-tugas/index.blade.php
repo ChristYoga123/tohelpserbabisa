@@ -5,7 +5,8 @@
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="display-4 fw-bold">Joki Tugas</h2>
-                <p class="lead">Layanan harian profesional untuk memastikan aktivitas Anda berjalan lancar dan nyaman.</p>
+                <p class="lead">Layanan joki tugas profesional untuk membantu menyelesaikan tugas Anda dengan cepat dan
+                    tepat.</p>
             </div>
 
             <div class="row g-4">
