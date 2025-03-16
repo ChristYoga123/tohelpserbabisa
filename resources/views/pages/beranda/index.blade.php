@@ -302,6 +302,11 @@
                         // 'isAnchor' => true,
                         // 'route' => route('spa'),
                     ],
+                    'Jasa IT' => [
+                        'icon' => 'fas fa-laptop',
+                        'color' => '#E74C3C', // Bold Red
+                        'items' => ['Website', 'Aplikasi Mobile', 'Dan Lain-Lain'],
+                    ],
                 ];
             @endphp
 
