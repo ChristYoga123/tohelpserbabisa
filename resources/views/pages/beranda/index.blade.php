@@ -252,6 +252,14 @@
                         'icon' => 'fas fa-tshirt',
                         'color' => '#3498DB', // Light Blue
                         'items' => ['Antar Cuci Sepeda', 'Antar Cuci Mobil', 'Antar Cuci Baju'],
+                        'message' =>
+                            'Hii kak, saya ingin meminta bantuan To Help\n\n' .
+                            'Jenis Jasa : laundry\n' .
+                            'Permintaan (pilih salah satu) : pakaian/kendaraan/perabotan\n' .
+                            'Alamat : \n' .
+                            'Hari/tanggal : \n' .
+                            'Nama : \n' .
+                            'Nomor WhatsApp : ',
                     ],
                     'All Service' => [
                         'icon' => 'fas fa-tools',
@@ -306,6 +314,13 @@
                         'icon' => 'fas fa-laptop',
                         'color' => '#E74C3C', // Bold Red
                         'items' => ['Website', 'Aplikasi Mobile', 'Dan Lain-Lain'],
+                        'message' =>
+                            'Hii kak, saya ingin meminta bantuan To Help\n\n' .
+                            'Jenis Jasa : Jasa IT\n' .
+                            'Tipe Jasa : (Website/Aplikasi Mobile/Lain-lain)\n' .
+                            'Deadline : \n' .
+                            'Nama : \n' .
+                            'Nomor WhatsApp : ',
                     ],
                 ];
             @endphp
@@ -378,7 +393,8 @@
                                     @else
                                         <button type="button"
                                             class="btn btn-success btn-lg w-100 card-footer-btn order-btn"
-                                            data-jasa="{{ $category }}">
+                                            data-jasa="{{ $category }}"
+                                            @if (isset($service['message'])) data-message="{{ $service['message'] }}" @endif>
                                             <i class="fab fa-whatsapp me-2"></i>Pesan Sekarang
                                         </button>
                                     @endif
@@ -724,6 +740,8 @@
                 confirmButtonText: "Ya, pesan!",
                 cancelButtonText: "Batal",
             }).then((result) => {
+                const message = $(this).data('message') ||
+                    `Hii kak, saya ingin meminta bantuan To Help untuk *(isi sesuai kebutuhan kalian)*`;
                 if (result.isConfirmed) {
                     $.ajax({
                         url: `{{ route('kustom.pesan') }}`,
@@ -743,10 +761,6 @@
                                     text: 'Pesanan berhasil dibuat, Anda akan diarahkan ke WhatsApp Admin',
                                     icon: 'success'
                                 }).then(() => {
-                                    const message =
-                                        // Hii kak, saya ingin meminta bantuan To Help untuk (isi sesuai kebutuhan kalian)
-                                        `Hii kak, saya ingin meminta bantuan To Help untuk *(isi sesuai kebutuhan kalian)*`;
-
                                     window.open(
                                         `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
                                         '_blank'
