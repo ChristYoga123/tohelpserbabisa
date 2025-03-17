@@ -254,6 +254,7 @@
                         'items' => ['Antar Cuci Sepeda', 'Antar Cuci Mobil', 'Antar Cuci Baju'],
                         'message' =>
                             'Hii kak, saya ingin meminta bantuan To Help\n\n' .
+                            'ID Order : [order_id]\n' .
                             'Jenis Jasa : laundry\n' .
                             'Permintaan (pilih salah satu) : pakaian/kendaraan/perabotan\n' .
                             'Alamat : \n' .
@@ -316,6 +317,7 @@
                         'items' => ['Website', 'Aplikasi Mobile', 'Dan Lain-Lain'],
                         'message' =>
                             'Hii kak, saya ingin meminta bantuan To Help\n\n' .
+                            'ID Order : [order_id]\n' .
                             'Jenis Jasa : Jasa IT\n' .
                             'Tipe Jasa : (Website/Aplikasi Mobile/Lain-lain)\n' .
                             'Deadline : \n' .
@@ -740,7 +742,7 @@
                 confirmButtonText: "Ya, pesan!",
                 cancelButtonText: "Batal",
             }).then((result) => {
-                const message = $(this).data('message') ||
+                let message = $(this).data('message') ||
                     `Hii kak, saya ingin meminta bantuan To Help untuk *(isi sesuai kebutuhan kalian)*`;
                 if (result.isConfirmed) {
                     $.ajax({
@@ -755,6 +757,9 @@
                             // alamat: result.value
                         },
                         success: function(response) {
+                            message = message.includes('[order_id]') ? message.replace(
+                                    '[order_id]', response.order_id) :
+                                `${message}\nID ORDER : ${response.order_id}\n...`;
                             if (response.status === 'success') {
                                 Swal.fire({
                                     title: 'Berhasil',

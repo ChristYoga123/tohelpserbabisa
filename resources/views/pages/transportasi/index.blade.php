@@ -596,7 +596,7 @@
                                         icon: 'success'
                                     }).then(() => {
                                         const message =
-                                            `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Ojek\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${$('#totalPrice').text()}`;
+                                            `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Ojek\nID Order : ${response.order_id}\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${$('#totalPrice').text()}`;
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
                                             '_blank'

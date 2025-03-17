@@ -113,6 +113,7 @@
                                     }).then(() => {
                                         const message =
                                             `Format Pemesanan\n` +
+                                            `ID Order : ${response.order_id}\n` +
                                             `Jenis pesanan : Pindahan/Angkut Barang\n` +
                                             `Alamat ambil / order : \n` +
                                             `List barang berat : \n` +

@@ -142,7 +142,8 @@
                                     }).then(() => {
                                         const message =
                                             // Hii kak, saya ingin meminta bantuan To Help untuk (isi sesuai kebutuhan kalian)
-                                            `Hii kak, saya ingin meminta bantuan To Help untuk *(isi sesuai kebutuhan kalian)*`;
+                                            `Hii kak, saya ingin meminta bantuan To Help untuk *(isi sesuai kebutuhan kalian)*` +
+                                            `Order ID : ${response.order_id}\n...`;
 
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
