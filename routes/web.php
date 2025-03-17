@@ -8,6 +8,7 @@ use App\Http\Controllers\JasaCustomController;
 use App\Http\Controllers\JasaNemeninController;
 use App\Http\Controllers\JastipController;
 use App\Http\Controllers\JokiTugasController;
+use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\MobilController;
 use App\Http\Controllers\OjekController;
 use App\Http\Controllers\PindahanController;
@@ -27,6 +28,8 @@ Route::get('/', function () {
         'testimonis' => Testimoni::latest()->get()
     ]);
 })->name('index');
+
+Route::get('/profile', [KaryawanController::class, 'index'])->name('profile');
 
 Route::post('/voucher/check', [VoucherController::class, 'check'])->name('voucher.check');
 

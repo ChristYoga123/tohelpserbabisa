@@ -22,6 +22,9 @@
                     <li class="nav-item">
                         <a class="nav-link px-3 text-white" href="{{ route('index') }}#cta">Kontak</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-3 text-white" href="{{ route('profile') }}">Profile</a>
+                    </li>
                 </ul>
             </div>
         </div>
