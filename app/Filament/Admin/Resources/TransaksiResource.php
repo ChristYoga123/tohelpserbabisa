@@ -75,6 +75,10 @@ class TransaksiResource extends Resource
                     ->weight(FontWeight::Bold)
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('komisi_admin')
+                    ->weight(FontWeight::Bold)
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status_tugas')
                     ->sortable()
                     ->badge(fn(Transaksi $transaksi) => match ($transaksi->status_tugas) {
@@ -87,18 +91,17 @@ class TransaksiResource extends Resource
                         'proses' => 'info',
                         'selesai' => 'success',
                     })
-                    ->getStateUsing(function(Transaksi $transaksi) {
+                    ->getStateUsing(function (Transaksi $transaksi) {
                         if ($transaksi->tugas->isEmpty()) {
                             return 'Belum Selesai';
                         }
 
-                        if($transaksi->karyawanTugas->every(fn($q) => $q->is_selesai)) {
+                        if ($transaksi->karyawanTugas->every(fn($q) => $q->is_selesai)) {
                             $transaksi->update(['status_tugas' => 'selesai']);
                             return 'Selesai';
                         }
-                
-                        return 'Belum Selesai';
 
+                        return 'Belum Selesai';
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -123,8 +126,7 @@ class TransaksiResource extends Resource
                     ->modalHeading('Selesaikan Tugas')
                     ->modalDescription('Apakah anda yakin ingin menyelesaikan tugas ini?')
                     ->modalSubmitActionLabel('Ya, Selesaikan')
-                    ->action(function(Transaksi $transaksi)
-                    {
+                    ->action(function (Transaksi $transaksi) {
                         $transaksi->karyawanTugas->each(fn($q) => $q->update(['is_selesai' => true]));
 
                         $transaksi->update(['status_tugas' => 'selesai']);
@@ -149,8 +151,7 @@ class TransaksiResource extends Resource
                             ->options(User::query()->whereHas('roles', fn($q) => $q->where('name', 'karyawan'))->pluck('name', 'id'))
                             ->required()
                     ])
-                    ->action(function(Transaksi $transaksi, array $data)
-                    {
+                    ->action(function (Transaksi $transaksi, array $data) {
                         $transaksi->tugas()->attach($data['karyawan']);
 
                         Notification::make()
@@ -160,6 +161,35 @@ class TransaksiResource extends Resource
                             ->send();
                     })
                     ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() != 0),
+                Tables\Actions\Action::make('ubahHarga')
+                    ->label('Ubah Harga')
+                    ->button()
+                    ->color('success')
+                    ->icon('heroicon-o-currency-dollar')
+                    ->form([
+                        Forms\Components\TextInput::make('total_harga')
+                            ->label('Total Harga')
+                            ->numeric()
+                            ->default(fn(Transaksi $record) => $record->total_harga)
+                            ->autoFocus(false),
+                        Forms\Components\TextInput::make('komisi_admin')
+                            ->label('Komisi Admin')
+                            ->numeric()
+                            ->default(fn(Transaksi $record) => $record->komisi_admin)
+                            ->autoFocus(false),
+                    ])
+                    ->action(function (Transaksi $transaksi, array $data) {
+                        $transaksi->update([
+                            'total_harga' => $data['total_harga'],
+                            'komisi_admin' => $data['komisi_admin'],
+                        ]);
+
+                        Notification::make()
+                            ->title('Sukses')
+                            ->body('Harga berhasil diubah')
+                            ->success()
+                            ->send();
+                    }),
                 SimpleMap::make('showMap')
                     ->button()
                     ->icon('heroicon-o-map')
@@ -167,14 +197,14 @@ class TransaksiResource extends Resource
                     ->color('info')
                     ->viewing()
                     ->directions()
-                    ->origin(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput)
-                    ->destination(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_tujuan)
+                    ->origin(fn(Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput)
+                    ->destination(fn(Transaksi $karyawanTugas) => $karyawanTugas->titik_tujuan)
                     // ->walking()
                     // ->satellite()
                     ->zoom(13)
                     ->language('id')
                     ->region('id')
-                    ->visible(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput && $karyawanTugas->titik_tujuan),
+                    ->visible(fn(Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput && $karyawanTugas->titik_tujuan),
                 Tables\Actions\Action::make('lihatTugas')
                     ->label('Lihat Tugas')
                     ->button()
@@ -183,11 +213,12 @@ class TransaksiResource extends Resource
                     ->url(fn(Transaksi $transaksi) => TugasPage::getUrl(['record' => $transaksi]))
                     ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() == 0),
                 Tables\Actions\DeleteAction::make()
+                    ->label('Hapus')
                     ->button(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    
+
                     // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
