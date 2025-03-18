@@ -16,7 +16,7 @@ class KaryawanController extends Controller
             ->get()
             ->map(function ($user) {
                 // Calculate age from tanggal_lahir
-                $age = $user?->custom_fields['tanggal_lahir']
+                $age = isset($user->custom_fields['tanggal_lahir'])
                     ? Carbon::parse($user->custom_fields['tanggal_lahir'])->age
                     : null;
                 return [
