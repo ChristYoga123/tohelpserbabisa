@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Carbon\Carbon;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class KaryawanController extends Controller
 {
     public function index()
     {
-        $karyawanRole = Role::where('name', 'karyawan')->first();
-        $karyawan = User::role('karyawan')
+        // $karyawanRole = Role::where('name', 'karyawan')->first();
+        // $karyawan = User::role('karyawan')
+        $karyawan = User::query()->with('media')->whereNot('name', 'Admin')->whereHas('roles', fn(Builder $query) => $query->where('name', 'karyawan'))
             ->get()
             ->map(function ($user) {
                 // Calculate age from tanggal_lahir
