@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Admin\Pages\TarifTransportasiPage;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -9,6 +10,7 @@ use Filament\PanelProvider;
 use Filament\Pages\Dashboard;
 use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Navigation\NavigationItem;
 use Filament\Navigation\NavigationGroup;
 use Filament\Http\Middleware\Authenticate;
@@ -19,6 +21,7 @@ use App\Filament\Admin\Resources\VoucherResource;
 use App\Filament\Admin\Resources\KaryawanResource;
 use App\Filament\Admin\Resources\TestimoniResource;
 use App\Filament\Admin\Resources\TransaksiResource;
+use App\Filament\Admin\Resources\TarifDasarResource;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use FilipFonal\FilamentLogManager\FilamentLogManager;
 use GeoSot\FilamentEnvEditor\FilamentEnvEditorPlugin;
@@ -27,7 +30,6 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\View\PanelsRenderHook;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
@@ -102,6 +104,7 @@ class AdminPanelProvider extends PanelProvider
                     ->items([
                             ...Dashboard::getNavigationItems(),
                             ...VoucherResource::getNavigationItems(),
+                            ...TarifTransportasiPage::getNavigationItems(),
                             ...TransaksiResource::getNavigationItems(),
                             ...TestimoniResource::getNavigationItems(),
                             // ...PageResource::getNavigationItems(),
