@@ -18,6 +18,7 @@
         "ibrahimbougaoua/filament-rating-star": "^1.0",
         "joaopaulolndev/filament-edit-profile": "^1.0",
         "laravel/framework": "^11.9",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "spatie/laravel-medialibrary": "^11.9",
         "spatie/laravel-permission": "^6.9"
@@ -39,7 +40,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/OrderHelper.php"
+            "app/Helpers/OrderHelper.php",
+            "app/Helpers/helpers.php"
         ]
     },
     "autoload-dev": {

@@ -3,6 +3,8 @@
 namespace App\Helpers;
 
 use App\Models\Transaksi;
+use App\Models\TarifDasar;
+use App\Models\TarifJarak;
 use InvalidArgumentException;
 
 class OrderHelper

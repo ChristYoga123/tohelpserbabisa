@@ -72,6 +72,7 @@ Route::get('/ojek', [OjekController::class, 'index'])->name('ojek');
 Route::post('/ojek/pesan', [OjekController::class, 'pesan'])->name('ojek.pesan');
 
 Route::get('/mobil', [MobilController::class, 'index'])->name('taxi');
+Route::post('/mobil/show-pricing', [MobilController::class, 'showPricing'])->name('taxi.show-pricing');
 Route::post('/mobil/pesan', [MobilController::class, 'pesan'])->name('taxi.pesan');
 
 Route::get('/bersih-bersih', [BersihController::class, 'index'])->name('bersih');

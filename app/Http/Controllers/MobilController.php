@@ -7,6 +7,8 @@ use App\Models\Voucher;
 use App\Models\Transaksi;
 use Illuminate\Support\Str;
 use App\Helpers\OrderHelper;
+use App\Models\TarifDasar;
+use App\Models\TarifJarak;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +17,21 @@ class MobilController extends Controller
 {
     public function index()
     {
-        return view('pages.taxi.index');
+        return view('pages.taxi.index', [
+            'tarifDasar' => TarifDasar::whereJenis('Mobil')->first(),
+            'tarifJarak' => TarifJarak::whereJenis('Mobil')->first(),
+        ]);
+    }
+
+    public function showPricing(Request $request)
+    {
+        $harga = getPricing('Mobil', $request->jarakBaseCampKeTitikJemput, $request->jarakTitikJemputKeTitikTujuan);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Berhasil mendapatkan harga',
+            'harga' => $harga,
+        ]);
     }
 
     public function pesan(Request $request)
@@ -30,7 +46,7 @@ class MobilController extends Controller
                 'jarak' => $request->jarak,
                 'titik_jemput' => $request->titik_jemput,
                 'titik_tujuan' => $request->titik_tujuan,
-                'total_harga' => $request->total_harga,
+                'total_harga' => getPricing('Mobil',  $request->jarakBaseCampKeTitikJemput, $request->jarak),
             ];
             Transaksi::create($data);
 
@@ -38,7 +54,8 @@ class MobilController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Berhasil memesan jasa taxi',
-                'order_id' => $data['order_id']
+                'order_id' => $data['order_id'],
+                'harga' => $data['total_harga'],
             ]);
         } catch (Exception $e) {
             Log::error($e->getMessage());

@@ -119,13 +119,13 @@
     <script>
         $(document).ready(function() {
             // Constants
-            const BASECAMP_LAT = -8.171121371857444;
-            const BASECAMP_LNG = 113.7233082269837;
-            const BASE_FEE = 2000; // Base fee for car
+            const BASECAMP_LAT = {{ env('BASECAMP_LAT') }};
+            const BASECAMP_LNG = {{ env('BASECAMP_LONG') }};
+            const BASE_FEE = {{ $tarifDasar->harga }}; // Base fee for car
 
             // Tiered pricing for cars
             const TIER_1_MAX = 3; // 1-3 km
-            const TIER_1_RATE = 6000; // 6rb/km
+            const TIER_1_RATE = 18000; // 18rb/km
             const TIER_2_MAX = 10; // 4-10 km
             const TIER_2_RATE = 5000; // 5rb/km
             const TIER_3_RATE = 4000; // > 10 km rate (4rb/km)
@@ -383,6 +383,15 @@
                 const startPos = markerAwal.getPosition();
                 const endPos = markerAkhir.getPosition();
 
+                // Calculate distance from basecamp to pickup point
+                const basecampPos = new google.maps.LatLng(BASECAMP_LAT, BASECAMP_LNG);
+                const basecampToPickupDistance = calculateDistance(
+                    BASECAMP_LAT,
+                    BASECAMP_LNG,
+                    startPos.lat(),
+                    startPos.lng()
+                ).toFixed(2);
+
                 const request = {
                     origin: startPos,
                     destination: endPos,
@@ -424,15 +433,51 @@
                                 `<br>Diskon Voucher (${voucherDiscount}%): -Rp${discountAmount.toLocaleString()}`;
                         }
 
-                        // Update route info display with pricing and discount
-                        $('#routeInfo').html(
-                            `Jarak: <span id="distance">${roundedDistance}</span> km<br>
+                        // Send both distances to the server
+                        $.ajax({
+                            url: `{{ route('taxi.show-pricing') }}`,
+                            method: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                jarakBaseCampKeTitikJemput: Math.ceil(basecampToPickupDistance),
+                                jarakTitikJemputKeTitikTujuan: Math.ceil(routeDistance),
+                            },
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    // Update the route info with the response data
+                                    $('#routeInfo').html(
+                                        `Jarak Basecamp ke Titik Jemput: ${basecampToPickupDistance} km<br>
+                            Jarak Perjalanan: <span id="distance">${roundedDistance}</span> km<br>
                             Estimasi waktu: <span id="duration">${duration}</span> menit<br>
                             Tarif dasar: Rp${BASE_FEE.toLocaleString()}<br>
                             Tarif jarak: Rp${(roundedDistance * appliedRate).toLocaleString()} (${roundedDistance} km × Rp${appliedRate.toLocaleString()}/km)
                             ${discountInfo}<br>
-                            Harga Total: Rp<span id="totalPrice">${totalPrice.toLocaleString()}</span>`
-                        ).show();
+                            Harga Total: Rp<span id="totalPrice">${response.harga}</span>`
+                                    ).show();
+                                } else {
+                                    // Handle error response
+                                    $('#routeInfo').html(
+                                        `<div class="alert alert-danger">
+                                <strong>Error!</strong><br>
+                                Maaf, terjadi kesalahan, silahkan coba lagi.
+                            </div>`
+                                    ).show();
+                                }
+                            },
+                            error: function(xhr) {
+                                let errorMessage = 'Terjadi kesalahan saat menghitung harga';
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    errorMessage = xhr.responseJSON.message;
+                                }
+
+                                $('#routeInfo').html(
+                                    `<div class="alert alert-danger">
+                            <strong>Error!</strong><br>
+                            ${errorMessage}
+                        </div>`
+                                ).show();
+                            }
+                        });
                     }
                 });
             }
@@ -568,7 +613,15 @@
                 const lng_awal = parseFloat($('#lng_awal').val());
                 const lat_akhir = parseFloat($('#lat_akhir').val());
                 const lng_akhir = parseFloat($('#lng_akhir').val());
-                const price = $('#totalPrice').text();
+
+                // Calculate basecamp to pickup distance
+                const basecampPos = new google.maps.LatLng(BASECAMP_LAT, BASECAMP_LNG);
+                const basecampToPickupDistance = calculateDistance(
+                    BASECAMP_LAT,
+                    BASECAMP_LNG,
+                    lat_awal,
+                    lng_awal
+                ).toFixed(2);
 
                 // Validate both locations
                 const isStartValid = await validateLocation(lat_awal, lng_awal);
@@ -594,9 +647,10 @@
                             data: {
                                 // csrf
                                 _token: '{{ csrf_token() }}',
-                                total_harga: parseInt(price.replace(/\D/g, '')),
                                 voucher: appliedVoucherCode,
                                 jarak: parseFloat($('#distance').text()),
+                                jarakBaseCampKeTitikJemput: Math.ceil(
+                                    basecampToPickupDistance),
                                 titik_jemput: $('#lokasi_awal').val(),
                                 titik_tujuan: $('#lokasi_akhir').val(),
                             },
@@ -608,7 +662,7 @@
                                         icon: 'success'
                                     }).then(() => {
                                         const message =
-                                            `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Mobil\nID Order : ${response.order_id}\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${$('#totalPrice').text()}`;
+                                            `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Mobil\nID Order : ${response.order_id}\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${response.harga}`;
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
                                             '_blank'
