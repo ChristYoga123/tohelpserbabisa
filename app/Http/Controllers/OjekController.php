@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Models\Voucher;
 use App\Models\Transaksi;
+use App\Models\TarifDasar;
+use App\Models\TarifJarak;
 use Illuminate\Support\Str;
 use App\Helpers\OrderHelper;
 use Illuminate\Http\Request;
@@ -15,7 +17,21 @@ class OjekController extends Controller
 {
     public function index()
     {
-        return view('pages.transportasi.index');
+        return view('pages.transportasi.index', [
+            'tarifDasar' => TarifDasar::whereJenis('Motor')->first(),
+            'tarifJarak' => TarifJarak::whereJenis('Motor')->first(),
+        ]);
+    }
+
+    public function showPricing(Request $request)
+    {
+        $harga = getPricing('Motor', $request->jarakBaseCampKeTitikJemput, $request->jarakTitikJemputKeTitikTujuan);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Berhasil mendapatkan harga',
+            'harga' => $harga,
+        ]);
     }
 
     public function pesan(Request $request)
@@ -30,7 +46,7 @@ class OjekController extends Controller
                 'jarak' => $request->jarak,
                 'titik_jemput' => $request->titik_jemput,
                 'titik_tujuan' => $request->titik_tujuan,
-                'total_harga' => $request->total_harga,
+                'total_harga' => getPricing('Motor',  $request->jarakBaseCampKeTitikJemput, $request->jarak),
             ];
             Transaksi::create($data);
 
@@ -38,7 +54,8 @@ class OjekController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Berhasil memesan jasa ojek',
-                'order_id' => $data['order_id']
+                'order_id' => $data['order_id'],
+                'harga' => $data['total_harga'],
             ]);
         } catch (Exception $e) {
             Log::error($e->getMessage());

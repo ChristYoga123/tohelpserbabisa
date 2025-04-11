@@ -119,8 +119,9 @@
     <script>
         $(document).ready(function() {
             // Constants
-            const BASECAMP_LAT = -8.171121371857444;
-            const BASECAMP_LNG = 113.7233082269837;
+            const BASECAMP_LAT = {{ env('BASECAMP_LAT') }};
+            const BASECAMP_LNG = {{ env('BASECAMP_LONG') }};
+            const BASE_FEE = {{ $tarifDasar->harga }}; // Base fee for car
 
             // New pricing model
             const RATE_PER_KM = 2000; // 2rb/km for motorcycle
@@ -372,6 +373,15 @@
                 const startPos = markerAwal.getPosition();
                 const endPos = markerAkhir.getPosition();
 
+                // Calculate distance from basecamp to pickup point
+                const basecampPos = new google.maps.LatLng(BASECAMP_LAT, BASECAMP_LNG);
+                const basecampToPickupDistance = calculateDistance(
+                    BASECAMP_LAT,
+                    BASECAMP_LNG,
+                    startPos.lat(),
+                    startPos.lng()
+                ).toFixed(2);
+
                 const request = {
                     origin: startPos,
                     destination: endPos,
@@ -413,14 +423,50 @@
                                 `<br>Diskon Voucher (${voucherDiscount}%): -Rp${discountAmount.toLocaleString()}`;
                         }
 
-                        // Update route info display with pricing and discount
-                        $('#routeInfo').html(
-                            `Jarak: <span id="distance">${routeDistance}</span> km (dibulatkan menjadi ${roundedDistance} km)<br>
-                            Estimasi waktu: <span id="duration">${duration}</span> menit<br>
-                            ${priceInfo}
-                            ${discountInfo}<br>
-                            Harga Total: Rp<span id="totalPrice">${totalPrice.toLocaleString()}</span>`
-                        ).show();
+                        // Send both distances to the server
+                        $.ajax({
+                            url: `{{ route('ojek.show-pricing') }}`,
+                            method: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                jarakBaseCampKeTitikJemput: Math.ceil(basecampToPickupDistance),
+                                jarakTitikJemputKeTitikTujuan: Math.ceil(routeDistance),
+                            },
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    // Update the route info with the response data
+                                    $('#routeInfo').html(
+                                        `Jarak Basecamp ke Titik Jemput: ${basecampToPickupDistance} km<br>
+                        Jarak Perjalanan: <span id="distance">${routeDistance}</span> km (dibulatkan menjadi ${roundedDistance} km)<br>
+                        Estimasi waktu: <span id="duration">${duration}</span> menit<br>
+                        ${priceInfo}
+                        ${discountInfo}<br>
+                        Harga Total: Rp<span id="totalPrice">${response.harga}</span>`
+                                    ).show();
+                                } else {
+                                    // Handle error response
+                                    $('#routeInfo').html(
+                                        `<div class="alert alert-danger">
+                            <strong>Error!</strong><br>
+                            Maaf, terjadi kesalahan, silahkan coba lagi.
+                        </div>`
+                                    ).show();
+                                }
+                            },
+                            error: function(xhr) {
+                                let errorMessage = 'Terjadi kesalahan saat menghitung harga';
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    errorMessage = xhr.responseJSON.message;
+                                }
+
+                                $('#routeInfo').html(
+                                    `<div class="alert alert-danger">
+                        <strong>Error!</strong><br>
+                        ${errorMessage}
+                    </div>`
+                                ).show();
+                            }
+                        });
                     }
                 });
             }

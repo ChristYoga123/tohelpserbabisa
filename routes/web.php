@@ -69,6 +69,7 @@ Route::post('/testimoni', function (Request $request) {
 })->name('testimoni');
 
 Route::get('/ojek', [OjekController::class, 'index'])->name('ojek');
+Route::post('/ojek/show-pricing', [OjekController::class, 'showPricing'])->name('ojek.show-pricing');
 Route::post('/ojek/pesan', [OjekController::class, 'pesan'])->name('ojek.pesan');
 
 Route::get('/mobil', [MobilController::class, 'index'])->name('taxi');

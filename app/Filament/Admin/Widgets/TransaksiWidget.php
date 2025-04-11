@@ -59,6 +59,21 @@ class TransaksiWidget extends BaseWidget
                         return 'Belum Selesai';
 
                     }),
+                Tables\Columns\TextColumn::make('status_transaksi')
+                    ->label('Status Transaksi')
+                    ->badge()
+                    ->color(fn (Transaksi $transaksi) => match ($transaksi->status_transaksi) {
+                        'belum' => 'warning',
+                        'sukses' => 'success',
+                        'batal' => 'danger',
+                    })
+                    ->getStateUsing(function(Transaksi $transaksi) {
+                        return match ($transaksi->status_transaksi) {
+                            'belum' => 'Belum Selesai',
+                            'sukses' => 'Sukses Bayar',
+                            'batal' => 'Dibatalkan',
+                        };
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -142,7 +157,20 @@ class TransaksiWidget extends BaseWidget
                     ->url(fn(Transaksi $transaksi) => TugasPage::getUrl(['record' => $transaksi]))
                     ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() == 0),
                 Tables\Actions\DeleteAction::make()
-                    ->button(),
+                    ->label('Batalkan Transaksi')
+                    ->button()
+                    ->action(function(Transaksi $transaksi)
+                    {
+                        $transaksi->update([
+                            'status_transaksi' => 'batal',
+                        ]);
+
+                        Notification::make()
+                            ->title('Sukses')
+                            ->body('Transaksi dibatalkan')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
