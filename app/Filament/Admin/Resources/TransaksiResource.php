@@ -13,6 +13,7 @@ use Filament\Forms\Components\Select;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
+use Filament\Tables\Enums\FiltersLayout;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\TransaksiResource\Pages;
@@ -128,8 +129,13 @@ class TransaksiResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                Tables\Filters\SelectFilter::make('status_transaksi')
+                    ->options([
+                        'belum' => 'Belum Selesai',
+                        'sukses' => 'Sukses Bayar',
+                        'batal' => 'Dibatalkan',
+                    ])
+                ], layout: FiltersLayout::AboveContent)
             ->actions([
                 // Tables\Actions\EditAction::make(),
                 Tables\Actions\ActionGroup::make([

@@ -9,6 +9,7 @@ use Filament\Tables\Table;
 use Filament\Forms\Components\Select;
 use Filament\Support\Enums\FontWeight;
 use Filament\Notifications\Notification;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Widgets\TableWidget as BaseWidget;
 use CodeWithDennis\SimpleMap\Components\Tables\SimpleMap;
 use App\Filament\Admin\Resources\TransaksiResource\Pages\TugasPage;
@@ -84,8 +85,13 @@ class TransaksiWidget extends BaseWidget
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                Tables\Filters\SelectFilter::make('status_transaksi')
+                    ->options([
+                        'belum' => 'Belum Selesai',
+                        'sukses' => 'Sukses Bayar',
+                        'batal' => 'Dibatalkan',
+                    ])
+                ], layout: FiltersLayout::AboveContent)
             ->actions([
                 // Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('selesaiTugas')
