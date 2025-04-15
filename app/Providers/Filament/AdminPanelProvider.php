@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Admin\Pages\TarifTransportasiPage;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -15,10 +14,12 @@ use Filament\Navigation\NavigationItem;
 use Filament\Navigation\NavigationGroup;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Navigation\NavigationBuilder;
+use App\Filament\Admin\Pages\AbsensiBasePage;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use App\Filament\Admin\Resources\VoucherResource;
 use App\Filament\Admin\Resources\KaryawanResource;
+use App\Filament\Admin\Pages\TarifTransportasiPage;
 use App\Filament\Admin\Resources\TestimoniResource;
 use App\Filament\Admin\Resources\TransaksiResource;
 use App\Filament\Admin\Resources\TarifDasarResource;
@@ -114,6 +115,7 @@ class AdminPanelProvider extends PanelProvider
                         NavigationGroup::make('Master Data')
                         ->items([
                             ...KaryawanResource::getNavigationItems(),
+                            ...AbsensiBasePage::getNavigationItems(),
                             // ...PageResource::getNavigationItems(),
                             // ...CategoryResource::getNavigationItems(),
                             // ...HomePageSettings::getNavigationItems(),
