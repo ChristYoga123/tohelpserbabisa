@@ -102,12 +102,12 @@ class AbsensiWidget extends BaseWidget
                         // cek waktu yang ditetapkan untuk bisa absen
                         $masterAbsensi = AbsensiBase::first();
 
-                        // jika jam absen belum mulai atau sudah lewat, maka berikan validasi tidak bisa absen
-                        if(now()->isBefore($masterAbsensi->jam_masuk) || now()->isAfter($masterAbsensi->jam_keluar))
+                        // jika jam absen belum mulai atau sudah lewat, maka berikan validasi tidak bisa absen. JAM INDONESIA
+                        if(now()->timezone('Asia/Jakarta')->format('H:i:s') < $masterAbsensi->jam_masuk || now()->timezone('Asia/Jakarta')->format('H:i:s') > $masterAbsensi->jam_keluar)
                         {
                             Notification::make()
                                 ->title('Gagal')
-                                ->body('Waktu absen sudah lewat atau belum dimulai')
+                                ->body('Bukti absen gagal diunggah. Silahkan coba lagi besok')
                                 ->danger()
                                 ->send();
                             return;
