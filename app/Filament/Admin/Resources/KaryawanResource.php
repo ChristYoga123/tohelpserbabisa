@@ -95,80 +95,85 @@ class KaryawanResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('lihatAbsensi')
+                    ->label('Lihat Absensi')
+                    ->color('info')
+                    ->icon('heroicon-o-document')
+                    ->url(fn(User $karyawan) => Pages\LihatAbsensiPage::getUrl(['record' => $karyawan])),
                 Tables\Actions\EditAction::make()
-                ->form([
-                    Grid::make()
-                    ->columns(1)
-                    ->schema([
-                        TextInput::make('name')
-                            ->label('Nama Karyawan')
-                            ->required()
-                            ->unique(ignoreRecord: true),
-                        TextInput::make('email')
-                            ->label('Email')
-                            ->required()
-                            ->email()
-                            ->unique(ignoreRecord: true),
-                        TextInput::make('password')
-                            ->password(),
-                        DatePicker::make('tanggal_lahir')
-                            ->label('Tanggal Lahir')
-                            ->required(fn(string $operation): bool => $operation === 'create')
-                            ->locale('id')
-                            ->formatStateUsing(fn(User $user) => $user?->custom_fields['tanggal_lahir'] ?? null),
-                        FileUpload::make('avatar_url')
-                            ->label('Foto')
-                            ->maxFiles(1),
-                    ]),
-                ])
-                ->using(function(User $user, array $data)
-                {
-                    // dd($data);
-                    DB::beginTransaction();
-                    try
+                    ->form([
+                        Grid::make()
+                        ->columns(1)
+                        ->schema([
+                            TextInput::make('name')
+                                ->label('Nama Karyawan')
+                                ->required()
+                                ->unique(ignoreRecord: true),
+                            TextInput::make('email')
+                                ->label('Email')
+                                ->required()
+                                ->email()
+                                ->unique(ignoreRecord: true),
+                            TextInput::make('password')
+                                ->password(),
+                            DatePicker::make('tanggal_lahir')
+                                ->label('Tanggal Lahir')
+                                ->required(fn(string $operation): bool => $operation === 'create')
+                                ->locale('id')
+                                ->formatStateUsing(fn(User $user) => $user?->custom_fields['tanggal_lahir'] ?? null),
+                            FileUpload::make('avatar_url')
+                                ->label('Foto')
+                                ->maxFiles(1),
+                        ]),
+                    ])
+                    ->using(function(User $user, array $data)
                     {
-                        $user->update([
-                            'name' => $data['name'],
-                            'email' => $data['email'],
-                            'avatar_url' => $data['avatar_url'],
-                        ]);
-
-                        if(isset($data['password']))
+                        // dd($data);
+                        DB::beginTransaction();
+                        try
                         {
                             $user->update([
-                                'password' => Hash::make($data['password']),
+                                'name' => $data['name'],
+                                'email' => $data['email'],
+                                'avatar_url' => $data['avatar_url'],
                             ]);
-                        }
 
-                        if(isset($data['tanggal_lahir']))
+                            if(isset($data['password']))
+                            {
+                                $user->update([
+                                    'password' => Hash::make($data['password']),
+                                ]);
+                            }
+
+                            if(isset($data['tanggal_lahir']))
+                            {
+                                $user->update([
+                                    'custom_fields' => [
+                                        'tanggal_lahir' => $data['tanggal_lahir'],
+                                    ],
+                                ]);
+                            }
+
+                            $user->syncRoles(['karyawan']);
+        
+                            DB::commit();
+
+                            Notification::make()
+                                ->title('Sukses!')
+                                ->body('Edit karyawan berhasil!')
+                                ->success()
+                                ->send();
+                        } catch(Exception $e)
                         {
-                            $user->update([
-                                'custom_fields' => [
-                                    'tanggal_lahir' => $data['tanggal_lahir'],
-                                ],
-                            ]);
+                            DB::rollBack();
+
+                            Notification::make()
+                                ->title('Gagal!')
+                                ->body('Edit karyawan gagal!' . $e->getMessage())
+                                ->danger()
+                                ->send();
                         }
-
-                        $user->syncRoles(['karyawan']);
-    
-                        DB::commit();
-
-                        Notification::make()
-                            ->title('Sukses!')
-                            ->body('Edit karyawan berhasil!')
-                            ->success()
-                            ->send();
-                    } catch(Exception $e)
-                    {
-                        DB::rollBack();
-
-                        Notification::make()
-                            ->title('Gagal!')
-                            ->body('Edit karyawan gagal!' . $e->getMessage())
-                            ->danger()
-                            ->send();
-                    }
-                }),
+                    }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -182,6 +187,7 @@ class KaryawanResource extends Resource
     {
         return [
             'index' => Pages\ManageKaryawans::route('/'),
+            'absen' => Pages\LihatAbsensiPage::route('/{record}/absen'),
         ];
     }
 }

@@ -12,7 +12,6 @@ use CodeWithDennis\SimpleMap\Components\Tables\SimpleMap;
 
 class TugasWidget extends BaseWidget
 {
-    protected int | string | array $columnSpan = 'full';
     public function table(Table $table): Table
     {
         return $table

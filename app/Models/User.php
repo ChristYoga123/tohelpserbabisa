@@ -72,6 +72,11 @@ class User extends Authenticatable implements HasAvatar, FilamentUser, HasMedia
         return $this->hasMany(KaryawanTugas::class, 'karyawan_id');
     }
 
+    public function absensi()
+    {
+        return $this->hasMany(Absensi::class, 'karyawan_id');
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         if($panel->getId() == 'admin')

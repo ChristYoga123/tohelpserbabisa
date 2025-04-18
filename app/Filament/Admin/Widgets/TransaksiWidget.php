@@ -126,7 +126,7 @@ class TransaksiWidget extends BaseWidget
                             ->multiple()
                             ->searchable()
                             ->preload()
-                            ->options(User::query()->whereHas('roles', fn($q) => $q->where('name', 'karyawan'))->pluck('name', 'id'))
+                            ->options(User::query()->whereHas('roles', fn($q) => $q->where('name', 'karyawan'))->whereHas('absensi', fn($q) => $q->whereDate('tanggal', now()))->pluck('name', 'id'))
                             ->required()
                     ])
                     ->action(function(Transaksi $transaksi, array $data)
@@ -139,7 +139,7 @@ class TransaksiWidget extends BaseWidget
                             ->success()
                             ->send();
                     })
-                    ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() != 0),
+                    ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() != 0 || $transaksi->status_transaksi === 'batal'),
                 SimpleMap::make('showMap')
                     ->button()
                     ->icon('heroicon-o-map')

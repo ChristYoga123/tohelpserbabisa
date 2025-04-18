@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Karyawan\Resources\AbsensiResource;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -44,8 +45,8 @@ class KaryawanPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Karyawan/Widgets'), for: 'App\\Filament\\Karyawan\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                // Widgets\AccountWidget::class,
+                // Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -68,24 +69,21 @@ class KaryawanPanelProvider extends PanelProvider
                         value: true,
                         directory: 'avatars', // image will be stored in 'storage/app/public/avatars
                         rules: 'mimes:jpeg,png,jpg|max:1024' //only accept jpeg and png files with a maximum size of 1MB
-                    )
-                    ->canAccess(fn() => auth()->user()->can('page_EditProfilePage')),
+                    ),
             ])
             // topbar
             ->userMenuItems([
                 'profile' => MenuItem::make()
                     ->label(fn() => "Edit Profile")
                     ->url(fn (): string => EditProfilePage::getUrl())
-                    ->icon('heroicon-m-cog-6-tooth')
-                    ->visible(function (): bool {
-                        return auth()->user()->can('page_EditProfilePage');
-                    }),
+                    ->icon('heroicon-m-cog-6-tooth'),
             ])
             ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                 return $builder->groups([
                     NavigationGroup::make('')
                         ->items([
                             ...Dashboard::getNavigationItems(),
+                            ...AbsensiResource::getNavigationItems(),
                             ...KaryawanTugasResource::getNavigationItems(),
                             // ...PageResource::getNavigationItems(),
                             // ...CategoryResource::getNavigationItems(),
