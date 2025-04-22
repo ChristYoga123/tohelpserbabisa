@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Exception;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
@@ -9,6 +10,7 @@ use Filament\Forms\Form;
 use App\Models\Transaksi;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\Select;
 use Filament\Support\Enums\FontWeight;
 use Illuminate\Database\Eloquent\Model;
@@ -74,10 +76,11 @@ class TransaksiResource extends Resource
                     ->getStateUsing(fn(Transaksi $transaksi) => $transaksi->jasa ?? '-'),
                 Tables\Columns\TextColumn::make('total_harga')
                     ->weight(FontWeight::Bold)
-                    ->numeric()
+                    ->money('IDR')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('komisi_admin')
                     ->weight(FontWeight::Bold)
+                    ->suffix('%')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status_tugas')
@@ -141,22 +144,54 @@ class TransaksiResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\Action::make('selesaiTugas')
                         ->label('Selesai')
-                        ->color('success')
+                        ->color('info')
                         ->icon('heroicon-o-check-circle')
                         ->requiresConfirmation()
                         ->modalHeading('Selesaikan Tugas')
                         ->modalDescription('Apakah anda yakin ingin menyelesaikan tugas ini?')
                         ->modalSubmitActionLabel('Ya, Selesaikan')
                         ->action(function (Transaksi $transaksi) {
-                            $transaksi->karyawanTugas->each(fn($q) => $q->update(['is_selesai' => true]));
-                            $transaksi->update(['status_tugas' => 'selesai']);
-                            Notification::make()
-                                ->title('Sukses')
-                                ->body('Tugas telah selesai')
-                                ->success()
-                                ->send();
+                            if(!$transaksi->total_harga || !$transaksi->komisi_admin)
+                            {
+                                Notification::make()
+                                    ->title('Gagal')
+                                    ->body('Tugas tidak dapat diselesaikan, karena belum ada harga')
+                                    ->danger()
+                                    ->send();
+                                return;
+                            }
+                            DB::beginTransaction();
+                            try
+                            {
+                                // update status transaksi
+                                $transaksi->update(['status_tugas' => 'selesai']);
+                                // update status karyawan tugas dan wallet karyawan
+                                $komisiKaryawanKeseluruhan = 100 - $transaksi->komisi_admin;
+                                $komisiMasingMasingKaryawan = $komisiKaryawanKeseluruhan / $transaksi->karyawanTugas->count();
+                                $transaksi->karyawanTugas->each(
+                                    // fn($q) => $q->update(['is_selesai' => true])
+                                    function($q) use ($komisiMasingMasingKaryawan, $transaksi) {
+                                        $q->update(['is_selesai' => true]);
+                                        $q->karyawan->deposit($transaksi->total_harga * ($komisiMasingMasingKaryawan / 100));
+                                    }
+                                );
+                                DB::commit();
+                                Notification::make()
+                                    ->title('Sukses')
+                                    ->body('Tugas telah selesai')
+                                    ->success()
+                                    ->send();
+                            }catch(Exception $e)
+                            {
+                                DB::rollBack();
+                                Notification::make()
+                                    ->title('Gagal')
+                                    ->body('Tugas gagal diselesaikan. ' . $e->getMessage())
+                                    ->danger()
+                                    ->send();
+                            }
                         })
-                        ->hidden(fn(Transaksi $transaksi) => $transaksi->status_tugas === 'selesai' || $transaksi->tugas->isEmpty()),
+                        ->hidden(fn(Transaksi $transaksi) => ($transaksi->status_tugas === 'selesai' || $transaksi->tugas->isEmpty()) || !$transaksi->total_harga),
                     Tables\Actions\Action::make('beriTugas')
                         ->label('Beri Tugas')
                         ->color('warning')
@@ -203,7 +238,8 @@ class TransaksiResource extends Resource
                                 ->body('Harga berhasil diubah')
                                 ->success()
                                 ->send();
-                        }),
+                        })
+                        ->hidden(fn(Transaksi $transaksi) => $transaksi->status_transaksi === 'batal' || $transaksi->status_tugas === 'selesai' || $transaksi->komisi_admin !== null),
                     SimpleMap::make('showMap')
                         ->icon('heroicon-o-map')
                         ->label('Lihat Peta')
@@ -217,7 +253,7 @@ class TransaksiResource extends Resource
                         ->zoom(13)
                         ->language('id')
                         ->region('id')
-                        ->visible(fn(Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput && $karyawanTugas->titik_tujuan),
+                        ->visible(fn(Transaksi $karyawanTugas) => ($karyawanTugas->titik_jemput && $karyawanTugas->titik_tujuan) && $karyawanTugas->status_transaksi !== 'batal'),
                     Tables\Actions\Action::make('lihatTugas')
                         ->label('Lihat Tugas')
                         ->color('warning')
@@ -237,7 +273,8 @@ class TransaksiResource extends Resource
                                 ->body('Transaksi dibatalkan')
                                 ->success()
                                 ->send();
-                        }),
+                        })
+                        ->hidden(fn(Transaksi $transaksi) => $transaksi->status_transaksi === 'batal' || $transaksi->status_tugas === 'selesai'),
                 ])
             ])
             ->bulkActions([

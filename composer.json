@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "bavix/laravel-wallet": "^11.4",
         "bezhansalleh/filament-shield": "^3.2",
         "codewithdennis/filament-simple-map": "^3.0",
         "filament/filament": "^3.2",

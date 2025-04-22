@@ -12,6 +12,8 @@ use CodeWithDennis\SimpleMap\Components\Tables\SimpleMap;
 
 class TugasWidget extends BaseWidget
 {
+    protected int | string | array $columnSpan = 'full';
+    protected static ?int $sort = 3;
     public function table(Table $table): Table
     {
         return $table
@@ -49,17 +51,6 @@ class TugasWidget extends BaseWidget
                 //
             ])
             ->actions([
-                Tables\Actions\Action::make('tugasSelesai')
-                    ->label('Selesai')
-                    ->button()
-                    ->color('success')
-                    ->icon('heroicon-o-check-circle')
-                    ->requiresConfirmation()
-                    ->modalHeading('Selesaikan Tugas')
-                    ->modalDescription('Apakah anda yakin ingin menyelesaikan tugas ini?')
-                    ->modalSubmitActionLabel('Ya, Selesaikan')
-                    ->action(fn (KaryawanTugas $karyawanTugas) => $karyawanTugas->update(['is_selesai' => true]))
-                    ->visible(fn (KaryawanTugas $karyawanTugas) => !$karyawanTugas->is_selesai),
                 SimpleMap::make('showMap')
                     ->button()
                     ->icon('heroicon-o-map')

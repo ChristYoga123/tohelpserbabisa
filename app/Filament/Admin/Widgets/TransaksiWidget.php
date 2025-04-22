@@ -2,12 +2,15 @@
 
 namespace App\Filament\Admin\Widgets;
 
+use Exception;
 use App\Models\User;
 use Filament\Tables;
 use App\Models\Transaksi;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\Select;
 use Filament\Support\Enums\FontWeight;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -35,13 +38,14 @@ class TransaksiWidget extends BaseWidget
                     ->weight(FontWeight::Bold)
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('komisi_admin')
+                    ->weight(FontWeight::Bold)
+                    ->suffix('%')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status_tugas')
                     ->sortable()
-                    ->badge(fn(Transaksi $transaksi) => match ($transaksi->status_tugas) {
-                        'belum' => 'warning',
-                        'proses' => 'info',
-                        'selesai' => 'success',
-                    })
+                    ->badge()
                     ->color(fn(Transaksi $transaksi) => match ($transaksi->status_tugas) {
                         'belum' => 'warning',
                         'proses' => 'info',
@@ -93,90 +97,150 @@ class TransaksiWidget extends BaseWidget
                     ])
                 ], layout: FiltersLayout::AboveContent)
             ->actions([
-                // Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('selesaiTugas')
-                    ->label('Selesai')
-                    ->button()
-                    ->color('success')
-                    ->icon('heroicon-o-check-circle')
-                    ->requiresConfirmation()
-                    ->modalHeading('Selesaikan Tugas')
-                    ->modalDescription('Apakah anda yakin ingin menyelesaikan tugas ini?')
-                    ->modalSubmitActionLabel('Ya, Selesaikan')
-                    ->action(function(Transaksi $transaksi)
-                    {
-                        $transaksi->karyawanTugas->each(fn($q) => $q->update(['is_selesai' => true]));
+                Tables\Actions\ActionGroup::make([
+                    // Tables\Actions\EditAction::make(),
+                    Tables\Actions\Action::make('selesaiTugas')
+                        ->label('Selesai')
+                        ->color('success')
+                        ->icon('heroicon-o-check-circle')
+                        ->requiresConfirmation()
+                        ->modalHeading('Selesaikan Tugas')
+                        ->modalDescription('Apakah anda yakin ingin menyelesaikan tugas ini?')
+                        ->modalSubmitActionLabel('Ya, Selesaikan')
+                        ->action(function(Transaksi $transaksi)
+                        {
+                            if(!$transaksi->total_harga || !$transaksi->komisi_admin)
+                                {
+                                    Notification::make()
+                                        ->title('Gagal')
+                                        ->body('Tugas tidak dapat diselesaikan, karena belum ada harga')
+                                        ->danger()
+                                        ->send();
+                                    return;
+                                }
+                            DB::beginTransaction();
+                            try
+                            {
+                                // update status transaksi
+                                $transaksi->update(['status_tugas' => 'selesai']);
+                                // update status karyawan tugas dan wallet karyawan
+                                $komisiKaryawanKeseluruhan = 100 - $transaksi->komisi_admin;
+                                $komisiMasingMasingKaryawan = $komisiKaryawanKeseluruhan / $transaksi->karyawanTugas->count();
+                                $transaksi->karyawanTugas->each(
+                                    // fn($q) => $q->update(['is_selesai' => true])
+                                    function($q) use ($komisiMasingMasingKaryawan, $transaksi) {
+                                        $q->update(['is_selesai' => true]);
+                                        $q->karyawan->deposit($transaksi->total_harga * ($komisiMasingMasingKaryawan / 100));
+                                    }
+                                );
+                                DB::commit();
+                                Notification::make()
+                                    ->title('Sukses')
+                                    ->body('Tugas telah selesai')
+                                    ->success()
+                                    ->send();
+                            }catch(Exception $e)
+                            {
+                                DB::rollBack();
+                                Notification::make()
+                                    ->title('Gagal')
+                                    ->body('Tugas gagal diselesaikan. ' . $e->getMessage())
+                                    ->danger()
+                                    ->send();
+                            }
+                        })
+                        ->hidden(fn(Transaksi $transaksi) => $transaksi->status_tugas === 'selesai' || $transaksi->tugas->isEmpty()),
+                    Tables\Actions\Action::make('beriTugas')
+                        ->label('Beri Tugas')
 
-                        $transaksi->update(['status_tugas' => 'selesai']);
+                        ->icon('heroicon-o-briefcase')
+                        ->form([
+                            Select::make('karyawan')
+                                ->label('Karyawan Yang Sedang Tidak Memiliki Tugas')
+                                ->multiple()
+                                ->searchable()
+                                ->preload()
+                                ->options(User::query()->whereHas('roles', fn($q) => $q->where('name', 'karyawan'))->whereHas('absensi', fn($q) => $q->whereDate('tanggal', now()))->pluck('name', 'id'))
+                                ->required()
+                        ])
+                        ->action(function(Transaksi $transaksi, array $data)
+                        {
+                            $transaksi->tugas()->attach($data['karyawan']);
 
-                        Notification::make()
-                            ->title('Sukses')
-                            ->body('Tugas telah selesai')
-                            ->success()
-                            ->send();
-                    })
-                    ->hidden(fn(Transaksi $transaksi) => $transaksi->status_tugas === 'selesai' || $transaksi->tugas->isEmpty()),
-                Tables\Actions\Action::make('beriTugas')
-                    ->label('Beri Tugas')
-                    ->button()
-                    ->icon('heroicon-o-briefcase')
-                    ->form([
-                        Select::make('karyawan')
-                            ->label('Karyawan Yang Sedang Tidak Memiliki Tugas')
-                            ->multiple()
-                            ->searchable()
-                            ->preload()
-                            ->options(User::query()->whereHas('roles', fn($q) => $q->where('name', 'karyawan'))->whereHas('absensi', fn($q) => $q->whereDate('tanggal', now()))->pluck('name', 'id'))
-                            ->required()
-                    ])
-                    ->action(function(Transaksi $transaksi, array $data)
-                    {
-                        $transaksi->tugas()->attach($data['karyawan']);
+                            Notification::make()
+                                ->title('Sukses')
+                                ->body('Karyawan telah ditugaskan')
+                                ->success()
+                                ->send();
+                        })
+                        ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() != 0 || $transaksi->status_transaksi === 'batal'),
+                    Tables\Actions\Action::make('ubahHarga')
+                        ->label('Ubah Harga')
 
-                        Notification::make()
-                            ->title('Sukses')
-                            ->body('Karyawan telah ditugaskan')
-                            ->success()
-                            ->send();
-                    })
-                    ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() != 0 || $transaksi->status_transaksi === 'batal'),
-                SimpleMap::make('showMap')
-                    ->button()
-                    ->icon('heroicon-o-map')
-                    ->label('Lihat Peta')
-                    ->color('info')
-                    ->viewing()
-                    ->directions()
-                    ->origin(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput)
-                    ->destination(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_tujuan)
-                    // ->walking()
-                    // ->satellite()
-                    ->zoom(13)
-                    ->language('id')
-                    ->region('id')
-                    ->visible(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput && $karyawanTugas->titik_tujuan),
-                Tables\Actions\Action::make('lihatTugas')
-                    ->label('Lihat Tugas')
-                    ->button()
-                    ->color('warning')
-                    ->icon('heroicon-o-briefcase')
-                    ->url(fn(Transaksi $transaksi) => TugasPage::getUrl(['record' => $transaksi]))
-                    ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() == 0),
-                Tables\Actions\DeleteAction::make()
-                    ->label('Batalkan Transaksi')
-                    ->button()
-                    ->action(function(Transaksi $transaksi)
-                    {
-                        $transaksi->update([
-                            'status_transaksi' => 'batal',
-                        ]);
+                        ->color('success')
+                        ->icon('heroicon-o-currency-dollar')
+                        ->form([
+                            TextInput::make('total_harga')
+                                ->label('Total Harga')
+                                ->numeric()
+                                ->default(fn(Transaksi $record) => $record->total_harga),
+                            TextInput::make('komisi_admin')
+                                ->label('Komisi Admin')
+                                ->numeric()
+                                ->default(fn(Transaksi $record) => $record->komisi_admin),
+                        ])
+                        ->action(function (Transaksi $transaksi, array $data) {
+                            $transaksi->update([
+                                'total_harga' => $data['total_harga'],
+                                'komisi_admin' => $data['komisi_admin'],
+                            ]);
+                            Notification::make()
+                                ->title('Sukses')
+                                ->body('Harga berhasil diubah')
+                                ->success()
+                                ->send();
+                        })
+                        ->hidden(fn(Transaksi $transaksi) => $transaksi->status_transaksi === 'batal' || $transaksi->status_tugas === 'selesai' || $transaksi->komisi_admin !== null),
+                    SimpleMap::make('showMap')
 
-                        Notification::make()
-                            ->title('Sukses')
-                            ->body('Transaksi dibatalkan')
-                            ->success()
-                            ->send();
-                    }),
+                        ->icon('heroicon-o-map')
+                        ->label('Lihat Peta')
+                        ->color('info')
+                        ->viewing()
+                        ->directions()
+                        ->origin(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput)
+                        ->destination(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_tujuan)
+                        // ->walking()
+                        // ->satellite()
+                        ->zoom(13)
+                        ->language('id')
+                        ->region('id')
+                        ->visible(fn (Transaksi $karyawanTugas) => $karyawanTugas->titik_jemput && $karyawanTugas->titik_tujuan),
+                    Tables\Actions\Action::make('lihatTugas')
+                        ->label('Lihat Tugas')
+
+                        ->color('warning')
+                        ->icon('heroicon-o-briefcase')
+                        ->url(fn(Transaksi $transaksi) => TugasPage::getUrl(['record' => $transaksi]))
+                        ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() == 0),
+                    Tables\Actions\DeleteAction::make()
+                        ->label('Batalkan Transaksi')
+
+                        ->action(function(Transaksi $transaksi)
+                        {
+                            $transaksi->update([
+                                'status_transaksi' => 'batal',
+                            ]);
+
+                            Notification::make()
+                                ->title('Sukses')
+                                ->body('Transaksi dibatalkan')
+                                ->success()
+                                ->send();
+                        })
+                        ->hidden(fn(Transaksi $transaksi) => $transaksi->status_transaksi === 'batal' || $transaksi->status_tugas === 'selesai'),
+                ]),
+                
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
