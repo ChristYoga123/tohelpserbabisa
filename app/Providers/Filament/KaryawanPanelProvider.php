@@ -24,6 +24,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use App\Filament\Karyawan\Resources\KaryawanTugasResource;
+use App\Filament\Karyawan\Resources\WithdrawRequestResource;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -89,6 +90,7 @@ class KaryawanPanelProvider extends PanelProvider
                             ...Dashboard::getNavigationItems(),
                             ...AbsensiResource::getNavigationItems(),
                             ...KaryawanTugasResource::getNavigationItems(),
+                            ...WithdrawRequestResource::getNavigationItems(),
                             // ...PageResource::getNavigationItems(),
                             // ...CategoryResource::getNavigationItems(),
                             // ...HomePageSettings::getNavigationItems(),

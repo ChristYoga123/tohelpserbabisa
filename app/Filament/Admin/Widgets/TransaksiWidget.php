@@ -20,6 +20,8 @@ use App\Filament\Admin\Resources\TransaksiResource\Pages\TugasPage;
 class TransaksiWidget extends BaseWidget
 {
     protected int | string | array $columnSpan = 'full';
+    protected static ?int $sort = 2;
+
 
     public function table(Table $table): Table
     {
@@ -123,7 +125,10 @@ class TransaksiWidget extends BaseWidget
                             {
                                 // update status transaksi
                                 $transaksi->update(['status_tugas' => 'selesai']);
-                                // update status karyawan tugas dan wallet karyawan
+                                // input wallet admin
+                                $admin = User::query()->role('super_admin')->first();
+                                $admin->deposit($transaksi->total_harga * ($transaksi->komisi_admin / 100));
+                                // update status karyawan tugas dan input wallet karyawan
                                 $komisiKaryawanKeseluruhan = 100 - $transaksi->komisi_admin;
                                 $komisiMasingMasingKaryawan = $komisiKaryawanKeseluruhan / $transaksi->karyawanTugas->count();
                                 $transaksi->karyawanTugas->each(
