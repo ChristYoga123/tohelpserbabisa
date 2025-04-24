@@ -190,8 +190,11 @@ class TransaksiWidget extends BaseWidget
                                 ->numeric()
                                 ->default(fn(Transaksi $record) => $record->total_harga),
                             TextInput::make('komisi_admin')
-                                ->label('Komisi Admin')
+                                ->label('Komisi Admin (Dalam Persen %)')
                                 ->numeric()
+                                ->suffix('%')
+                                ->minValue(1)
+                                ->maxValue(100)
                                 ->default(fn(Transaksi $record) => $record->komisi_admin),
                         ])
                         ->action(function (Transaksi $transaksi, array $data) {
