@@ -25,7 +25,20 @@ class MobilController extends Controller
 
     public function showPricing(Request $request)
     {
-        $harga = getPricing('Mobil', $request->jarakBaseCampKeTitikJemput, $request->jarakTitikJemputKeTitikTujuan);
+        $discount = null;
+        if($request->discount)
+        {
+            $discount = Voucher::where('nama', $request->discount)->first();
+
+            if(!$discount)
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Voucher tidak ditemukan'
+                ], 404);
+            }
+        }
+        $harga = getPricing('Mobil', $request->jarakBaseCampKeTitikJemput, $request->jarakTitikJemputKeTitikTujuan, $discount->persentase ?? null);
 
         return response()->json([
             'status' => 'success',
@@ -46,7 +59,7 @@ class MobilController extends Controller
                 'jarak' => $request->jarak,
                 'titik_jemput' => $request->titik_jemput,
                 'titik_tujuan' => $request->titik_tujuan,
-                'total_harga' => getPricing('Mobil',  $request->jarakBaseCampKeTitikJemput, $request->jarak),
+                'total_harga' => getPricing('Mobil',  $request->jarakBaseCampKeTitikJemput, $request->jarak, Voucher::whereNama($request->voucher)->first()->persentase ?? null),
             ];
             Transaksi::create($data);
 

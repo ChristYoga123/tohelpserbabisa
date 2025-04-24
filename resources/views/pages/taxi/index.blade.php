@@ -444,15 +444,28 @@
                             },
                             success: function(response) {
                                 if (response.status === 'success') {
+                                    let finalPrice = response.harga;
+
+                                    // Apply voucher discount if available
+                                    if (voucherDiscount > 0) {
+                                        const discountAmount = Math.round(finalPrice * (
+                                            voucherDiscount / 100));
+                                        finalPrice -= discountAmount;
+                                    }
+                                    // Format price with thousand separators for Rupiah
+                                    const formattedPrice = new Intl.NumberFormat('id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR',
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    }).format(finalPrice);
                                     // Update the route info with the response data
                                     $('#routeInfo').html(
                                         `Jarak Basecamp ke Titik Jemput: ${basecampToPickupDistance} km<br>
                             Jarak Perjalanan: <span id="distance">${roundedDistance}</span> km<br>
                             Estimasi waktu: <span id="duration">${duration}</span> menit<br>
-                            Tarif dasar: Rp${BASE_FEE.toLocaleString()}<br>
-                            Tarif jarak: Rp${(roundedDistance * appliedRate).toLocaleString()} (${roundedDistance} km × Rp${appliedRate.toLocaleString()}/km)
                             ${discountInfo}<br>
-                            Harga Total: Rp<span id="totalPrice">${response.harga}</span>`
+                            Harga Total: <h1 id="totalPrice" class="text-success">${formattedPrice}</h1>`
                                     ).show();
                                 } else {
                                     // Handle error response
@@ -656,13 +669,15 @@
                             },
                             success: function(response) {
                                 if (response.status === 'success') {
+                                    // console.log($('#totalPrice').text());
+
                                     Swal.fire({
                                         title: 'Berhasil',
                                         text: 'Pesanan berhasil dibuat, Anda akan diarahkan ke WhatsApp Admin',
                                         icon: 'success'
                                     }).then(() => {
                                         const message =
-                                            `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Mobil\nID Order : ${response.order_id}\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${response.harga}`;
+                                            `Hii, saya baru saja memesan To Help untuk meminta bantuan\n\n- Mobil\nID Order : ${response.order_id}\nTitik Penjemputan : ${$('#lokasi_awal').val()}\nTitik Pengantaran : ${$('#lokasi_akhir').val()}\nHarga : ${$('#totalPrice').text()}`;
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
                                             '_blank'

@@ -193,6 +193,11 @@
                             // Recalculate price with the discount
                             calculateRoute();
 
+                            // $('#totalPrice').html(parseInt($('#totalPrice').text().replace(/\D/g, '') -
+                            //     ($(
+                            //         '#totalPrice').text().replace(/\D/g, '')) * (
+                            //         voucherDiscount / 100)));
+
                             Swal.fire({
                                 title: 'Berhasil',
                                 text: `Voucher "${response.data.nama}" berhasil diaplikasikan! Diskon ${voucherDiscount}%`,
@@ -431,17 +436,34 @@
                                 _token: '{{ csrf_token() }}',
                                 jarakBaseCampKeTitikJemput: Math.ceil(basecampToPickupDistance),
                                 jarakTitikJemputKeTitikTujuan: Math.ceil(routeDistance),
+                                diskon: $('#kode-voucher').val().trim(),
                             },
                             success: function(response) {
                                 if (response.status === 'success') {
+                                    let finalPrice = response.harga;
+
+                                    // Apply voucher discount if available
+                                    if (voucherDiscount > 0) {
+                                        const discountAmount = Math.round(finalPrice * (
+                                            voucherDiscount / 100));
+                                        finalPrice -= discountAmount;
+                                    }
+                                    // Format price with thousand separators for Rupiah
+                                    const formattedPrice = new Intl.NumberFormat('id-ID', {
+                                        style: 'currency',
+                                        currency: 'IDR',
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    }).format(finalPrice);
+
                                     // Update the route info with the response data
                                     $('#routeInfo').html(
-                                        `Jarak Basecamp ke Titik Jemput: ${basecampToPickupDistance} km<br>
-                        Jarak Perjalanan: <span id="distance">${routeDistance}</span> km (dibulatkan menjadi ${roundedDistance} km)<br>
-                        Estimasi waktu: <span id="duration">${duration}</span> menit<br>
-                        ${priceInfo}
-                        ${discountInfo}<br>
-                        Harga Total: Rp<span id="totalPrice">${response.harga}</span>`
+                                        `Jarak Driver ke Titik Jemput: ${basecampToPickupDistance} km<br>
+                                        Jarak Perjalanan: <span id="distance">${roundedDistance}</span> km<br>
+                                        Estimasi waktu: <span id="duration">${duration}</span> menit<br>
+                                        
+                                        ${discountInfo}<br>
+                                        Harga Total: <h1 id="totalPrice" class="text-success">${formattedPrice}</h1>`
                                     ).show();
                                 } else {
                                     // Handle error response

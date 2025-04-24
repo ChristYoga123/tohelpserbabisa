@@ -3,7 +3,7 @@
 use App\Models\TarifDasar;
 use App\Models\TarifJarak;
 
-function getPricing(string $tipe, $jarakBaseCampKeTitikJemput, $jarakTitikJemputKeTitikTujuan)
+function getPricing(string $tipe, $jarakBaseCampKeTitikJemput, $jarakTitikJemputKeTitikTujuan, $discount = null)
 {
     $tarifDasar = TarifDasar::whereJenis($tipe)->first();
     
@@ -29,6 +29,10 @@ function getPricing(string $tipe, $jarakBaseCampKeTitikJemput, $jarakTitikJemput
 
         // pembulatan harga
         $harga = round($harga, -3, PHP_ROUND_HALF_UP);
+    }
+
+    if ($discount) {
+        $harga -= $harga * ($discount / 100);
     }
 
     return $harga;
