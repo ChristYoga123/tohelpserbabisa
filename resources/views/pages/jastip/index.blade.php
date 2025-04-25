@@ -13,7 +13,7 @@
                 <div class="col-md-12">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="card-title">Makanan & Minuman</h5>
+                            <h5 class="card-title">Makanan, Minuman, atau Barang</h5>
                             <h2 class="card-text text-primary mb-3">Start from Rp 9.000*</h2>
                             <p class="card-text mb-4">
                                 Ketentuan:<br>
@@ -22,7 +22,7 @@
                                 - Bisa Jastip disemua outlet (kecuali alkohol / sejenisnya)<br>
                                 - Antri pemesanan 5k/30 menit, 15k/jam (Jika ada)<br>
                             </p>
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Makanan & Minuman"
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Makanan/Minuman/Barang"
                                 data-price="9.000">
                                 <i class="fab fa-whatsapp"></i> Pesan Sekarang
                             </a>
@@ -78,7 +78,8 @@
                                             `List order : \n1. ......\n2. ......\n3. ......\n\n` +
                                             `Alamat tujuan / kirim : \n` +
                                             `No.hp / wa : \n` +
-                                            `Atas nama : `;
+                                            `Atas nama : \n\n` +
+                                            `Noted : Tetap berikan sharelok kepada driver untuk membantu memudahkan pengambilan / pengantaran 🙏🏻`;
 
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,

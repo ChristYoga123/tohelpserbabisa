@@ -111,7 +111,10 @@
                                             `Permintaan (pilih salah satu) : ngopi/nonton/night ride/yang lain…\n` +
                                             `Hari/tanggal : \n` +
                                             `Nama : \n` +
-                                            `Nomor WhatsApp : `;
+                                            `Nomor WhatsApp : \n` +
+                                            `Pilih Talent : \n\n` +
+                                            `Dijemput / Menjemput : (tulis alamat kalian apabila ingin dijemput)\n\n` +
+                                            `Noted : (untuk cek talent, bisa kunjungi website di menu bagian profile. Bingung? Tanya admin)`;
 
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
