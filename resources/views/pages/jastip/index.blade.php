@@ -75,6 +75,7 @@
                                             `ID Order : ${response.order_id}\n` +
                                             `Jenis pesanan : Jastip\n` +
                                             `Jasa : ${service}\n` +
+                                            `Alamat Ambil/Beli : \n` +
                                             `List order : \n1. ......\n2. ......\n3. ......\n\n` +
                                             `Alamat tujuan / kirim : \n` +
                                             `No.hp / wa : \n` +
