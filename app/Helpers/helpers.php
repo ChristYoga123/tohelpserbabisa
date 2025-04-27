@@ -24,7 +24,12 @@ function getPricing(string $tipe, $jarakBaseCampKeTitikJemput, $jarakTitikJemput
         if($jarakBaseCampKeTitikJemput > 5) {
             $harga = ($jarakBaseCampKeTitikJemput - 5) * $tarifDasar->harga + ($jarakTitikJemputKeTitikTujuan * $tarifJarak->harga);
         } else {
-            $harga = ($jarakTitikJemputKeTitikTujuan * $tarifJarak->harga);
+            if($tarifJarak->id === $tarifJarak->whereJenis($tipe)->first()->id)
+            {
+                $harga = $tarifJarak->harga;
+            } else {
+                $harga = ($jarakTitikJemputKeTitikTujuan * $tarifJarak->harga);
+            }
         }
 
         // pembulatan harga
