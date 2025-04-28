@@ -16,6 +16,7 @@ use Filament\Tables\Enums\FiltersLayout;
 use Filament\Widgets\TableWidget as BaseWidget;
 use CodeWithDennis\SimpleMap\Components\Tables\SimpleMap;
 use App\Filament\Admin\Resources\TransaksiResource\Pages\TugasPage;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
 class TransaksiWidget extends BaseWidget
 {
@@ -96,7 +97,9 @@ class TransaksiWidget extends BaseWidget
                         'belum' => 'Belum Selesai',
                         'sukses' => 'Sukses Bayar',
                         'batal' => 'Dibatalkan',
-                    ])
+                    ]),
+                DateRangeFilter::make('created_at')->timezone('Asia/Jakarta')
+                    ->label('Tanggal'),
                 ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\ActionGroup::make([
@@ -181,7 +184,7 @@ class TransaksiWidget extends BaseWidget
                         ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() != 0 || $transaksi->status_transaksi === 'batal'),
                     Tables\Actions\Action::make('ubahHarga')
                         ->label('Ubah Harga')
-
+                        ->requiresConfirmation()
                         ->color('success')
                         ->icon('heroicon-o-currency-dollar')
                         ->form([

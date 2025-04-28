@@ -22,6 +22,7 @@ use App\Filament\Admin\Resources\TransaksiResource\Pages;
 use CodeWithDennis\SimpleMap\Components\Tables\SimpleMap;
 use App\Filament\Admin\Resources\TransaksiResource\Pages\TugasPage;
 use App\Filament\Admin\Resources\TransaksiResource\RelationManagers;
+use Malzariey\FilamentDaterangepickerFilter\Filters\DateRangeFilter;
 
 class TransaksiResource extends Resource
 {
@@ -137,7 +138,9 @@ class TransaksiResource extends Resource
                         'belum' => 'Belum Selesai',
                         'sukses' => 'Sukses Bayar',
                         'batal' => 'Dibatalkan',
-                    ])
+                    ]),
+                DateRangeFilter::make('created_at')->timezone('Asia/Jakarta')
+                    ->label('Tanggal')
                 ], layout: FiltersLayout::AboveContent)
             ->actions([
                 // Tables\Actions\EditAction::make(),
@@ -215,6 +218,7 @@ class TransaksiResource extends Resource
                         })
                         ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() != 0 || $transaksi->status_transaksi === 'batal'),
                     Tables\Actions\Action::make('ubahHarga')
+                        ->requiresConfirmation()
                         ->label('Ubah Harga')
                         ->color('success')
                         ->icon('heroicon-o-currency-dollar')
