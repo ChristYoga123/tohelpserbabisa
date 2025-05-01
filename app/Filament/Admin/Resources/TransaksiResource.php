@@ -168,6 +168,9 @@ class TransaksiResource extends Resource
                             {
                                 // update status transaksi
                                 $transaksi->update(['status_tugas' => 'selesai']);
+                                // input wallet admin
+                                $admin = User::query()->role('super_admin')->first();
+                                $admin->deposit($transaksi->total_harga * ($transaksi->komisi_admin / 100));
                                 // update status karyawan tugas dan wallet karyawan
                                 $komisiKaryawanKeseluruhan = 100 - $transaksi->komisi_admin;
                                 $komisiMasingMasingKaryawan = $komisiKaryawanKeseluruhan / $transaksi->karyawanTugas->count();
