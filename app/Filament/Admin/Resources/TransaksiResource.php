@@ -111,12 +111,12 @@ class TransaksiResource extends Resource
                 Tables\Columns\TextColumn::make('status_transaksi')
                     ->label('Status Transaksi')
                     ->badge()
-                    ->color(fn (Transaksi $transaksi) => match ($transaksi->status_transaksi) {
+                    ->color(fn(Transaksi $transaksi) => match ($transaksi->status_transaksi) {
                         'belum' => 'warning',
                         'sukses' => 'success',
                         'batal' => 'danger',
                     })
-                    ->getStateUsing(function(Transaksi $transaksi) {
+                    ->getStateUsing(function (Transaksi $transaksi) {
                         return match ($transaksi->status_transaksi) {
                             'belum' => 'Belum Selesai',
                             'sukses' => 'Sukses Bayar',
@@ -139,9 +139,14 @@ class TransaksiResource extends Resource
                         'sukses' => 'Sukses Bayar',
                         'batal' => 'Dibatalkan',
                     ]),
+                Tables\Filters\SelectFilter::make('jenis')
+                    ->multiple()
+                    ->preload()
+                    ->searchable()
+                    ->options(Transaksi::query()->distinct('jenis')->pluck('jenis', 'jenis')->mapWithKeys(fn($item) => [$item => ucwords($item)])),
                 DateRangeFilter::make('created_at')->timezone('Asia/Jakarta')
                     ->label('Tanggal')
-                ], layout: FiltersLayout::AboveContent)
+            ], layout: FiltersLayout::AboveContent)
             ->actions([
                 // Tables\Actions\EditAction::make(),
                 Tables\Actions\ActionGroup::make([
@@ -154,8 +159,7 @@ class TransaksiResource extends Resource
                         ->modalDescription('Apakah anda yakin ingin menyelesaikan tugas ini?')
                         ->modalSubmitActionLabel('Ya, Selesaikan')
                         ->action(function (Transaksi $transaksi) {
-                            if(!$transaksi->total_harga || !$transaksi->komisi_admin)
-                            {
+                            if (!$transaksi->total_harga || !$transaksi->komisi_admin) {
                                 Notification::make()
                                     ->title('Gagal')
                                     ->body('Tugas tidak dapat diselesaikan, karena belum ada harga')
@@ -164,8 +168,7 @@ class TransaksiResource extends Resource
                                 return;
                             }
                             DB::beginTransaction();
-                            try
-                            {
+                            try {
                                 // update status transaksi
                                 $transaksi->update(['status_tugas' => 'selesai']);
                                 // input wallet admin
@@ -176,7 +179,7 @@ class TransaksiResource extends Resource
                                 $komisiMasingMasingKaryawan = $komisiKaryawanKeseluruhan / $transaksi->karyawanTugas->count();
                                 $transaksi->karyawanTugas->each(
                                     // fn($q) => $q->update(['is_selesai' => true])
-                                    function($q) use ($komisiMasingMasingKaryawan, $transaksi) {
+                                    function ($q) use ($komisiMasingMasingKaryawan, $transaksi) {
                                         $q->update(['is_selesai' => true]);
                                         $q->karyawan->deposit($transaksi->total_harga * ($komisiMasingMasingKaryawan / 100));
                                     }
@@ -187,8 +190,7 @@ class TransaksiResource extends Resource
                                     ->body('Tugas telah selesai')
                                     ->success()
                                     ->send();
-                            }catch(Exception $e)
-                            {
+                            } catch (Exception $e) {
                                 DB::rollBack();
                                 Notification::make()
                                     ->title('Gagal')
@@ -272,12 +274,11 @@ class TransaksiResource extends Resource
                         ->hidden(fn(Transaksi $transaksi) => $transaksi->tugas->count() == 0),
                     Tables\Actions\DeleteAction::make()
                         ->label('Batalkan Transaksi')
-                        ->action(function(Transaksi $transaksi)
-                        {
+                        ->action(function (Transaksi $transaksi) {
                             $transaksi->update([
                                 'status_transaksi' => 'batal',
                             ]);
-    
+
                             Notification::make()
                                 ->title('Sukses')
                                 ->body('Transaksi dibatalkan')
