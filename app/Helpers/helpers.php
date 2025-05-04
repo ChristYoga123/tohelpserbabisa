@@ -21,8 +21,8 @@ function getPricing(string $tipe, $jarakBaseCampKeTitikJemput, $jarakTitikJemput
 
     if ($tarifJarak) {
         // Jika jarak dari basecamp ke titik jemput lebih dari 5 km maka akan dapat gratis 5km pertama
-        if($jarakBaseCampKeTitikJemput > 5) {
-            $harga = ($jarakBaseCampKeTitikJemput - 5) * $tarifDasar->harga + ($jarakTitikJemputKeTitikTujuan * $tarifJarak->harga);
+        if($jarakBaseCampKeTitikJemput > 3) {
+            $harga = ($jarakBaseCampKeTitikJemput - 3) * $tarifDasar->harga + ($jarakTitikJemputKeTitikTujuan * $tarifJarak->harga);
         } else {
             if($tarifJarak->id === $tarifJarak->whereJenis($tipe)->first()->id)
             {
