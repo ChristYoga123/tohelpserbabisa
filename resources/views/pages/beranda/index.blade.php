@@ -319,7 +319,7 @@
                             'Hii kak, saya ingin meminta bantuan To Help\n\n' .
                             'ID Order : [order_id]\n' .
                             'Jenis Jasa : Jasa IT\n' .
-                            'Tipe Jasa : (Website/Aplikasi Mobile/Lain-lain)\n' .
+                            'Tipe Jasa : (Website/Aplikasi Mobile)\n' .
                             'Deadline : \n' .
                             'Nama : \n' .
                             'Nomor WhatsApp : ',
