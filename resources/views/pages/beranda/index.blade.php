@@ -314,7 +314,7 @@
                     'Jasa IT' => [
                         'icon' => 'fas fa-laptop',
                         'color' => '#E74C3C', // Bold Red
-                        'items' => ['Website', 'Aplikasi Mobile', 'Dan Lain-Lain'],
+                        'items' => ['Website', 'Aplikasi Mobile'],
                         'message' =>
                             'Hii kak, saya ingin meminta bantuan To Help\n\n' .
                             'ID Order : [order_id]\n' .
