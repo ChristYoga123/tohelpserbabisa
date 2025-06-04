@@ -75,13 +75,13 @@
             <form class="contact-form row mt-5" id="locationForm">
                 <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
                     <input type="text" name="lokasi_awal" id="lokasi_awal" placeholder="Mendapatkan lokasi Anda..."
-                        class="form-control w-100 ps-3 py-2 rounded-0" required>
+                        class="form-control w-100 ps-3 py-2 rounded-0" required disabled>
                     <input type="hidden" id="lat_awal" name="lat_awal">
                     <input type="hidden" id="lng_awal" name="lng_awal">
                 </div>
                 <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
                     <input type="text" name="lokasi_akhir" id="lokasi_akhir" placeholder="Masukkan Tujuan*"
-                        class="form-control w-100 ps-3 py-2 rounded-0" required>
+                        class="form-control w-100 ps-3 py-2 rounded-0" required disabled>
                     <input type="hidden" id="lat_akhir" name="lat_akhir">
                     <input type="hidden" id="lng_akhir" name="lng_akhir">
                 </div>
@@ -269,6 +269,9 @@
                 });
 
                 directionsRenderer.setMap(map);
+
+                // Enable location inputs after map is loaded
+                $('#lokasi_awal, #lokasi_akhir').prop('disabled', false);
 
                 // Add click listener to map for destination selection
                 map.addListener('click', function(e) {
