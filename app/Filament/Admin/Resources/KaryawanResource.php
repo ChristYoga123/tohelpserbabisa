@@ -6,6 +6,7 @@ use Exception;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
+use App\Models\Cabang;
 use App\Models\Karyawan;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -13,11 +14,13 @@ use Filament\Resources\Resource;
 use Illuminate\Support\Facades\DB;
 use Filament\Forms\Components\Grid;
 use Illuminate\Support\Facades\Hash;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\KaryawanResource\Pages;
@@ -48,6 +51,10 @@ class KaryawanResource extends Resource
                             ->required()
                             ->email()
                             ->unique(ignoreRecord: true),
+                        Select::make('cabang_id')
+                            ->label('Cabang')
+                            ->options(Cabang::all()->pluck('nama', 'id'))
+                            ->required(),
                         TextInput::make('password')
                             ->password()
                             ->dehydrateStateUsing(fn ($state) => Hash::make($state))
@@ -77,6 +84,10 @@ class KaryawanResource extends Resource
                     ->label('Email')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('cabang.nama')
+                    ->label('Cabang')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal_lahir')
                     ->label('Tanggal Lahir')
                     ->searchable()
@@ -92,7 +103,9 @@ class KaryawanResource extends Resource
                     ->label('Foto'),
             ])
             ->filters([
-                //
+                SelectFilter::make('cabang_id')
+                    ->label('Cabang')
+                    ->options(Cabang::all()->pluck('nama', 'id')),
             ])
             ->actions([
                 Tables\Actions\Action::make('lihatAbsensi')
@@ -136,6 +149,7 @@ class KaryawanResource extends Resource
                                 'name' => $data['name'],
                                 'email' => $data['email'],
                                 'avatar_url' => $data['avatar_url'],
+                                'cabang_id' => $data['cabang_id'],
                             ]);
 
                             if(isset($data['password']))
