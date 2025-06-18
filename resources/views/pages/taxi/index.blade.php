@@ -119,9 +119,9 @@
     <script>
         $(document).ready(function() {
             // Constants
-            const BASECAMP_LAT = {{ env('BASECAMP_LAT') }};
-            const BASECAMP_LNG = {{ env('BASECAMP_LONG') }};
-            const BASE_FEE = {{ $tarifDasar->harga }}; // Base fee for car
+            const BASECAMP_LAT = parseFloat("{{ env('BASECAMP_LAT') }}");
+            const BASECAMP_LNG = parseFloat("{{ env('BASECAMP_LONG') }}");
+            const BASE_FEE = parseFloat("{{ $tarifDasar->harga }}"); // Base fee for car
 
             // Tiered pricing for cars
             const TIER_1_MAX = 3; // 1-3 km
@@ -572,15 +572,15 @@
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         function(position) {
-                            const lat = position.coords.latitude;
-                            const lng = position.coords.longitude;
+                            const lat = parseFloat(position.coords.latitude);
+                            const lng = parseFloat(position.coords.longitude);
 
                             $('#lat_awal').val(lat);
                             $('#lng_awal').val(lng);
 
                             map.setCenter({
-                                lat,
-                                lng
+                                lat: lat,
+                                lng: lng
                             });
                             map.setZoom(15);
                             createMarker(lat, lng, true);
@@ -603,8 +603,8 @@
                     const geocoder = new google.maps.Geocoder();
                     geocoder.geocode({
                         location: {
-                            lat,
-                            lng
+                            lat: parseFloat(lat),
+                            lng: parseFloat(lng)
                         }
                     }, (results, status) => {
                         resolve(
@@ -614,16 +614,57 @@
                             results[0].geometry &&
                             results[0].geometry.location_type !== 'APPROXIMATE' &&
                             results[0].formatted_address &&
-                            !results[0].formatted_address.toLowerCase().includes(
-                                'undefined')
+                            !results[0].formatted_address.toLowerCase().includes('undefined')
                         );
                     });
                 });
             }
 
-            // Event Handlers
-            $('#useMyLocation').click(getUserLocation);
+            // Determine cabang based on location
+            async function determineCabang(lat, lng) {
+                return new Promise((resolve) => {
+                    const geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({
+                        location: { 
+                            lat: parseFloat(lat), 
+                            lng: parseFloat(lng) 
+                        }
+                    }, (results, status) => {
+                        if (status === 'OK' && results[0]) {
+                            // Get the address components
+                            const addressComponents = results[0].address_components;
+                            let city = '';
+                            
+                            // Find the city component
+                            for (const component of addressComponents) {
+                                if (component.types.includes('locality')) {
+                                    city = component.long_name.toLowerCase();
+                                    break;
+                                }
+                            }
 
+                            // Determine cabang based on city
+                            let cabangId = null;
+                            switch(city) {
+                                case 'malang':
+                                    cabangId = 1; // Assuming 1 is Malang's cabang ID
+                                    break;
+                                case 'surabaya':
+                                    cabangId = 2; // Assuming 2 is Surabaya's cabang ID
+                                    break;
+                                // Add more cities as needed
+                                default:
+                                    cabangId = 1; // Default to Malang or handle as needed
+                            }
+                            resolve(cabangId);
+                        } else {
+                            resolve(1); // Default to Malang if geocoding fails
+                        }
+                    });
+                });
+            }
+
+            // Modify the order click handler
             $('#order').click(async function() {
                 const lat_awal = parseFloat($('#lat_awal').val());
                 const lng_awal = parseFloat($('#lng_awal').val());
@@ -648,6 +689,9 @@
                     return;
                 }
 
+                // Determine cabang based on pickup location
+                const cabangId = await determineCabang(lat_awal, lng_awal);
+
                 Swal.fire({
                     title: "Apakah anda yakin?",
                     text: "Apakah anda yakin ingin memesan jasa ini?",
@@ -661,14 +705,13 @@
                             url: `{{ route('taxi.pesan') }}`,
                             method: 'POST',
                             data: {
-                                // csrf
                                 _token: '{{ csrf_token() }}',
                                 voucher: appliedVoucherCode,
                                 jarak: parseFloat($('#distance').text()),
-                                jarakBaseCampKeTitikJemput: Math.ceil(
-                                    basecampToPickupDistance),
+                                jarakBaseCampKeTitikJemput: Math.ceil(basecampToPickupDistance),
                                 titik_jemput: $('#lokasi_awal').val(),
                                 titik_tujuan: $('#lokasi_akhir').val(),
+                                cabang: cabangId
                             },
                             success: function(response) {
                                 if (response.status === 'success') {

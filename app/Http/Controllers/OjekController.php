@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\Cabang;
 use App\Models\Voucher;
 use App\Models\Transaksi;
 use App\Models\TarifDasar;
@@ -20,6 +21,7 @@ class OjekController extends Controller
         return view('pages.transportasi.index', [
             'tarifDasar' => TarifDasar::whereJenis('Motor')->first(),
             'tarifJarak' => TarifJarak::whereJenis('Motor')->first(),
+            'cabang' => Cabang::all(),
         ]);
     }
 
@@ -59,6 +61,7 @@ class OjekController extends Controller
                 'jarak' => $request->jarak,
                 'titik_jemput' => $request->titik_jemput,
                 'titik_tujuan' => $request->titik_tujuan,
+                'cabang_id' => $request->cabang,
                 'total_harga' => getPricing('Motor',  $request->jarakBaseCampKeTitikJemput, $request->jarak, Voucher::whereNama($request->voucher)->first()->persentase ?? null),
             ];
             Transaksi::create($data);

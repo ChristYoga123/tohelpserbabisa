@@ -15,6 +15,8 @@ class CabangSeeder extends Seeder
     {
         Cabang::firstOrCreate([
             'nama' => 'Jember',
+            'lat' => -8.171121371857444,
+            'lng' => 113.7233082269837,
         ]);
     }
 }
