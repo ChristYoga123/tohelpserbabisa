@@ -6,6 +6,7 @@ use Exception;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
+use App\Models\Cabang;
 use Filament\Forms\Form;
 use App\Models\Transaksi;
 use Filament\Tables\Table;
@@ -33,17 +34,17 @@ class TransaksiResource extends Resource
 
     public static function canCreate(): bool
     {
-        return 'false';
+        return false;
     }
 
     public static function canDelete(Model $model): bool
     {
-        return 'false';
+        return false;
     }
 
     public static function canEdit(Model $record): bool
     {
-        return 'false';
+        return false;
     }
 
     public static function form(Form $form): Form
@@ -108,6 +109,10 @@ class TransaksiResource extends Resource
 
                         return 'Belum Selesai';
                     }),
+                Tables\Columns\TextColumn::make('cabang.nama')
+                    ->label('Cabang')
+                    ->getStateUsing(fn(Transaksi $transaksi) => $transaksi->cabang->nama ?? '-')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status_transaksi')
                     ->label('Status Transaksi')
                     ->badge()
@@ -133,6 +138,9 @@ class TransaksiResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('cabang_id')
+                    ->options(Cabang::all()->pluck('nama', 'id'))
+                    ->label('Cabang'),
                 Tables\Filters\SelectFilter::make('status_transaksi')
                     ->options([
                         'belum' => 'Belum Selesai',
