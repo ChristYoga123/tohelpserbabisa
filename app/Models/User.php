@@ -92,4 +92,9 @@ class User extends Authenticatable implements HasAvatar, FilamentUser, HasMedia,
 
         return false;
     }
+
+    public function cabang()
+    {
+        return $this->belongsTo(Cabang::class);
+    }
 }

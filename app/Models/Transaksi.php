@@ -22,4 +22,9 @@ class Transaksi extends Model
     {
         return $this->hasMany(KaryawanTugas::class, 'tugas_id');
     }
+
+    public function cabang()
+    {
+        return $this->belongsTo(Cabang::class);
+    }
 }
