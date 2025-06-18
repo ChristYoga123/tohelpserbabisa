@@ -67,6 +67,10 @@ class TransaksiWidget extends BaseWidget
                         return 'Belum Selesai';
 
                     }),
+                Tables\Columns\TextColumn::make('cabang.nama')
+                    ->label('Cabang')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status_transaksi')
                     ->label('Status Transaksi')
                     ->badge()
