@@ -68,7 +68,7 @@ class MobilController extends Controller
                 'titik_jemput' => $request->titik_jemput,
                 'titik_tujuan' => $request->titik_tujuan,
                 'total_harga' => getPricing('Mobil',  $request->jarakBaseCampKeTitikJemput, $request->jarak, Voucher::whereNama($request->voucher)->first()->persentase ?? null),
-                'cabang_id' => $cabang->id,
+                'cabang_id' => $cabang->id ?? Cabang::first()->id,
             ];
             Transaksi::create($data);
 

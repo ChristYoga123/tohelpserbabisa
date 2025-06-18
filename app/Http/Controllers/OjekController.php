@@ -61,7 +61,7 @@ class OjekController extends Controller
                 'jarak' => $request->jarak,
                 'titik_jemput' => $request->titik_jemput,
                 'titik_tujuan' => $request->titik_tujuan,
-                'cabang_id' => $request->cabang,
+                'cabang_id' => $request->cabang ?? Cabang::first()->id,
                 'total_harga' => getPricing('Motor',  $request->jarakBaseCampKeTitikJemput, $request->jarak, Voucher::whereNama($request->voucher)->first()->persentase ?? null),
             ];
             Transaksi::create($data);
