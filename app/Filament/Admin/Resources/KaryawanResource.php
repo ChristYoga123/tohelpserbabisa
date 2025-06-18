@@ -18,6 +18,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Filters\SelectFilter;
@@ -106,7 +107,7 @@ class KaryawanResource extends Resource
                 SelectFilter::make('cabang_id')
                     ->label('Cabang')
                     ->options(Cabang::all()->pluck('nama', 'id')),
-            ])
+            ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\Action::make('lihatAbsensi')
                     ->label('Lihat Absensi')
