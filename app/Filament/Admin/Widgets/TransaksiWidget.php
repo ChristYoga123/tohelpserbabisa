@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Widgets;
 use Exception;
 use App\Models\User;
 use Filament\Tables;
+use App\Models\Cabang;
 use App\Models\Transaksi;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\DB;
@@ -96,6 +97,9 @@ class TransaksiWidget extends BaseWidget
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\SelectFilter::make('cabang_id')
+                    ->label('Cabang')
+                    ->options(Cabang::all()->pluck('nama', 'id')),
                 Tables\Filters\SelectFilter::make('status_transaksi')
                     ->options([
                         'belum' => 'Belum Selesai',
