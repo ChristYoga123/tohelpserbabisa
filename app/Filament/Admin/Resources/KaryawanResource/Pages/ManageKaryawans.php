@@ -32,6 +32,7 @@ class ManageKaryawans extends ManageRecords
                                 'tanggal_lahir' => $data['tanggal_lahir'],
                             ],
                             'avatar_url' => $data['avatar_url'],
+                            'cabang_id' => $data['cabang_id'],
                         ]);
     
                         $karyawan->assignRole('karyawan');

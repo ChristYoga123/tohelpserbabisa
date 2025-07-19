@@ -135,6 +135,10 @@ class KaryawanResource extends Resource
                                 ->required(fn(string $operation): bool => $operation === 'create')
                                 ->locale('id')
                                 ->formatStateUsing(fn(User $user) => $user?->custom_fields['tanggal_lahir'] ?? null),
+                            Select::make('cabang_id')
+                                ->label('Cabang')
+                                ->options(Cabang::all()->pluck('nama', 'id'))
+                                ->required(),
                             FileUpload::make('avatar_url')
                                 ->label('Foto')
                                 ->maxFiles(1),
@@ -184,7 +188,7 @@ class KaryawanResource extends Resource
 
                             Notification::make()
                                 ->title('Gagal!')
-                                ->body('Edit karyawan gagal!' . $e->getMessage())
+                                ->body('Edit karyawan gagal! ' . $e->getMessage())
                                 ->danger()
                                 ->send();
                         }
