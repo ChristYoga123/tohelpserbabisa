@@ -20,7 +20,7 @@
                                 - Start form 20k/barang<br>
                                 - Antar/jemput service 2k/km
                             </p>
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Service Elektronik"
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Service Elektronik" data-barang="Elektronik"
                                 data-price="20.000">
                                 <i class="fab fa-whatsapp"></i> Pesan Sekarang
                             </a>
@@ -38,7 +38,7 @@
                                 - Jasa tunggu service 15k/jam (Diluar Service)<br>
                                 - Antar/jemput service 2k/km
                             </p>
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Service Kendaraan"
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Service Kendaraan" data-barang="Kendaraan"
                                 data-price="15.000">
                                 <i class="fab fa-whatsapp"></i> Pesan Sekarang
                             </a>
@@ -58,6 +58,7 @@
 
                 const service = $(this).data('service');
                 const price = $(this).data('price');
+                const jenisBarang = $(this).data('barang');
 
                 Swal.fire({
                     title: "Apakah anda yakin?",
@@ -87,14 +88,16 @@
                                         const message =
                                             `Hii kak, saya ingin meminta bantuan To Help\n\n` +
                                             `ID Order : ${response.order_id}\n` +
-                                            `Jenis Jasa : All Service\n` +
-                                            `Jenis barang : \n` +
+                                            `Jenis Jasa : Service\n` +
+                                            `Jenis barang : ${jenisBarang}\n` +
                                             `Keluhan/kerusakan :\n` +
                                             `Ambil : (ya/tidak)?\n` +
                                             `Jika iya, Alamat ambil di : \n` +
                                             `Hari/tanggal : \n` +
+                                            `Waktu : \n` +
                                             `Nama : \n` +
-                                            `Nomor WhatsApp : `;
+                                            `Nomor WhatsApp : \n` +
+                                            `Payment (cash/TF) : `;
 
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,

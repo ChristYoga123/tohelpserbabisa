@@ -78,8 +78,10 @@
                                             `Alamat Ambil/Beli : \n` +
                                             `List order : \n1. ......\n2. ......\n3. ......\n\n` +
                                             `Alamat tujuan / kirim : \n` +
-                                            `No.hp / wa : \n` +
-                                            `Atas nama : \n\n` +
+                                            `Atas nama : \n` +
+                                            `Payment (Cash/TF) : \n\n` +
+                                            `No HP Penerima : \n\n` +
+                                            `No HP Pengirim : (apabila pengirim dan penerima sama, di isi salah satu aja)\n\n` +
                                             `Noted : Tetap berikan sharelok kepada driver untuk membantu memudahkan pengambilan / pengantaran 🙏🏻`;
 
                                         window.open(

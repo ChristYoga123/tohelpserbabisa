@@ -255,7 +255,7 @@
                         'message' =>
                             'Hii kak, saya ingin meminta bantuan To Help\n\n' .
                             'ID Order : [order_id]\n' .
-                            'Jenis Jasa : laundry\n' .
+                            'Jenis Jasa : laundry\n\n' .
                             'Permintaan (pilih salah satu) : pakaian/kendaraan/perabotan\n' .
                             'Alamat : \n' .
                             'Hari/tanggal : \n' .
@@ -760,6 +760,7 @@
                             message = message.includes('[order_id]') ? message.replace(
                                     '[order_id]', response.order_id) :
                                 `${message}\nID ORDER : ${response.order_id}\n...`;
+                            message = message.replace(/\\n/g, '\n');
                             if (response.status === 'success') {
                                 Swal.fire({
                                     title: 'Berhasil',

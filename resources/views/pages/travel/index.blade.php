@@ -64,6 +64,7 @@
 
                 const service = $(this).data('service');
                 const price = $(this).data('price');
+                const jenisKendaraan = service.replace('Rental ', '');
 
                 Swal.fire({
                     title: "Apakah anda yakin?",
@@ -93,15 +94,16 @@
                                         const message =
                                             `Hii kak, saya ingin menyewa kendaraan\n\n` +
                                             `ID Order : ${response.order_id}\n` +
-                                            `Jenis Kendaraan : ${service.replace('Rental ', '')}\n` +
+                                            `Jenis Kendaraan : ${jenisKendaraan}\n` +
                                             `Nama Unit : \n` +
                                             `Tambahan Driver : ( ya / tidak)\n` +
-                                            `Alamat pengambilan : \n` +
-                                            `Alamat tujuan : \n` +
-                                            `Waktu pengambilan : \n` +
+                                            `Di ambil / diantar : \n` +
+                                            `Alamat tujuan : (apabila diantar)\n` +
+                                            `Waktu Ambil : \n` +
                                             `Waktu kembali : \n` +
                                             `Nama : \n` +
-                                            `Nomor WhatsApp : `;
+                                            `Nomor WhatsApp : \n\n` +
+                                            `*${jenisKendaraan === 'Mobil' ? 'Tolong siapkan KTP asli + Sepeda motor dan STNK sebagai jaminan 🙏🏻' : 'Tolong siapkan KTP asli sebagai jaminan 🙏🏻'}*`;
 
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,

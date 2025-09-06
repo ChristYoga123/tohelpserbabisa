@@ -112,7 +112,7 @@
                                         icon: 'success'
                                     }).then(() => {
                                         const message =
-                                            `Format Pemesanan\n` +
+                                            `Hii kak, saya ingin meminta bantuan To Help\n\n` +
                                             `ID Order : ${response.order_id}\n` +
                                             `Jenis pesanan : Pindahan/Angkut Barang\n` +
                                             `Alamat ambil / order : \n` +
@@ -123,14 +123,15 @@
                                             `List barang ringan :\n` +
                                             `1. ......\n` +
                                             `2. ......\n` +
-                                            `3. ......\n` +
+                                            `3. ......\n\n` +
                                             `Jenis jasa : ${service}\n` +
                                             `Perlu kuli tambahan? (ya/tidak) : \n` +
                                             `Jika ya, berapa orang : \n` +
-                                            `Alamat tujuan / kirim : \n` +
+                                            `Alamat tujuan / kirim (sertakan lantai) : \n` +
                                             `Tanggal/Waktu : \n` +
                                             `No.hp / wa : \n` +
-                                            `Atas nama : `;
+                                            `Atas nama : \n` +
+                                            `Payment (cash/TF) : `;
 
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,

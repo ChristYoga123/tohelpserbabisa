@@ -201,10 +201,17 @@
                                             `Hello Minhelp, saya ingin meminta bantuan Cleaning Service dan saya sudah membaca Price List di Website\n\n` +
                                             `Harap Di Isi, Format Order Berikut\n` +
                                             `ID Order : ${response.order_id}\n` +
-                                            `Jasa : ${service}\n` +
-                                            `${service === 'Tandon' ? '' : `Harga : Rp ${price}\n`}` +
+                                            `Jenis Jasa : Cleaning Service\n` +
+                                            `Jenis Ruangan : ${service}\n` +
+                                            `Luas : \n` +
+                                            // `${service === 'Tandon' ? '' : `Harga : Rp ${price}\n`}` +
                                             `Tanggal Pengerjaan : \n` +
-                                            `Alamat : `;
+                                            `Waktu : \n` +
+                                            `Alamat : \n` +
+                                            `Nama Pemesan : \n` +
+                                            `No. WA : \n` +
+                                            `Payment (cash/TF) : \n\n` +
+                                            `*Noted : sertakan foto / video*`;
 
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,

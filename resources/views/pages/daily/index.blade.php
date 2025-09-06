@@ -88,9 +88,13 @@
                                             `Jenis Jasa : Daily Activity\n` +
                                             `Paket : ${service}\n` +
                                             `Masalah Yang Sedang Dihadapi : \n` +
-                                            `Hari/tanggal : \n` +
+                                            `Bantuan yang di inginkan : \n` +
+                                            `Hari/tanggal Bantuan : \n` +
+                                            `Waktu : \n` +
+                                            `Lokasi Bantuan : \n` +
                                             `Nama : \n` +
-                                            `Nomor WhatsApp : `;
+                                            `Nomor WhatsApp : \n` +
+                                            `Payment (cash/TF) : `;
 
                                         window.open(
                                             `https://api.whatsapp.com/send?phone=6285695908981&text=${encodeURIComponent(message)}`,
