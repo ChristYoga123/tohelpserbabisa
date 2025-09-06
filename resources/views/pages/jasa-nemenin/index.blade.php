@@ -110,10 +110,12 @@
                                             `Jenis Jasa : Nemenin\n` +
                                             `Permintaan (pilih salah satu) : ngopi/nonton/night ride/yang lain…\n` +
                                             `Hari/tanggal : \n` +
+                                            `Waktu : \n` +
                                             `Nama : \n` +
+                                            `Pilih Talent : \n` +
                                             `Nomor WhatsApp : \n` +
-                                            `Pilih Talent : \n\n` +
-                                            `Dijemput / Menjemput : (tulis alamat kalian apabila ingin dijemput)\n\n` +
+                                            `Payment (Cash/TF) : \n\n` +
+                                            `Dijemput / Menjemput : (tulis alamat kalian apabila ingin dijemput)\n` +
                                             `Noted : (untuk cek talent, bisa kunjungi website di menu bagian profile. Bingung? Tanya admin)`;
 
                                         window.open(
