@@ -442,15 +442,10 @@
                                     `Tarif: Rp${totalPrice.toLocaleString()} (${roundedDistance} km × Rp${RATE_PER_KM.toLocaleString()}/km)`;
                             }
 
-                            // Apply voucher discount if available
-                            let discountAmount = 0;
+                            // Voucher discount info for display (calculation will be done by backend)
                             let discountInfo = '';
-
                             if (voucherDiscount > 0) {
-                                discountAmount = Math.round(totalPrice * (voucherDiscount / 100));
-                                totalPrice -= discountAmount;
-                                discountInfo =
-                                    `<br>Diskon Voucher (${voucherDiscount}%): -Rp${discountAmount.toLocaleString()}`;
+                                discountInfo = `<br>Diskon Voucher: ${voucherDiscount}%`;
                             }
 
                             // Send both distances to the server including calculated return distance
@@ -467,14 +462,9 @@
                                 },
                             success: function(response) {
                                 if (response.status === 'success') {
+                                    // Backend already calculated final price including discount
                                     let finalPrice = response.harga;
-
-                                    // Apply voucher discount if available
-                                    if (voucherDiscount > 0) {
-                                        const discountAmount = Math.round(finalPrice * (
-                                            voucherDiscount / 100));
-                                        finalPrice -= discountAmount;
-                                    }
+                                    
                                     // Format price with thousand separators for Rupiah
                                     const formattedPrice = new Intl.NumberFormat('id-ID', {
                                         style: 'currency',
