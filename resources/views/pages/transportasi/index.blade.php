@@ -390,6 +390,14 @@
                     startPos.lng()
                 ).toFixed(2);
 
+                // Calculate distance from basecamp to destination point
+                const basecampToDestinationDistance = calculateDistance(
+                    BASECAMP_LAT,
+                    BASECAMP_LNG,
+                    endPos.lat(),
+                    endPos.lng()
+                ).toFixed(2);
+
                 const request = {
                     origin: startPos,
                     destination: endPos,
@@ -404,43 +412,59 @@
                         const routeDistance = (route.legs[0].distance.value / 1000).toFixed(2);
                         const duration = Math.round(route.legs[0].duration.value / 60);
 
-                        // Get rounded distance for display
-                        const roundedDistance = Math.ceil(parseFloat(routeDistance));
+                        // Calculate return trip distance (destination to pickup) in background
+                        const returnRequest = {
+                            origin: endPos,
+                            destination: startPos,
+                            travelMode: 'DRIVING'
+                        };
 
-                        // Calculate price using new flat rate pricing
-                        let calculatedPrice = roundedDistance * RATE_PER_KM;
-                        let totalPrice = Math.max(calculatedPrice, MINIMUM_ORDER_PRICE);
-                        let priceInfo = '';
+                        directionsService.route(returnRequest, function(returnResult, returnStatus) {
+                            let returnDistance = routeDistance; // fallback to same distance
+                            
+                            if (returnStatus === 'OK') {
+                                returnDistance = (returnResult.routes[0].legs[0].distance.value / 1000).toFixed(2);
+                            }
 
-                        // Create appropriate price explanation based on whether minimum price is applied
-                        if (calculatedPrice < MINIMUM_ORDER_PRICE) {
-                            priceInfo = `Tarif: Rp${MINIMUM_ORDER_PRICE.toLocaleString()} (Tarif minimum)`;
-                        } else {
-                            priceInfo =
-                                `Tarif: Rp${totalPrice.toLocaleString()} (${roundedDistance} km × Rp${RATE_PER_KM.toLocaleString()}/km)`;
-                        }
+                            // Get rounded distance for display
+                            const roundedDistance = Math.ceil(parseFloat(routeDistance));
 
-                        // Apply voucher discount if available
-                        let discountAmount = 0;
-                        let discountInfo = '';
+                            // Calculate price using new flat rate pricing
+                            let calculatedPrice = roundedDistance * RATE_PER_KM;
+                            let totalPrice = Math.max(calculatedPrice, MINIMUM_ORDER_PRICE);
+                            let priceInfo = '';
 
-                        if (voucherDiscount > 0) {
-                            discountAmount = Math.round(totalPrice * (voucherDiscount / 100));
-                            totalPrice -= discountAmount;
-                            discountInfo =
-                                `<br>Diskon Voucher (${voucherDiscount}%): -Rp${discountAmount.toLocaleString()}`;
-                        }
+                            // Create appropriate price explanation based on whether minimum price is applied
+                            if (calculatedPrice < MINIMUM_ORDER_PRICE) {
+                                priceInfo = `Tarif: Rp${MINIMUM_ORDER_PRICE.toLocaleString()} (Tarif minimum)`;
+                            } else {
+                                priceInfo =
+                                    `Tarif: Rp${totalPrice.toLocaleString()} (${roundedDistance} km × Rp${RATE_PER_KM.toLocaleString()}/km)`;
+                            }
 
-                        // Send both distances to the server
-                        $.ajax({
-                            url: `{{ route('ojek.show-pricing') }}`,
-                            method: 'POST',
-                            data: {
-                                _token: '{{ csrf_token() }}',
-                                jarakBaseCampKeTitikJemput: Math.ceil(basecampToPickupDistance),
-                                jarakTitikJemputKeTitikTujuan: Math.ceil(routeDistance),
-                                diskon: $('#kode-voucher').val().trim(),
-                            },
+                            // Apply voucher discount if available
+                            let discountAmount = 0;
+                            let discountInfo = '';
+
+                            if (voucherDiscount > 0) {
+                                discountAmount = Math.round(totalPrice * (voucherDiscount / 100));
+                                totalPrice -= discountAmount;
+                                discountInfo =
+                                    `<br>Diskon Voucher (${voucherDiscount}%): -Rp${discountAmount.toLocaleString()}`;
+                            }
+
+                            // Send both distances to the server including calculated return distance
+                            $.ajax({
+                                url: `{{ route('ojek.show-pricing') }}`,
+                                method: 'POST',
+                                data: {
+                                    _token: '{{ csrf_token() }}',
+                                    jarakBaseCampKeTitikJemput: Math.ceil(basecampToPickupDistance),
+                                    jarakTitikJemputKeTitikTujuan: Math.ceil(routeDistance),
+                                    jarakBaseCampKeTitikTujuan: Math.ceil(basecampToDestinationDistance),
+                                    jarakTitikTujuanKeTitikJemput: Math.ceil(returnDistance),
+                                    discount: appliedVoucherCode || null,
+                                },
                             success: function(response) {
                                 if (response.status === 'success') {
                                     let finalPrice = response.harga;
@@ -492,6 +516,7 @@
                                 ).show();
                             }
                         });
+                        }); // Close return distance calculation callback
                     }
                 });
             }
@@ -629,6 +654,22 @@
                 const lng_akhir = parseFloat($('#lng_akhir').val());
                 const price = $('#totalPrice').text();
 
+                // Calculate basecamp to pickup distance
+                const basecampToPickupDistance = calculateDistance(
+                    BASECAMP_LAT,
+                    BASECAMP_LNG,
+                    lat_awal,
+                    lng_awal
+                ).toFixed(2);
+
+                // Calculate basecamp to destination distance
+                const basecampToDestinationDistance = calculateDistance(
+                    BASECAMP_LAT,
+                    BASECAMP_LNG,
+                    lat_akhir,
+                    lng_akhir
+                ).toFixed(2);
+
                 // Validate both locations
                 const isStartValid = await validateLocation(lat_awal, lng_awal);
                 const isEndValid = await validateLocation(lat_akhir, lng_akhir);
@@ -638,27 +679,46 @@
                     return;
                 }
 
-                Swal.fire({
-                    title: "Apakah anda yakin?",
-                    text: "Apakah anda yakin ingin memesan jasa ini?",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonText: "Ya, pesan!",
-                    cancelButtonText: "Batal",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: `{{ route('ojek.pesan') }}`,
-                            method: 'POST',
-                            data: {
-                                // csrf
-                                _token: '{{ csrf_token() }}',
-                                total_harga: parseInt(price.replace(/\D/g, '')),
-                                voucher: appliedVoucherCode,
-                                jarak: parseFloat($('#distance').text()),
-                                titik_jemput: $('#lokasi_awal').val(),
-                                titik_tujuan: $('#lokasi_akhir').val(),
-                            },
+                // Calculate return distance for accurate pricing
+                const startPos = new google.maps.LatLng(lat_awal, lng_awal);
+                const endPos = new google.maps.LatLng(lat_akhir, lng_akhir);
+                
+                const returnRequest = {
+                    origin: endPos,
+                    destination: startPos,
+                    travelMode: 'DRIVING'
+                };
+
+                directionsService.route(returnRequest, function(returnResult, returnStatus) {
+                    let returnDistance = parseFloat($('#distance').text()); // fallback to forward distance
+                    
+                    if (returnStatus === 'OK') {
+                        returnDistance = (returnResult.routes[0].legs[0].distance.value / 1000).toFixed(2);
+                    }
+
+                    Swal.fire({
+                        title: "Apakah anda yakin?",
+                        text: "Apakah anda yakin ingin memesan jasa ini?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Ya, pesan!",
+                        cancelButtonText: "Batal",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                                $.ajax({
+                                    url: `{{ route('ojek.pesan') }}`,
+                                    method: 'POST',
+                                    data: {
+                                        _token: '{{ csrf_token() }}',
+                                        total_harga: parseInt(price.replace(/\D/g, '')),
+                                        jarak: parseFloat($('#distance').text()),
+                                        jarakBaseCampKeTitikJemput: Math.ceil(basecampToPickupDistance),
+                                        jarakBaseCampKeTitikTujuan: Math.ceil(basecampToDestinationDistance),
+                                        jarakTitikTujuanKeTitikJemput: Math.ceil(returnDistance),
+                                        voucher: appliedVoucherCode,
+                                        titik_jemput: $('#lokasi_awal').val(),
+                                        titik_tujuan: $('#lokasi_akhir').val(),
+                                    },
                             success: function(response) {
                                 if (response.status === 'success') {
                                     Swal.fire({
@@ -691,6 +751,7 @@
                         });
                     }
                 });
+                }); // Close return distance calculation callback
             });
 
             $('#reset-voucher').click(function() {

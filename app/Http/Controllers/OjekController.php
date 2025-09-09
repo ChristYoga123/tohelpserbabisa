@@ -40,7 +40,7 @@ class OjekController extends Controller
                 ], 404);
             }
         }
-        $harga = getPricing('Motor', $request->jarakBaseCampKeTitikJemput, $request->jarakTitikJemputKeTitikTujuan, $discount->persentase ?? null);
+        $harga = getPricing('Motor', $request->jarakBaseCampKeTitikJemput, $request->jarakTitikJemputKeTitikTujuan, $request->jarakBaseCampKeTitikTujuan, $request->jarakTitikTujuanKeTitikJemput, $discount->persentase ?? null);
 
         return response()->json([
             'status' => 'success',
@@ -62,7 +62,7 @@ class OjekController extends Controller
                 'titik_jemput' => $request->titik_jemput,
                 'titik_tujuan' => $request->titik_tujuan,
                 'cabang_id' => $request->cabang ?? Cabang::first()->id,
-                'total_harga' => getPricing('Motor',  $request->jarakBaseCampKeTitikJemput, $request->jarak, Voucher::whereNama($request->voucher)->first()->persentase ?? null),
+                'total_harga' => getPricing('Motor',  $request->jarakBaseCampKeTitikJemput, $request->jarak, $request->jarakBaseCampKeTitikTujuan, $request->jarakTitikTujuanKeTitikJemput, Voucher::whereNama($request->voucher)->first()->persentase ?? null),
             ];
             Transaksi::create($data);
 

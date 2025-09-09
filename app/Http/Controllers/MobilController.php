@@ -39,7 +39,7 @@ class MobilController extends Controller
                 ], 404);
             }
         }
-        $harga = getPricing('Mobil', $request->jarakBaseCampKeTitikJemput, $request->jarakTitikJemputKeTitikTujuan, $discount->persentase ?? null);
+        $harga = getPricing('Mobil', $request->jarakBaseCampKeTitikJemput, $request->jarakTitikJemputKeTitikTujuan, $request->jarakBaseCampKeTitikTujuan, $request->jarakTitikTujuanKeTitikJemput, $discount->persentase ?? null);
 
         return response()->json([
             'status' => 'success',
@@ -67,7 +67,7 @@ class MobilController extends Controller
                 'jarak' => $request->jarak,
                 'titik_jemput' => $request->titik_jemput,
                 'titik_tujuan' => $request->titik_tujuan,
-                'total_harga' => getPricing('Mobil',  $request->jarakBaseCampKeTitikJemput, $request->jarak, Voucher::whereNama($request->voucher)->first()->persentase ?? null),
+                'total_harga' => getPricing('Mobil',  $request->jarakBaseCampKeTitikJemput, $request->jarak, $request->jarakBaseCampKeTitikTujuan, $request->jarakTitikTujuanKeTitikJemput, Voucher::whereNama($request->voucher)->first()->persentase ?? null),
                 'cabang_id' => $cabang->id ?? Cabang::first()->id,
             ];
             Transaksi::create($data);

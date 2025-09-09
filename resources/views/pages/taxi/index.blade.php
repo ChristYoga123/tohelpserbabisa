@@ -395,6 +395,14 @@
                     startPos.lng()
                 ).toFixed(2);
 
+                // Calculate distance from basecamp to destination point
+                const basecampToDestinationDistance = calculateDistance(
+                    BASECAMP_LAT,
+                    BASECAMP_LNG,
+                    endPos.lat(),
+                    endPos.lng()
+                ).toFixed(2);
+
                 const request = {
                     origin: startPos,
                     destination: endPos,
@@ -409,42 +417,59 @@
                         const routeDistance = (route.legs[0].distance.value / 1000).toFixed(2);
                         const duration = Math.round(route.legs[0].duration.value / 60);
 
-                        // Get rounded distance for display
-                        const roundedDistance = Math.ceil(parseFloat(routeDistance));
+                        // Calculate return trip distance (destination to pickup) in background
+                        const returnRequest = {
+                            origin: endPos,
+                            destination: startPos,
+                            travelMode: 'DRIVING'
+                        };
 
-                        // Calculate price using tiered pricing
-                        let totalPrice = calculatePrice(parseFloat(routeDistance));
+                        directionsService.route(returnRequest, function(returnResult, returnStatus) {
+                            let returnDistance = routeDistance; // fallback to same distance
+                            
+                            if (returnStatus === 'OK') {
+                                returnDistance = (returnResult.routes[0].legs[0].distance.value / 1000).toFixed(2);
+                            }
 
-                        // Determine which rate is applied based on distance
-                        let appliedRate;
-                        if (roundedDistance <= TIER_1_MAX) {
-                            appliedRate = TIER_1_RATE;
-                        } else if (roundedDistance <= TIER_2_MAX) {
-                            appliedRate = TIER_2_RATE;
-                        } else {
-                            appliedRate = TIER_3_RATE;
-                        }
+                            // Get rounded distance for display
+                            const roundedDistance = Math.ceil(parseFloat(routeDistance));
 
-                        // Apply voucher discount if available
-                        let discountAmount = 0;
-                        let discountInfo = '';
+                            // Calculate price using tiered pricing
+                            let totalPrice = calculatePrice(parseFloat(routeDistance));
 
-                        if (voucherDiscount > 0) {
-                            discountAmount = Math.round(totalPrice * (voucherDiscount / 100));
-                            totalPrice -= discountAmount;
-                            discountInfo =
-                                `<br>Diskon Voucher (${voucherDiscount}%): -Rp${discountAmount.toLocaleString()}`;
-                        }
+                            // Determine which rate is applied based on distance
+                            let appliedRate;
+                            if (roundedDistance <= TIER_1_MAX) {
+                                appliedRate = TIER_1_RATE;
+                            } else if (roundedDistance <= TIER_2_MAX) {
+                                appliedRate = TIER_2_RATE;
+                            } else {
+                                appliedRate = TIER_3_RATE;
+                            }
 
-                        // Send both distances to the server
-                        $.ajax({
-                            url: `{{ route('taxi.show-pricing') }}`,
-                            method: 'POST',
-                            data: {
-                                _token: '{{ csrf_token() }}',
-                                jarakBaseCampKeTitikJemput: Math.ceil(basecampToPickupDistance),
-                                jarakTitikJemputKeTitikTujuan: Math.ceil(routeDistance),
-                            },
+                            // Apply voucher discount if available
+                            let discountAmount = 0;
+                            let discountInfo = '';
+
+                            if (voucherDiscount > 0) {
+                                discountAmount = Math.round(totalPrice * (voucherDiscount / 100));
+                                totalPrice -= discountAmount;
+                                discountInfo =
+                                    `<br>Diskon Voucher (${voucherDiscount}%): -Rp${discountAmount.toLocaleString()}`;
+                            }
+
+                            // Send both distances to the server including calculated return distance
+                            $.ajax({
+                                url: `{{ route('taxi.show-pricing') }}`,
+                                method: 'POST',
+                                data: {
+                                    _token: '{{ csrf_token() }}',
+                                    jarakBaseCampKeTitikJemput: Math.ceil(basecampToPickupDistance),
+                                    jarakTitikJemputKeTitikTujuan: Math.ceil(routeDistance),
+                                    jarakBaseCampKeTitikTujuan: Math.ceil(basecampToDestinationDistance),
+                                    jarakTitikTujuanKeTitikJemput: Math.ceil(returnDistance),
+                                    discount: appliedVoucherCode || null,
+                                },
                             success: function(response) {
                                 if (response.status === 'success') {
                                     let finalPrice = response.harga;
@@ -494,6 +519,7 @@
                                 ).show();
                             }
                         });
+                        }); // Close return distance calculation callback
                     }
                 });
             }
@@ -680,6 +706,14 @@
                     lng_awal
                 ).toFixed(2);
 
+                // Calculate basecamp to destination distance
+                const basecampToDestinationDistance = calculateDistance(
+                    BASECAMP_LAT,
+                    BASECAMP_LNG,
+                    lat_akhir,
+                    lng_akhir
+                ).toFixed(2);
+
                 // Validate both locations
                 const isStartValid = await validateLocation(lat_awal, lng_awal);
                 const isEndValid = await validateLocation(lat_akhir, lng_akhir);
@@ -692,27 +726,46 @@
                 // Determine cabang based on pickup location
                 const cabangId = await determineCabang(lat_awal, lng_awal);
 
-                Swal.fire({
-                    title: "Apakah anda yakin?",
-                    text: "Apakah anda yakin ingin memesan jasa ini?",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonText: "Ya, pesan!",
-                    cancelButtonText: "Batal",
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: `{{ route('taxi.pesan') }}`,
-                            method: 'POST',
-                            data: {
-                                _token: '{{ csrf_token() }}',
-                                voucher: appliedVoucherCode,
-                                jarak: parseFloat($('#distance').text()),
-                                jarakBaseCampKeTitikJemput: Math.ceil(basecampToPickupDistance),
-                                titik_jemput: $('#lokasi_awal').val(),
-                                titik_tujuan: $('#lokasi_akhir').val(),
-                                cabang: cabangId
-                            },
+                // Calculate return distance for accurate pricing
+                const startPos = new google.maps.LatLng(lat_awal, lng_awal);
+                const endPos = new google.maps.LatLng(lat_akhir, lng_akhir);
+                
+                const returnRequest = {
+                    origin: endPos,
+                    destination: startPos,
+                    travelMode: 'DRIVING'
+                };
+
+                directionsService.route(returnRequest, function(returnResult, returnStatus) {
+                    let returnDistance = parseFloat($('#distance').text()); // fallback to forward distance
+                    
+                    if (returnStatus === 'OK') {
+                        returnDistance = (returnResult.routes[0].legs[0].distance.value / 1000).toFixed(2);
+                    }
+
+                    Swal.fire({
+                        title: "Apakah anda yakin?",
+                        text: "Apakah anda yakin ingin memesan jasa ini?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Ya, pesan!",
+                        cancelButtonText: "Batal",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                                    $.ajax({
+                                        url: `{{ route('taxi.pesan') }}`,
+                                        method: 'POST',
+                                        data: {
+                                            _token: '{{ csrf_token() }}',
+                                            jarak: parseFloat($('#distance').text()),
+                                            jarakBaseCampKeTitikJemput: Math.ceil(basecampToPickupDistance),
+                                            jarakBaseCampKeTitikTujuan: Math.ceil(basecampToDestinationDistance),
+                                            jarakTitikTujuanKeTitikJemput: Math.ceil(returnDistance),
+                                            voucher: appliedVoucherCode,
+                                            titik_jemput: $('#lokasi_awal').val(),
+                                            titik_tujuan: $('#lokasi_akhir').val(),
+                                            cabang: cabangId
+                                        },
                             success: function(response) {
                                 if (response.status === 'success') {
                                     // console.log($('#totalPrice').text());
@@ -747,6 +800,7 @@
                         });
                     }
                 });
+                }); // Close return distance calculation callback
             });
 
             $('#reset-voucher').click(function() {
