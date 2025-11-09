@@ -14,8 +14,8 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <h5 class="card-title">Makalah</h5>
-                            <h2 class="card-text text-primary mb-3">Rp 4.000-<br>Rp 7.000/lembar</h2>
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Makalah">
+                            <h2 class="card-text text-primary mb-3">Start from<br>Rp 100.000</h2>
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Makalah" data-price="100000">
                                 <i class="fab fa-whatsapp"></i> Pesan Sekarang
                             </a>
                         </div>
@@ -24,9 +24,9 @@
                 <div class="col-md-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="card-title">Ppt</h5>
-                            <h2 class="card-text text-primary mb-3">Rp 3.000/point<br><br></h2>
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Ppt" data-price="3.000">
+                            <h5 class="card-title">Power Point</h5>
+                            <h2 class="card-text text-primary mb-3">Start from<br>Rp 50.000</h2>
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Power Point" data-price="50000">
                                 <i class="fab fa-whatsapp"></i> Pesan Sekarang
                             </a>
                         </div>
@@ -35,9 +35,9 @@
                 <div class="col-md-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="card-title">Esai/Soal</h5>
-                            <h2 class="card-text text-primary mb-3">Start from<br>Rp 5.000/soal</h2>
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Esai/Soal">
+                            <h5 class="card-title">Tugas Custom</h5>
+                            <h2 class="card-text text-primary mb-3">Start from<br>Rp 30.000</h2>
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Tugas Custom" data-price="30000">
                                 <i class="fab fa-whatsapp"></i> Pesan Sekarang
                             </a>
                         </div>
@@ -46,9 +46,9 @@
                 <div class="col-md-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="card-title">Matematika</h5>
-                            <h2 class="card-text text-primary mb-3">Start from<br>Rp 8.000/soal</h2>
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Matematika">
+                            <h5 class="card-title">Thesis</h5>
+                            <h2 class="card-text text-primary mb-3">Start from<br>Rp 3.500.000</h2>
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Thesis" data-price="3500000">
                                 <i class="fab fa-whatsapp"></i> Pesan Sekarang
                             </a>
                         </div>
@@ -58,9 +58,8 @@
                     <div class="card h-100">
                         <div class="card-body">
                             <h5 class="card-title">Judul Skripsi</h5>
-                            <h2 class="card-text text-primary mb-3">Rp 50.000<br><br></h2>
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Judul Skripsi"
-                                data-price="50.000">
+                            <h2 class="card-text text-primary mb-3">Start from<br>Rp 75.000</h2>
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Judul Skripsi" data-price="75000">
                                 <i class="fab fa-whatsapp"></i> Pesan Sekarang
                             </a>
                         </div>
@@ -71,8 +70,7 @@
                         <div class="card-body">
                             <h5 class="card-title">Proposal</h5>
                             <h2 class="card-text text-primary mb-3">Paket Sempro<br>Rp 750.000</h2>
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Proposal"
-                                data-price="750.000">
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Proposal" data-price="750000">
                                 <i class="fab fa-whatsapp"></i> Pesan Sekarang
                             </a>
                         </div>
@@ -81,10 +79,9 @@
                 <div class="col-md-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="card-title">Skripsi</h5>
-                            <h2 class="card-text text-primary mb-3">Bab 4<br>Rp 800.000</h2>
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Skripsi Bab 4"
-                                data-price="800.000">
+                            <h5 class="card-title">Analisis Data</h5>
+                            <h2 class="card-text text-primary mb-3">Start from<br>Rp 900.000</h2>
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Analisis Data" data-price="900000">
                                 <i class="fab fa-whatsapp"></i> Pesan Sekarang
                             </a>
                         </div>
@@ -93,10 +90,9 @@
                 <div class="col-md-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="card-title">Skripsi</h5>
-                            <h2 class="card-text text-primary mb-3">Bab 5<br>Rp 170.000</h2>
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Skripsi Bab 5"
-                                data-price="170.000">
+                            <h5 class="card-title">Jurnal</h5>
+                            <h2 class="card-text text-primary mb-3">Start from<br>Rp 150.000</h2>
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Jurnal" data-price="150000">
                                 <i class="fab fa-whatsapp"></i> Pesan Sekarang
                             </a>
                         </div>
@@ -105,26 +101,30 @@
                 <div class="col-md-12">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="card-title">Pharafrase</h5>
-                            <h2 class="card-text text-primary mb-3">Start from Rp 5.000*</h2>
+                            <h5 class="card-title">Essai</h5>
+                            <h2 class="card-text text-primary mb-3">Start from Rp 100.000</h2>
                             <p class="card-text mb-4">
-                                Ketentuan harga:<br>
-                                - &lt;25 halaman : 5k/%<br>
-                                - 26-50 hal : 7k/%<br>
-                                - 51-100 hal : 10k/%<br>
-                                - &gt;100 hal : 12k/%
+                                *Harga mulai untuk essai standar. Detail harga dapat berubah sesuai panjang dan tingkat kesulitan.
                             </p>
-                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Pharafrase">
+                            <a href="#" class="btn btn-success w-100 order-btn" data-service="Essai" data-price="100000">
                                 <i class="fab fa-whatsapp"></i> Pesan Sekarang
                             </a>
                         </div>
                     </div>
                 </div>
+
                 <div class="col-md-12">
                     <div class="alert alert-info border">
                         <strong>NB:</strong> apabila ada tugas diluar price list, bisa ditanyakan kepada admin.
                     </div>
                 </div>
+
+                <div class="col-md-12">
+                    <div class="alert alert-warning border">
+                        <strong>Catatan:</strong> Harga bisa berubah sesuai tingkat kesulitan dan mepet tidaknya deadline.
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
@@ -153,8 +153,8 @@
                             jasa: service,
                         };
                         if (price) {
-                            data.total_harga = parseInt(price.replace(/\D/g,
-                                ''));
+                            // pastikan total_harga disimpan sebagai integer (dalam rupiah, tanpa pemisah)
+                            data.total_harga = parseInt(String(price).replace(/\D/g, ''));
                         }
 
                         $.ajax({

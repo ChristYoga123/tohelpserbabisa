@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use Spatie\Permission\Models\Role;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,5 +26,11 @@ class DatabaseSeeder extends Seeder
             CabangSeeder::class,
             TarifDasarSeeder::class,
         ]);
+        User::create([
+            'name' => 'super_admin',
+            'email' => 'admin@test.com',
+            'password' => bcrypt('password'),
+            'cabang_id' => 1,
+        ])->assignRole(Role::all());
     }
 }
