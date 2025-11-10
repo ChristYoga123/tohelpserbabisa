@@ -93,7 +93,6 @@
 
                     <select class="form-select rounded-0 d-inline-block mx-auto py-2 ps-3" id="metode_pembayaran">
                         <option value="Cash">Cash</option>
-                        <option value="QRIS">QRIS</option>
                         <option value="Transfer">Transfer</option>
                     </select>
 
@@ -121,9 +120,9 @@
                 </div>
                 <div class="col-md-12 mt-4">
                     <div class="alert alert-info border">
-                            <div>Setiap pemberhentian di setiap rute yang sama ditambahkan <strong>Rp2.000</strong> per
-                                lokasi.</div>
-                            <div>Setiap menunggu akan dikenakan <strong>Rp5.000 per 30 menit</strong>.</div>
+                        <div>Setiap pemberhentian di setiap rute yang sama ditambahkan <strong>Rp2.000</strong> per
+                            lokasi.</div>
+                        <div>Setiap menunggu akan dikenakan <strong>Rp5.000 per 30 menit</strong>.</div>
                         <div class="mt-1"><em>Biaya tambahan akan dihitung saat proses layanan atau sesuai kebijakan.</em>
                         </div>
                     </div>
@@ -444,9 +443,10 @@
 
                         directionsService.route(returnRequest, function(returnResult, returnStatus) {
                             let returnDistance = routeDistance; // fallback to same distance
-                            
+
                             if (returnStatus === 'OK') {
-                                returnDistance = (returnResult.routes[0].legs[0].distance.value / 1000).toFixed(2);
+                                returnDistance = (returnResult.routes[0].legs[0].distance.value /
+                                    1000).toFixed(2);
                             }
 
                             // Get rounded distance for display
@@ -459,7 +459,8 @@
 
                             // Create appropriate price explanation based on whether minimum price is applied
                             if (calculatedPrice < MINIMUM_ORDER_PRICE) {
-                                priceInfo = `Tarif: Rp${MINIMUM_ORDER_PRICE.toLocaleString()} (Tarif minimum)`;
+                                priceInfo =
+                                    `Tarif: Rp${MINIMUM_ORDER_PRICE.toLocaleString()} (Tarif minimum)`;
                             } else {
                                 priceInfo =
                                     `Tarif: Rp${totalPrice.toLocaleString()} (${roundedDistance} km × Rp${RATE_PER_KM.toLocaleString()}/km)`;
@@ -477,26 +478,30 @@
                                 method: 'POST',
                                 data: {
                                     _token: '{{ csrf_token() }}',
-                                    jarakBaseCampKeTitikJemput: Math.ceil(basecampToPickupDistance),
+                                    jarakBaseCampKeTitikJemput: Math.ceil(
+                                        basecampToPickupDistance),
                                     jarakTitikJemputKeTitikTujuan: Math.ceil(routeDistance),
-                                    jarakBaseCampKeTitikTujuan: Math.ceil(basecampToDestinationDistance),
-                                    jarakTitikTujuanKeTitikJemput: Math.ceil(returnDistance),
+                                    jarakBaseCampKeTitikTujuan: Math.ceil(
+                                        basecampToDestinationDistance),
+                                    jarakTitikTujuanKeTitikJemput: Math.ceil(
+                                        returnDistance),
                                     discount: appliedVoucherCode || null,
                                 },
                                 success: function(response) {
                                     if (response.status === 'success') {
-                                    // Backend already calculated final price including discount
+                                        // Backend already calculated final price including discount
                                         let finalPrice = response.harga;
 
-                                    // Format price with thousand separators for Rupiah
-                                    const formattedPrice = new Intl.NumberFormat('id-ID', {
+                                        // Format price with thousand separators for Rupiah
+                                        const formattedPrice = new Intl.NumberFormat(
+                                            'id-ID', {
                                                 style: 'currency',
                                                 currency: 'IDR',
                                                 minimumFractionDigits: 0,
                                                 maximumFractionDigits: 0
                                             }).format(finalPrice);
 
-                                    // Update the route info with the response data
+                                        // Update the route info with the response data
                                         $('#routeInfo').html(
                                             `Jarak Driver ke Titik Jemput: ${basecampToPickupDistance} km<br>
                                             Jarak Perjalanan: <span id="distance">${roundedDistance}</span> km<br>
@@ -506,7 +511,7 @@
                                             Harga Total: <h1 id="totalPrice" class="text-success">${formattedPrice}</h1>`
                                         ).show();
                                     } else {
-                                    // Handle error response
+                                        // Handle error response
                                         $('#routeInfo').html(
                                             `<div class="alert alert-danger">
                                                 <strong>Error!</strong><br>
@@ -516,7 +521,8 @@
                                     }
                                 },
                                 error: function(xhr) {
-                                let errorMessage = 'Terjadi kesalahan saat menghitung harga';
+                                    let errorMessage =
+                                        'Terjadi kesalahan saat menghitung harga';
                                     if (xhr.responseJSON && xhr.responseJSON.message) {
                                         errorMessage = xhr.responseJSON.message;
                                     }
@@ -703,8 +709,9 @@
                 };
 
                 directionsService.route(returnRequest, function(returnResult, returnStatus) {
-                    let returnDistance = parseFloat($('#distance').text()); // fallback to forward distance
-                    
+                    let returnDistance = parseFloat($('#distance')
+                .text()); // fallback to forward distance
+
                     if (returnStatus === 'OK') {
                         returnDistance = (returnResult.routes[0].legs[0].distance.value / 1000)
                             .toFixed(2);
@@ -726,12 +733,16 @@
                                 method: 'POST',
                                 data: {
                                     _token: '{{ csrf_token() }}',
-                                        total_harga: parseInt(price.replace(/\D/g, '')),
-                                        jarak: parseFloat($('#distance').text()),
-                                        jarakBaseCampKeTitikJemput: Math.ceil(basecampToPickupDistance),
-                                        jarakBaseCampKeTitikTujuan: Math.ceil(basecampToDestinationDistance),
-                                        jarakTitikTujuanKeTitikJemput: Math.ceil(returnDistance),
-                                        voucher: appliedVoucherCode,
+                                    total_harga: parseInt(price.replace(/\D/g,
+                                        '')),
+                                    jarak: parseFloat($('#distance').text()),
+                                    jarakBaseCampKeTitikJemput: Math.ceil(
+                                        basecampToPickupDistance),
+                                    jarakBaseCampKeTitikTujuan: Math.ceil(
+                                        basecampToDestinationDistance),
+                                    jarakTitikTujuanKeTitikJemput: Math.ceil(
+                                        returnDistance),
+                                    voucher: appliedVoucherCode,
                                     titik_jemput: $('#lokasi_awal').val(),
                                     titik_tujuan: $('#lokasi_akhir').val(),
                                 },
