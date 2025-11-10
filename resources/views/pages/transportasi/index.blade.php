@@ -120,7 +120,7 @@
                 </div>
                 <div class="col-md-12 mt-4">
                     <div class="alert alert-info border">
-                        <div>Setiap pemberhentian di setiap rute yang sama ditambahkan <strong>Rp2.000</strong> per
+                        <div>Setiap kali pemberhentian di rute yang sama ditambahkan <strong>Rp2.000</strong> per
                             lokasi.</div>
                         <div>Setiap menunggu akan dikenakan <strong>Rp5.000 per 30 menit</strong>.</div>
                         <div class="mt-1"><em>Biaya tambahan akan dihitung saat proses layanan atau sesuai kebijakan.</em>
